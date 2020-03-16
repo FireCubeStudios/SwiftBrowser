@@ -1,0 +1,29 @@
+﻿{
+  "Websites": [
+    {
+      "HeaderJSON": "Ecosia",
+      "UrlJSON": "https://www.ecosia.org/",
+      "FavIconJSON": "https://icons.duckduckgo.com/ip2/www.ecosia.org.ico"
+    },
+	 {
+      "HeaderJSON": "Reddit",
+      "UrlJSON": "https://www.reddit.com/",
+      "FavIconJSON": "https://icons.duckduckgo.com/ip2/www.reddit.com.ico"
+    },
+	 {
+      "HeaderJSON": "Office",
+      "UrlJSON": "https://www.office.com/",
+      "FavIconJSON": "https://icons.duckduckgo.com/ip2/www.office.com.ico"
+    },
+	 {
+      "HeaderJSON": "Youtube",
+      "UrlJSON": "https://www.youtube.com/",
+      "FavIconJSON": "https://icons.duckduckgo.com/ip2/www.Youtube.com.ico"
+    },
+	 {
+      "HeaderJSON": "Care Cards",
+      "UrlJSON": "https://carecards.io/cards",
+      "FavIconJSON": "https://icons.duckduckgo.com/ip2/carecards.io.ico"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>SwiftBrowser.Core</RootNamespace>
+  </PropertyGroup>
+
+   <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+   <ItemGroup>
+     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+   </ItemGroup>
+
+   <ItemGroup>
+     <Reference Include="Windows.Foundation.FoundationContract">
+       <HintPath>..\..\..\..\..\..\Program Files (x86)\Windows Kits\10\References\10.0.18362.0\Windows.Foundation.FoundationContract\3.0.0.0\Windows.Foundation.FoundationContract.winmd</HintPath>
+     </Reference>
+   </ItemGroup>
+</Project>

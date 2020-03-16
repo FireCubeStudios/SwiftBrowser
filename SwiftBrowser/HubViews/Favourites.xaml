@@ -1,0 +1,55 @@
+﻿<Page
+    x:Class="SwiftBrowser.HubViews.Favourites"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+        <StackPanel Width="400">
+            <CommandBar  Background="{ThemeResource SystemControlAcrylicWindowBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="True" OverflowButtonVisibility="Visible">
+                <AppBarButton Icon="Add" Label="Add to favorites" Click="AddFav"></AppBarButton>
+                <AppBarButton Icon="Add" Label="Add a site">
+                    <AppBarButton.Flyout>
+                        <Flyout>
+                            <StackPanel Orientation="Vertical" Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="200">
+                                <TextBox Margin="5" x:Name="NameBox" Header="Name: " PlaceholderText="Dont leave blank">
+
+                                </TextBox>
+                                <TextBox Margin="5" x:Name="UrlBox" Header="Url:" PlaceholderText="Enter valid URL">
+
+                                </TextBox>
+                                <Button Margin="5" Click="AddSiteFav" Content="Add" >
+
+                                </Button>
+                            </StackPanel>
+                        </Flyout>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
+                <AppBarButton Icon="Import" Label="Import Favorites"></AppBarButton>
+                <AppBarButton Icon="Share" Label="Export favorites"></AppBarButton>
+            </CommandBar>
+            <ListView
+                   Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+  SelectionMode="None"
+    x:Name="Favorites"
+    HorizontalAlignment="Left">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="5"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                            <Image Height="15" Width="15" Source="{Binding FavIconJSON}" Margin="5"/>
+                            <TextBlock Text="{Binding HeaderJSON}" Margin="0,5,0,5"/>
+                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                                <AppBarButton Icon="OpenFile" Label="Open" Click="OpenFav" Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
+                                <AppBarButton Icon="Delete" Click="DeleteFav" Label="Delete"  Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
+                            </CommandBar>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</Page>

@@ -1,0 +1,267 @@
+﻿<Page
+    x:Class="SwiftBrowser.Views.WebViewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    Style="{StaticResource PageStyle}"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <Style x:Key="BrowserButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{ThemeResource ButtonForeground}" />
+            <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" />
+            <Setter Property="BorderThickness" Value="{ThemeResource ButtonBorderThemeThickness}" />
+            <Setter Property="Padding" Value="8,4,8,4" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+            <Setter Property="UseSystemFocusVisuals" Value="True" />
+            <Setter Property="FocusVisualMargin" Value="-3" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid" Background="{TemplateBinding Background}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushPointerOver}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonForegroundPointerOver}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerUpThemeAnimation Storyboard.TargetName="RootGrid" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushPressed}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonForegroundPressed}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <PointerDownThemeAnimation Storyboard.TargetName="RootGrid" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBorderBrushDisabled}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonForegroundDisabled}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="ContentPresenter" AutomationProperties.AccessibilityView="Raw" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" ContentTemplate="{TemplateBinding ContentTemplate}" ContentTransitions="{TemplateBinding ContentTransitions}" Content="{TemplateBinding Content}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+    <Grid x:Name="ContentGrid">
+        <Grid x:Name="HomeFrame" x:Load="True" Canvas.ZIndex="1" Margin="0, 60, 0, 0">
+            <!--<AutoSuggestBox Canvas.ZIndex="2" VerticalAlignment="Top" Margin="50" Foreground="{ThemeResource SystemControlAcrylicElementBrush}" QueryIcon="Find" HorizontalAlignment="Center" MinWidth="300" Width="600" Height="50" PlaceholderText="Quick search" x:Name="SearchBox" QuerySubmitted="QuickSearchBox_QuerySubmitted"></AutoSuggestBox>-->
+            <Frame x:Name="HomeFrameFrameFrame" >
+<!---_the werid name because the searchboxes weree in homepage and this frame was called homeframe but now grid is called hmeframe to smooth the change so i cALLED IT homeframeframeframe from homeframe because homeframeframe exists-->
+            </Frame>
+        </Grid>
+        <Grid x:Name="InfoFrameGrid" x:Load="False" Margin="0, 60, 0, 0" Canvas.ZIndex="1">
+            <Frame x:Name="InfoFrame">
+            </Frame>
+        </Grid>
+        <Grid x:Name="InkingFrameGrid" Visibility="Collapsed" Margin="0, 60, 0, 0" Canvas.ZIndex="1">
+            <Frame x:Name="InkingFrame">
+            </Frame>
+        </Grid>
+        <Grid x:Name="EmergencyFrame" x:Load="False" Canvas.ZIndex="100">
+            <Frame x:Name="Processlostframe">
+            </Frame>
+        </Grid>
+        <Grid x:Name="NavigationTipGrid" VerticalAlignment="Bottom" Background="{ThemeResource SystemControlAccentDark1AcrylicElementAccentDark1Brush}" CornerRadius="10" Padding="5" HorizontalAlignment="Left" Canvas.ZIndex="6000" Visibility="Collapsed" Margin="30">
+            <TextBlock x:Name="NavigationTip"></TextBlock>
+                </Grid>
+                <StackPanel x:Name="IsloadingPanel"
+                    Visibility="Visible"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <ProgressRing x:Name="Loading" IsActive="False"/>
+            <TextBlock x:Uid="WebView_Loading" />
+        </StackPanel>
+        <StackPanel Visibility="{x:Bind FailedMesageVisibility, Mode=OneWay}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <TextBlock HorizontalAlignment="Center" x:Uid="WebView_FailedMessage" Foreground="Black" TextWrapping="WrapWholeWords" />
+            <HyperlinkButton Click="OnRetry" x:Uid="WebView_Retry" HorizontalAlignment="Center" />
+        </StackPanel>
+        <controls:TeachingTip x:Name="InfoTip" HorizontalAlignment="Center" VerticalAlignment="Center" Height="600" CloseButtonClick="InfoTip_CloseButtonClick" CloseButtonContent="Go back">
+            <controls:TeachingTip.IconSource>
+                <controls:SymbolIconSource Symbol="Globe" />
+            </controls:TeachingTip.IconSource>
+        </controls:TeachingTip>
+        <SplitView x:Name="HubsplitView" PaneBackground="{ThemeResource SystemControlAcrylicElementBrush}"
+           IsPaneOpen="False" PanePlacement="Right" Margin="0, 53, 0, 0" HorizontalAlignment="Right" Canvas.ZIndex="999" OpenPaneLength="500" CompactPaneLength="48" DisplayMode="Overlay">
+            <SplitView.Pane>
+                <Frame Height="800" x:Name="HubFrame" Width="450"></Frame>
+            </SplitView.Pane>
+        </SplitView>
+        <Grid VerticalAlignment="Top">
+            <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button IsEnabled="{x:Bind IsBackEnabled, Mode=OneWay}" Style="{StaticResource BrowserButtonStyle}" Click="OnGoBack" x:Name="BackButton" x:Uid="WebView_BrowserBackButton">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;" />
+                </Button>
+                <Button IsEnabled="{x:Bind IsForwardEnabled, Mode=OneWay}" Style="{StaticResource BrowserButtonStyle}" Click="OnGoForward" x:Name="ForwardButton" x:Uid="WebView_BrowserForwardButton">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72A;" />
+                </Button>
+                <Button Style="{StaticResource BrowserButtonStyle}" Click="OnRefresh" x:Uid="WebView_RefreshBrowserButton" x:Name="RefreshButton">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" x:Name="RefreshButtonIcon"/>
+                </Button>
+                <Button Style="{StaticResource BrowserButtonStyle}" Click="HomeButton_Click" x:Uid="WebView_RefreshBrowserButton">
+                    <SymbolIcon Symbol="Home"/>
+                </Button>
+                <AutoSuggestBox PlaceholderText="Search web"
+                                TextChanged="SearchWebBox_TextChanged"
+                                Margin="5, 0, 5, 0"
+                                MinWidth="500"
+                                MaxWidth="3000"
+                                x:Name="SearchWebBox"
+                                Foreground="{ThemeResource SystemControlAcrylicElementBrush}"
+                                SuggestionChosen="SearchWebBox_SuggestionChosen"
+        QueryIcon="Find"
+        QuerySubmitted="SearchBox_QuerySubmitted">
+                </AutoSuggestBox>
+                <Button Style="{StaticResource BrowserButtonStyle}" x:Name="HubButton" Click="HubButton_Click">
+                    <SymbolIcon Symbol="Favorite"/>
+                </Button>
+                <Button Style="{StaticResource BrowserButtonStyle}" x:Name="ExtensionsButton">
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel Margin="5" Orientation="Vertical">
+                                <TextBlock>
+                                    <Bold>Extensions manager:</Bold>
+                                </TextBlock>
+                                <TextBlock Text="Adblocker"  Margin="5"/>
+                                <TextBlock Text="Web options extensions"  Margin="5"/>
+                                <Button Style="{StaticResource ButtonRevealStyle}" Margin="5" Content="Attempt dark mode" x:Name="DarkModebutton" Click="DarkModebutton_Click"/>
+                                <TextBlock Text="Mobile extension:"  Margin="5"/>
+                                <Button Style="{StaticResource ButtonRevealStyle}" Margin="5" Content="Request mobile site" x:Name="UserAgentbutton" Click="UserAgentbutton_Click"/>
+                                <TextBlock Text="Setting extension:"/>
+                                <Button Style="{StaticResource ButtonRevealStyle}" Margin="5" Content="Clear cache and web data" x:Name="ClearCachebutton" Click="ClearCachebutton_Click"/>
+                                <Button Style="{StaticResource ButtonRevealStyle}" Margin="5" Content="Clear cookies" x:Name="ClearCookies" Click="ClearCookies_Click"/>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74C;" />
+                </Button>
+                <Button Style="{StaticResource BrowserButtonStyle}" x:Name="MenuFrameButton" >
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Open in browser" Click="OnOpenInBrowser" Width="300" Icon="Globe"/>
+                            <MenuFlyoutItem Text="New Tab" Click="NewTabItem_Click"/>
+                            <MenuFlyoutItem Text="New secondary window" Click="NewWindow_Click"/>
+                            <MenuFlyoutItem Text="New secondary incognito" Click="Incognito_Click"/>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Favourites" Click="HubButton_Click"/>
+                            <MenuFlyoutItem Text="History" Click="HisButton_Click"/>
+                            <MenuFlyoutItem Text="Downloads" Click="DownlButton_Click"/>
+                            <MenuFlyoutSubItem Text="Apps">
+                                <MenuFlyoutItem Text="Manage apps"/>
+                                <MenuFlyoutSeparator/>
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutItem Text="Extensions" />
+                            <MenuFlyoutSubItem Text="Toolbar">
+
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Settings" Click="SettingsButton_Click"/>
+                            <MenuFlyoutSubItem Text="Help and feedback">
+                                <MenuFlyoutItem Text="Help"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Send feedback"/>
+                                <MenuFlyoutItem Text="Rate"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="What's new"/>
+                                <MenuFlyoutItem Text="About"/>
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutItem Text="Exit" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" />
+                </Button>
+                <Button Style="{StaticResource BrowserButtonStyle}" x:Name="MenuButton" Visibility="Collapsed">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem Text="Open in browser" Click="OnOpenInBrowser" Width="300" Icon="Globe"/>
+                            <MenuFlyoutItem Text="New Tab" Click="NewTabItem_Click"/>
+                            <MenuFlyoutItem Text="New secondary window" Click="NewWindow_Click"/>
+                            <MenuFlyoutItem Text="New secondary incognito" Click="Incognito_Click"/>
+                                <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Favourites" Click="HubButton_Click"/>
+                            <MenuFlyoutItem Text="History" Click="HisButton_Click"/>
+                            <MenuFlyoutItem Text="Downloads" Click="DownlButton_Click"/>
+                            <MenuFlyoutSubItem Text="Apps">
+                                <MenuFlyoutItem Text="Manage apps"/>
+                                <MenuFlyoutSeparator/>
+                                
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutItem Text="Extensions" />
+                            <MenuFlyoutSubItem Text="Toolbar">
+
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Print (Beta)" Click="PrintFlyoutItem_Click"/>
+                            <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
+                            <MenuFlyoutItem Text="Share" Click="ShareFlyoutItem_Click"/>
+                            <MenuFlyoutItem Text="Find on page" />
+                                <MenuFlyoutItem Text="Read aloud" />
+                                <MenuFlyoutSubItem Text="Pin" >
+                                    <MenuFlyoutItem Text="Taskbar" IsEnabled="False"/>
+                                    <MenuFlyoutItem Text="Livetile" Click="PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click"/>
+                                </MenuFlyoutSubItem>
+                                <MenuFlyoutSubItem Text="More tools">
+                                    <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
+                                    <MenuFlyoutItem Text="Share page" Click="ShareFlyoutItem_Click"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Save page as .HTML" Click="SaveWebPageAsHTMLFlyoutItem_Click"/>
+                                <MenuFlyoutItem Text="Cast page" />
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Browser task manager" />
+                                <MenuFlyoutItem Text="Dev Tools" Click="DevFlyoutItem_Click"/>
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Text="Settings" Click="SettingsButton_Click"/>
+                            <MenuFlyoutSubItem Text="Help and feedback">
+                                <MenuFlyoutItem Text="Help"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Send feedback"/>
+                                <MenuFlyoutItem Text="Rate"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="What's new"/>
+                                <MenuFlyoutItem Text="About"/>
+                            </MenuFlyoutSubItem>
+                            <MenuFlyoutItem Text="Exit" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" />
+                </Button>
+            </StackPanel>
+            <Grid x:Name="PrintPanel">
+
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,28 @@
+﻿<Page
+    x:Class="SwiftBrowser.SettingsViews.SettingsHubPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.SettingsViews"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+        xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <muxc:NavigationView x:Name="SetHubNav" PaneDisplayMode="LeftCompact" IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
+            <muxc:NavigationView.MenuItems>
+                <muxc:NavigationViewItem  x:Name="Main" Icon="Setting" Content="General" />
+                <muxc:NavigationViewItem Icon="Setting" Content="Privacy and security"/>
+                <muxc:NavigationViewItem Icon="Setting" Content="Web settings"/>
+                <muxc:NavigationViewItem Icon="Setting" Content="Personalization"/>
+                <muxc:NavigationViewItem Icon="Setting" Content="Home page"/>
+                <muxc:NavigationViewItem Icon="Setting" Content="Permissions"/>
+                <muxc:NavigationViewItem Icon="Setting" Content="Downloads"/>
+                <muxc:NavigationViewItem Icon="Setting" Content="Sync"/>
+                <muxc:NavigationViewItem Icon="Setting" Content="About"/>
+            </muxc:NavigationView.MenuItems>
+            <Frame x:Name="contentFrame"/>
+        </muxc:NavigationView>
+    </Grid>
+</Page>
