@@ -53,10 +53,18 @@
       </uap:VisualElements>
 
       <Extensions>
+
+        <uap:Extension Category="windows.shareTarget">
+
+          <uap:ShareTarget Description="Open in Swift Browser">
+
+            <uap:SupportedFileTypes>
+            </uap:SupportedFileTypes>
+
+            <uap:DataFormat>URI</uap:DataFormat>
+          </uap:ShareTarget>
+        </uap:Extension>
       </Extensions>
-      <uap:ApplicationContentUriRules>
-        <uap:Rule Type="include" Match="https://www.ecosia.org" WindowsRuntimeAccess="none"/>
-      </uap:ApplicationContentUriRules>
     </Application>
   </Applications>
 

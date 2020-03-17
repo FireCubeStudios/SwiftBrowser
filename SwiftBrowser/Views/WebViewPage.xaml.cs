@@ -49,6 +49,7 @@ using Windows.Storage.Provider;
 using Windows.Graphics.Imaging;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
+using Windows.Graphics.Display;
 
 namespace SwiftBrowser.Views
 {
@@ -124,6 +125,7 @@ namespace SwiftBrowser.Views
             MenuFlyoutItem SaveIMGItem = new MenuFlyoutItem { Text = "Save image - beta" };
             SaveIMGItem.Click += SaveIMGItem_Click;
             MenuFlyoutItem ShareIMGItem = new MenuFlyoutItem { Text = "Share image - beta" };
+            ShareIMGItem.Click += ShareIMGItem_Click;
             MenuFlyoutItem DevItem = new MenuFlyoutItem { Text = "DevTools" };
             ContextFlyout.Items.Add(DevItem);
             ContextFlyoutImage.Items.Add(CopyIMGItem);
@@ -133,6 +135,8 @@ namespace SwiftBrowser.Views
             Window.Current.SizeChanged += SearchWebBox_SizeChanged;
             DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += DataTransferManager_DataRequested;
+            DataTransferManager IMGdataTransferManager = DataTransferManager.GetForCurrentView();
+            IMGdataTransferManager.DataRequested += IMGdataTransferManager_DataRequested;
             webView = new WebView(WebViewExecutionMode.SeparateProcess);
             webView.Name = "webView";
             webView.Height = 1000;
@@ -287,6 +291,21 @@ namespace SwiftBrowser.Views
      RightTimer.Enabled = true;
 
         }
+
+        private async void IMGdataTransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            DataRequest request = args.Request;
+            string x = "Shared Image";
+            request.Data.Properties.Title = x;
+            request.Data.Properties.Description = "Check out this image";
+            request.Data.SetBitmap(RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink)));
+        }
+
+        private void ShareIMGItem_Click(object sender, RoutedEventArgs e)
+        {
+            DataTransferManager.ShowShareUI();
+        }
+
         private async void SaveIMGItem_Click(object sender, RoutedEventArgs e)
         {
            try
@@ -328,21 +347,20 @@ namespace SwiftBrowser.Views
         }
         private async void CopyIMGItem_Click(object sender, RoutedEventArgs e)
         {
-            try { 
+           try { 
             DataPackage dataPackage = new DataPackage();
             dataPackage.RequestedOperation = DataPackageOperation.Copy;
             var CopyImage = RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink));
             IRandomAccessStream stream = await CopyImage.OpenReadAsync();
-            var bitmapImage = new BitmapImage();
-            bitmapImage.SetSource(stream);
-            dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromStream(stream));
+            dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink)));
                 Clipboard.SetContent(dataPackage);
-            }
-            catch
-            {
-                var m = new MessageDialog("could not copy this image. Images embedded in webpages cant be copied yet :(");
-               await m.ShowAsync();
-            }
+            await stream.FlushAsync();
+              }
+               catch
+               {
+                   var m = new MessageDialog("could not copy this image. Images embedded in webpages cant be copied yet :(");
+                  await m.ShowAsync();
+               }
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 ContextFlyoutImage.Hide();
@@ -465,7 +483,7 @@ namespace SwiftBrowser.Views
                 //your code here
                 var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
                 var x = pointerPosition.X - Window.Current.Bounds.X;
-                var y = pointerPosition.Y - Window.Current.Bounds.Y;
+                var y = pointerPosition.Y;
                 if (String.IsNullOrEmpty(ContextMenu.hrefLink) == false && ContextMenu.hrefLink.StartsWith("http") == true)
              {
                     await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
