@@ -53,6 +53,8 @@ namespace SwiftBrowser.Views
             ContentGrid.Children.Add(webView);
             try
             {
+                var ms = new MessageDialog(WebViewNavigationString);
+                 ms.ShowAsync();
                 webView.Navigate(new Uri(WebViewNavigationString));
             }
             catch

@@ -44,6 +44,11 @@ using System.Timers;
 using System.Linq;
 using Windows.UI.StartScreen;
 using Windows.Storage.Streams;
+using Windows.Storage.Pickers;
+using Windows.Storage.Provider;
+using Windows.Graphics.Imaging;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel;
 
 namespace SwiftBrowser.Views
 {
@@ -99,26 +104,26 @@ namespace SwiftBrowser.Views
                 CurrentMainTab = null;
                 MainTab = null;
             }
-            MenuFlyoutItem firstItem = new MenuFlyoutItem { Text = "Open in new tab" };
+            MenuFlyoutItem firstItem = new MenuFlyoutItem { Text = "Open in new tab- beta" };
             firstItem.Click += FirstItem_Click;
             ContextFlyout.Items.Add(firstItem);
-            MenuFlyoutItem WindowItem = new MenuFlyoutItem { Text = "Open in new window" };
+            MenuFlyoutItem WindowItem = new MenuFlyoutItem { Text = "Open in new window - beta" };
             WindowItem.Click += WindowItem_Click;
             ContextFlyout.Items.Add(WindowItem);
-            MenuFlyoutItem IncognitoItem = new MenuFlyoutItem { Text = "Open in new incognito" };
+            MenuFlyoutItem IncognitoItem = new MenuFlyoutItem { Text = "Open in new incognito - beta" };
             ContextFlyout.Items.Add(IncognitoItem);
             IncognitoItem.Click += IncognitoItem_Click;
-            MenuFlyoutItem AppItem = new MenuFlyoutItem { Text = "Open as app" };
+            MenuFlyoutItem AppItem = new MenuFlyoutItem { Text = "Open as app - beta" };
             AppItem.Click += AppItem_Click;
             ContextFlyout.Items.Add(AppItem);
-            MenuFlyoutItem CopyItem = new MenuFlyoutItem { Text = "Copy link" };
+            MenuFlyoutItem CopyItem = new MenuFlyoutItem { Text = "Copy link - beta" };
             CopyItem.Click += CopyItem_Click;
             ContextFlyout.Items.Add(CopyItem);
-            MenuFlyoutItem CopyIMGItem = new MenuFlyoutItem { Text = "Copy image" };
+            MenuFlyoutItem CopyIMGItem = new MenuFlyoutItem { Text = "Copy image - beta" };
             CopyIMGItem.Click += CopyIMGItem_Click;
-            MenuFlyoutItem SaveIMGItem = new MenuFlyoutItem { Text = "Save image" };
+            MenuFlyoutItem SaveIMGItem = new MenuFlyoutItem { Text = "Save image - beta" };
             SaveIMGItem.Click += SaveIMGItem_Click;
-            MenuFlyoutItem ShareIMGItem = new MenuFlyoutItem { Text = "Share image" };
+            MenuFlyoutItem ShareIMGItem = new MenuFlyoutItem { Text = "Share image - beta" };
             MenuFlyoutItem DevItem = new MenuFlyoutItem { Text = "DevTools" };
             ContextFlyout.Items.Add(DevItem);
             ContextFlyoutImage.Items.Add(CopyIMGItem);
@@ -274,38 +279,31 @@ namespace SwiftBrowser.Views
      RightTimer.Enabled = true;
 
         }
-
         private async void SaveIMGItem_Click(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                var CopyImage = RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink));
-                IRandomAccessStream stream = await CopyImage.OpenReadAsync();
-                var bitmapImage = new BitmapImage();
-                bitmapImage.SetSource(stream);
-                var savePicker = new Windows.Storage.Pickers.FileSavePicker();
-                savePicker.SuggestedStartLocation =
-                    Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-                // Dropdown of file types the user can save the file as
-                savePicker.FileTypeChoices.Add("jpg image", new List<string>() { ".jpg" });
-                savePicker.FileTypeChoices.Add("png image", new List<string>() { ".png" });
-                // Default file name if the user does not type one in or select a file to replace
-                savePicker.SuggestedFileName = "New image";
-                Windows.Storage.StorageFile file = StorageFile.CreateStreamedFileFromUriAsync("Downloaded Image", new Uri(NewWindowLink), CopyImage);
-                if (file != null)
+           try
+           {
+            var savePicker = new FileSavePicker
                 {
-                    // Prevent updates to the remote version of the file until
-                    // we finish making changes and call CompleteUpdatesAsync.
-                    Windows.Storage.CachedFileManager.DeferUpdates(file);
-                    // write to file
-                    await Windows.Storage.FileIO.WriteTextAsync(file, file.Name);
-                    // Let Windows know that we're finished changing the file so
-                    // the other app can update the remote version of the file.
-                    // Completing updates may require Windows to ask for user input.
-                    Windows.Storage.Provider.FileUpdateStatus status =
-                        await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+                    SuggestedStartLocation = PickerLocationId.PicturesLibrary
+                };
+                savePicker.FileTypeChoices.Add("png image", new List<string>() { ".png" });
+                savePicker.SuggestedFileName = "Saved image";        
+                StorageFile sFile = await savePicker.PickSaveFileAsync();
+                if (sFile != null)
+                {
+                    CachedFileManager.DeferUpdates(sFile);
+
+
+                System.Net.Http.HttpClient client = new System.Net.Http.HttpClient(); // Create HttpClient
+                byte[] bBuffer = await client.GetByteArrayAsync(new Uri(NewWindowLink)); // Download file
+                using (Stream sstream = await sFile.OpenStreamForWriteAsync())
+                    sstream.Write(bBuffer, 0, bBuffer.Length); // Save
+
+
+                FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(sFile);
                 }
-                }
+            }
             catch
             {
                 var m = new MessageDialog("Could not save image");
@@ -315,8 +313,11 @@ namespace SwiftBrowser.Views
             {
                 ContextFlyoutImage.Hide();
             });
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                ContextFlyout.Hide();
+            });
         }
-
         private async void CopyIMGItem_Click(object sender, RoutedEventArgs e)
         {
             try { 
@@ -331,12 +332,16 @@ namespace SwiftBrowser.Views
             }
             catch
             {
-                var m = new MessageDialog("Could not copy image");
-                await m.ShowAsync();
+                var m = new MessageDialog("could not copy this image. Images embedded in webpages cant be copied yet :(");
+               await m.ShowAsync();
             }
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 ContextFlyoutImage.Hide();
+            });
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                ContextFlyout.Hide();
             });
         }
 
@@ -344,11 +349,24 @@ namespace SwiftBrowser.Views
         {
             DataPackage dataPackage = new DataPackage();
             dataPackage.RequestedOperation = DataPackageOperation.Copy;
-            dataPackage.SetWebLink(new Uri(NewWindowLink));
+            try
+            {
+                dataPackage.SetText(NewWindowLink);
+            }
+            catch
+            {
+                    var ms = new MessageDialog("Unfortunately we werent able to copy the link");
+                    await ms.ShowAsync();
+                
+            }
             Clipboard.SetContent(dataPackage);
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 ContextFlyout.Hide();
+            });
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                ContextFlyoutImage.Hide();
             });
         }
 
@@ -373,6 +391,10 @@ namespace SwiftBrowser.Views
             {
                 ContextFlyout.Hide();
             });
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                ContextFlyoutImage.Hide();
+            });
         }
 
         private async void WindowItem_Click(object sender, RoutedEventArgs e)
@@ -396,6 +418,10 @@ namespace SwiftBrowser.Views
             {
                 ContextFlyout.Hide();
             });
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                ContextFlyoutImage.Hide();
+            });
         }
 
         private async void AppItem_Click(object sender, RoutedEventArgs e)
@@ -418,6 +444,10 @@ namespace SwiftBrowser.Views
             {
                 ContextFlyout.Hide();
             });
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                ContextFlyoutImage.Hide();
+            });
         }
 
         public async void WebView_RightTapped(object source, ElapsedEventArgs e)
@@ -428,7 +458,7 @@ namespace SwiftBrowser.Views
                 var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
                 var x = pointerPosition.X - Window.Current.Bounds.X;
                 var y = pointerPosition.Y - Window.Current.Bounds.Y;
-                if (String.IsNullOrEmpty(ContextMenu.hrefLink) == false)
+                if (String.IsNullOrEmpty(ContextMenu.hrefLink) == false && ContextMenu.hrefLink.StartsWith("http") == true)
              {
                  //   TabviewMain.ContextFlyout = ContextFlyout;
                     FlyoutShowOptions ee = new FlyoutShowOptions();
@@ -437,26 +467,32 @@ namespace SwiftBrowser.Views
                     NewWindowLink = ContextMenu.hrefLink;
                 ContextMenu.hrefLink = null;
            }
-                if (String.IsNullOrEmpty(ContextMenu.SRC) == false)
+                if (String.IsNullOrEmpty(ContextMenu.SRC) == false && ContextMenu.SRC.StartsWith("http") == true)
                 {
                   //  TabviewMain.ContextFlyout = ContextFlyoutImage;
                     FlyoutShowOptions ee = new FlyoutShowOptions();
                     ee.Position = pointerPosition;
                     ContextFlyoutImage.ShowAt(TabviewMain, ee);
                     NewWindowLink = ContextMenu.SRC;
-                    var m = new MessageDialog(NewWindowLink);
-                    m.ShowAsync();
                     ContextMenu.SRC = null;
                 }
             }); 
         }
 
 
-        private void FirstItem_Click(object sender, RoutedEventArgs e)
+        private async void FirstItem_Click(object sender, RoutedEventArgs e)
         {
             localSettings.Values["SourceToGo"] = NewWindowLink;
             localSettings.Values["BackupSourceToGo"] = webView.Source + NewWindowLink;
             NewTabItem_Click(sender, e);
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                ContextFlyoutImage.Hide();
+            });
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                ContextFlyout.Hide();
+            });
         }
 
         private async void WebView_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
@@ -700,7 +736,13 @@ window.Context.setSRCCombination(src);
                     //args.Uri..ToString().Replace("https://", string.Empty)
                     ContextMenu winRTObject = new ContextMenu();
                     webView.AddWebAllowedObject("Context", winRTObject);
+                    try {
                     webView.Navigate(new Uri(sender.Text));
+                    }
+                    catch
+                    {
+                        webView.Navigate(new Uri("https://www.ecosia.org/search?q=" + sender.Text));
+                    }
                 }
                 else
                 {

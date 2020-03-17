@@ -240,7 +240,8 @@
                                 <MenuFlyoutItem Text="Cast page" />
                                 <MenuFlyoutSeparator/>
                                 <MenuFlyoutItem Text="Browser task manager" />
-                                <MenuFlyoutItem Text="Dev Tools" Click="DevFlyoutItem_Click"/>
+                                <MenuFlyoutItem Text="Dev Tools" />
+                                <MenuFlyoutItem Text="Advanced Dev Tools" Click="DevFlyoutItem_Click"/>
                             </MenuFlyoutSubItem>
                             <MenuFlyoutSeparator/>
                             <MenuFlyoutItem Text="Settings" Click="SettingsButton_Click"/>
