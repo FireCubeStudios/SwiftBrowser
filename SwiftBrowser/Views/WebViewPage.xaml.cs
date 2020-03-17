@@ -223,6 +223,14 @@ namespace SwiftBrowser.Views
                 }
                 else
                 {
+                    try { 
+                    var m = new MessageDialog(localSettings.Values["SourceToGo"].ToString());
+                    m.ShowAsync();
+                    }
+                    catch
+                    {
+                        var x = "2";
+                    }
                     localSettings.Values["SourceToGo"] = null;
                     FindName("HomeFrame");
                     FindName("webView");
@@ -452,7 +460,7 @@ namespace SwiftBrowser.Views
 
         public async void WebView_RightTapped(object source, ElapsedEventArgs e)
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async() =>
             { 
                 //your code here
                 var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
@@ -460,7 +468,15 @@ namespace SwiftBrowser.Views
                 var y = pointerPosition.Y - Window.Current.Bounds.Y;
                 if (String.IsNullOrEmpty(ContextMenu.hrefLink) == false && ContextMenu.hrefLink.StartsWith("http") == true)
              {
-                 //   TabviewMain.ContextFlyout = ContextFlyout;
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        ContextFlyout.Hide();
+                    });
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        ContextFlyoutImage.Hide();
+                    });
+                    //   TabviewMain.ContextFlyout = ContextFlyout;
                     FlyoutShowOptions ee = new FlyoutShowOptions();
                 ee.Position = pointerPosition;
                 ContextFlyout.ShowAt(TabviewMain,ee);
@@ -469,7 +485,15 @@ namespace SwiftBrowser.Views
            }
                 if (String.IsNullOrEmpty(ContextMenu.SRC) == false && ContextMenu.SRC.StartsWith("http") == true)
                 {
-                  //  TabviewMain.ContextFlyout = ContextFlyoutImage;
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        ContextFlyout.Hide();
+                    });
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        ContextFlyoutImage.Hide();
+                    });
+                    //  TabviewMain.ContextFlyout = ContextFlyoutImage;
                     FlyoutShowOptions ee = new FlyoutShowOptions();
                     ee.Position = pointerPosition;
                     ContextFlyoutImage.ShowAt(TabviewMain, ee);
