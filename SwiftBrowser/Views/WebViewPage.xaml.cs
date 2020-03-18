@@ -66,15 +66,17 @@ namespace SwiftBrowser.Views
         public static TabViewItem CurrentMainTab { get; set; }
         MenuFlyout ContextFlyout = new MenuFlyout();
         MenuFlyout ContextFlyoutImage = new MenuFlyout();
-        string NewWindowLink; 
+        string NewWindowLink;
         public static Button UserAgentbuttonControl { get; set; }
         public WebViewLongRunningScriptDetectedEventArgs e;
         public static TeachingTip InfoDialog { get; set; }
         public WebView webView;
         public static Grid HomeFrameFrame { get; set; }
+        bool ShareIMG = false;
         public static Boolean IncognitoModeStatic { get; set; }
         public Boolean IncognitoMode;
         TabViewItem CurrentTab;
+        public static string SourceToGo { get; set; }
         TabView TabviewMain;
         public WebViewPage()
         {
@@ -122,7 +124,7 @@ namespace SwiftBrowser.Views
             ContextFlyout.Items.Add(CopyItem);
             MenuFlyoutItem CopyIMGItem = new MenuFlyoutItem { Text = "Copy image - beta" };
             CopyIMGItem.Click += CopyIMGItem_Click;
-            MenuFlyoutItem SaveIMGItem = new MenuFlyoutItem { Text = "Save image - beta" };
+            MenuFlyoutItem SaveIMGItem = new MenuFlyoutItem { Text = "Save image as .png - beta" };
             SaveIMGItem.Click += SaveIMGItem_Click;
             MenuFlyoutItem ShareIMGItem = new MenuFlyoutItem { Text = "Share image - beta" };
             ShareIMGItem.Click += ShareIMGItem_Click;
@@ -135,8 +137,6 @@ namespace SwiftBrowser.Views
             Window.Current.SizeChanged += SearchWebBox_SizeChanged;
             DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += DataTransferManager_DataRequested;
-            DataTransferManager IMGdataTransferManager = DataTransferManager.GetForCurrentView();
-            IMGdataTransferManager.DataRequested += IMGdataTransferManager_DataRequested;
             webView = new WebView(WebViewExecutionMode.SeparateProcess);
             webView.Name = "webView";
             webView.Height = 1000;
@@ -227,14 +227,6 @@ namespace SwiftBrowser.Views
                 }
                 else
                 {
-                    try { 
-                    var m = new MessageDialog(localSettings.Values["SourceToGo"].ToString());
-                    m.ShowAsync();
-                    }
-                    catch
-                    {
-                        var x = "2";
-                    }
                     localSettings.Values["SourceToGo"] = null;
                     FindName("HomeFrame");
                     FindName("webView");
@@ -291,18 +283,9 @@ namespace SwiftBrowser.Views
      RightTimer.Enabled = true;
 
         }
-
-        private async void IMGdataTransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
-        {
-            DataRequest request = args.Request;
-            string x = "Shared Image";
-            request.Data.Properties.Title = x;
-            request.Data.Properties.Description = "Check out this image";
-            request.Data.SetBitmap(RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink)));
-        }
-
         private void ShareIMGItem_Click(object sender, RoutedEventArgs e)
         {
+            ShareIMG = true;
             DataTransferManager.ShowShareUI();
         }
 
@@ -1234,11 +1217,14 @@ window.Context.setSRCCombination(src);
 
         private void ShareFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
+            ShareIMG = false;
             DataTransferManager.ShowShareUI();
         }
 
         private async void DataTransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
+            if(ShareIMG == false)
+            { 
             DataRequest request = args.Request;
             string x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
             request.Data.Properties.Title = x;
@@ -1246,6 +1232,14 @@ window.Context.setSRCCombination(src);
             string host = ArgsUri.Host;
             request.Data.Properties.Description = host;
             request.Data.SetText(webView.Source.ToString());
+            }
+            else
+            {
+                DataRequest request = args.Request;
+                string x = "Shared Image";
+                request.Data.Properties.Title = x;
+                request.Data.SetBitmap(RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink)));
+            }
         }
 
         private void NewTabItem_Click(object sender, RoutedEventArgs e)
