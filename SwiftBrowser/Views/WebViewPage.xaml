@@ -223,10 +223,12 @@
 
                             </MenuFlyoutSubItem>
                             <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Click="ZoomFlyoutItem_Click" Text="Zoom">
+                            </MenuFlyoutItem>
                                 <MenuFlyoutItem Text="Print (Beta)" Click="PrintFlyoutItem_Click"/>
                             <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
                             <MenuFlyoutItem Text="Share" Click="ShareFlyoutItem_Click"/>
-                            <MenuFlyoutItem Text="Find on page" />
+                            <MenuFlyoutItem Text="Find on page" Click="FindFlyoutItem_Click"/>
                                 <MenuFlyoutItem Text="Read aloud" />
                                 <MenuFlyoutSubItem Text="Pin" >
                                     <MenuFlyoutItem Text="Taskbar" IsEnabled="False"/>
@@ -260,6 +262,33 @@
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" />
                 </Button>
             </StackPanel>
+            <controls:TeachingTip x:Name="ZoomTip"
+                                  IsLightDismissEnabled="True"
+                                  Canvas.ZIndex="3000"
+                   HorizontalAlignment="Right" VerticalAlignment="Top"
+	Title="Zoom">
+                <controls:TeachingTip.IconSource>
+                    <controls:SymbolIconSource Symbol="Zoom" />
+                </controls:TeachingTip.IconSource>
+                <controls:TeachingTip.Content>
+                    <Slider Minimum="-75" Maximum="90" Value="0" ValueChanged="ZoomSlider_ValueChanged" SnapsTo="Ticks" TickFrequency="1"/>
+                </controls:TeachingTip.Content>
+            </controls:TeachingTip>
+            <controls:TeachingTip x:Name="FindTip"
+                              CloseButtonClick="FindTip_CloseButtonClick"
+                                  Canvas.ZIndex="3000"
+                   HorizontalAlignment="Right" VerticalAlignment="Top"
+	Title="Find in page">
+                <controls:TeachingTip.IconSource>
+                    <controls:SymbolIconSource Symbol="Find" />
+                </controls:TeachingTip.IconSource>
+                <controls:TeachingTip.Content>
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <AutoSuggestBox x:Name="HighlightTerm" PlaceholderText="Enter text to search" Width="250" Margin="10" QueryIcon="Find" QuerySubmitted="HighlightTerm_QuerySubmitted"/>
+                        <Button Click="ClearHighlights" Content="Clear" Margin="10"/>
+                    </StackPanel>
+                </controls:TeachingTip.Content>
+            </controls:TeachingTip>
             <Grid x:Name="PrintPanel">
 
             </Grid>

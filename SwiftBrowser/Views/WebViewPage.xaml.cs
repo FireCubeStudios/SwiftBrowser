@@ -69,6 +69,7 @@ namespace SwiftBrowser.Views
         string NewWindowLink;
         public static Button UserAgentbuttonControl { get; set; }
         public WebViewLongRunningScriptDetectedEventArgs e;
+        public string HighlightFunctionJS;
         public static TeachingTip InfoDialog { get; set; }
         public WebView webView;
         public static Grid HomeFrameFrame { get; set; }
@@ -85,7 +86,7 @@ namespace SwiftBrowser.Views
             InitializeComponent();
             Startup();
         }
-        public void Startup()
+        public async void Startup()
         {
             if (IncognitoMode == true)
             {
@@ -159,7 +160,7 @@ namespace SwiftBrowser.Views
             webView.UnviewableContentIdentified += webView_UnviewableContentIdentified;
             webView.NavigationFailed += OnNavigationFailed;
             WebviewControl = webView;
-          //  webView.Loaded += webView_LoadCompleted;
+            //  webView.Loaded += webView_LoadCompleted;
             //   webView.SeparateProcessLost += WebView_SeparateProcessLost;
             ContentGrid.Children.Add(webView);
             /*  bool E = (bool)localSettings.Values["IncognitoMode"];
@@ -214,8 +215,8 @@ namespace SwiftBrowser.Views
                     MenuFrameButton.Visibility = Visibility.Collapsed;
                     MenuButton.Visibility = Visibility.Visible;
                     Loading.IsActive = true;
-                   try
-                   {
+                    try
+                    {
                         webView.Navigate(new Uri((string)localSettings.Values["SourceToGo"]));
                     }
                     catch
@@ -274,19 +275,30 @@ namespace SwiftBrowser.Views
                       HomeFrameFrameFrame.Navigate(typeof(HomePage));
                   }
               }*/
+            StorageFile HighlightFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///WebFiles/highlight.js"));
+            HighlightFunctionJS = await FileIO.ReadTextAsync(HighlightFile);
             SearchWebBox.Width = Window.Current.Bounds.Width - 300;
             WebviewControl = webView;
             HomeFrameFrame = HomeFrame;
             System.Timers.Timer RightTimer = new System.Timers.Timer();
             RightTimer.Elapsed += new ElapsedEventHandler(WebView_RightTapped);
             RightTimer.Interval = 50;
-     RightTimer.Enabled = true;
-
+            RightTimer.Enabled = true;
+           
         }
+
         private void ShareIMGItem_Click(object sender, RoutedEventArgs e)
         {
             ShareIMG = true;
             DataTransferManager.ShowShareUI();
+        }
+        private async void ZoomSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            string func = String.Format("document.documentElement.style.zoom = (1.0 - " + e.NewValue + " * 0.01); ");       //" function ZoomFunction(" + e.NewValue.ToString() + ") { var mybody = document.body;  if (Percentage < 100){  mybody.style.overflow = 'hidden'; NewWidth = (100 * OriginalWidth) / Percentage; NewHeight = (100 * OriginalHeight) / Percentage;  } else if (Percentage == 100) {mybody.style.overflow = 'hidden'; NewWidth = OriginalWidth; NewHeight = OriginalHeight;}  else{  mybody.style.overflow = 'auto'; NewWidth = OriginalWidth * (Percentage / 100);   NewHeight = OriginalHeight * (Percentage / 10);    } }";
+            if (webView != null)
+            { 
+                await webView.InvokeScriptAsync("eval", new string[] { func });
+            }
         }
 
         private async void SaveIMGItem_Click(object sender, RoutedEventArgs e)
@@ -1575,15 +1587,37 @@ window.Context.setSRCCombination(src);
                   TileSize.Default);
             tile.VisualElements.ShowNameOnSquare150x150Logo = true;
             await tile.RequestCreateAsync();
-         /*   var secondaryTile = new SecondaryTile("tileID",
- "App Name",
- "args",
- "tile",
- TileOptions.ShowNameOnLogo,
- new Uri("ms-appx:///Assets/Square150x150Logo.png")
-            { RoamingEnabled = true };
+        }
 
-            await secondaryTile.RequestCreateAsync();*/
+        private void ZoomFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            ZoomTip.IsOpen = true;
+        }
+
+        private void ClearHighlights(object sender, RoutedEventArgs e)
+        {
+            ClearSearch();
+        }
+        private void FindFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            FindTip.IsOpen = true;
+        }
+        private bool Cleared = true;
+        private async void HighlightTerm_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (!Cleared) ClearSearch();
+await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " HighlightFunction('" + args.QueryText + "');" });
+            Cleared = false;
+        }
+        public async void ClearSearch()
+        {
+            await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " RestoreFunction();" });
+            Cleared = true;
+        }
+
+        private void FindTip_CloseButtonClick(TeachingTip sender, object args)
+        {
+            ClearSearch();
         }
         ////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////
