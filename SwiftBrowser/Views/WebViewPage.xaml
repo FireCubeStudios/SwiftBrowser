@@ -235,10 +235,15 @@
                                     <MenuFlyoutItem Text="Livetile" Click="PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click"/>
                                 </MenuFlyoutSubItem>
                                 <MenuFlyoutSubItem Text="More tools">
-                                    <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
+                                <MenuFlyoutItem Text="Mute page (beta)" Click="MuteFlyoutItem_Click"/>
+                                <MenuFlyoutItem Text="UnMute page (beta)" Click="unMuteFlyoutItem_Click"/>
+                                <MenuFlyoutItem Text="Translate" Click="TranslateFlyoutItem_Click"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
                                     <MenuFlyoutItem Text="Share page" Click="ShareFlyoutItem_Click"/>
                                 <MenuFlyoutSeparator/>
                                 <MenuFlyoutItem Text="Save page as .HTML" Click="SaveWebPageAsHTMLFlyoutItem_Click"/>
+                                <MenuFlyoutItem Text="Screenshot web page" Click="PageIMGFlyoutItem_Click"/>
                                 <MenuFlyoutItem Text="Cast page" />
                                 <MenuFlyoutSeparator/>
                                 <MenuFlyoutItem Text="Browser task manager" />

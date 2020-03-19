@@ -215,6 +215,9 @@
     <Compile Include="SettingsViews\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ReadingModeFrame.xaml.cs">
+      <DependentUpon>ReadingModeFrame.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TabViewPage.xaml.cs">
       <DependentUpon>TabViewPage.xaml</DependentUpon>
     </Compile>
@@ -310,6 +313,10 @@
     <Page Include="SettingsViews\SettingsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ReadingModeFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TabViewPage.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -409,6 +416,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
     <Content Include="WebFiles\global.css" />
     <Content Include="WebFiles\highlight.js" />
+    <Content Include="WebFiles\readingmode.js" />
     <Content Include="WebFiles\UniversalDarkMode.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

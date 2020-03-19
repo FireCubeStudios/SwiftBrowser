@@ -138,7 +138,7 @@ namespace SwiftBrowser.Views
             Window.Current.SizeChanged += SearchWebBox_SizeChanged;
             DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += DataTransferManager_DataRequested;
-            webView = new WebView(WebViewExecutionMode.SeparateProcess);
+            webView = new WebView(WebViewExecutionMode.SameThread);
             webView.Name = "webView";
             webView.Height = 1000;
             webView.MinHeight = 300;
@@ -368,11 +368,12 @@ namespace SwiftBrowser.Views
 
         private async void CopyItem_Click(object sender, RoutedEventArgs e)
         {
+            await Task.Delay(1000);
             DataPackage dataPackage = new DataPackage();
             dataPackage.RequestedOperation = DataPackageOperation.Copy;
             try
             {
-                dataPackage.SetText(NewWindowLink);
+                dataPackage.SetText(NewWindowLink.ToString());
             }
             catch
             {
@@ -479,8 +480,10 @@ namespace SwiftBrowser.Views
                 var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
                 var x = pointerPosition.X - Window.Current.Bounds.X;
                 var y = pointerPosition.Y;
-                if (String.IsNullOrEmpty(ContextMenu.hrefLink) == false && ContextMenu.hrefLink.StartsWith("http") == true)
+                if (String.IsNullOrEmpty(ContextMenu.hrefLink) == false && ContextMenu.hrefLink.Contains("http") == true)
              {
+                    NewWindowLink = ContextMenu.hrefLink;
+                    CurrentTab.Header = ContextMenu.hrefLink;
                     await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
                         ContextFlyout.Hide();
@@ -493,11 +496,11 @@ namespace SwiftBrowser.Views
                     FlyoutShowOptions ee = new FlyoutShowOptions();
                 ee.Position = pointerPosition;
                 ContextFlyout.ShowAt(TabviewMain,ee);
-                    NewWindowLink = ContextMenu.hrefLink;
                 ContextMenu.hrefLink = null;
            }
-                if (String.IsNullOrEmpty(ContextMenu.SRC) == false && ContextMenu.SRC.StartsWith("http") == true)
+                if (String.IsNullOrEmpty(ContextMenu.SRC) == false && ContextMenu.SRC.Contains("http") == true)
                 {
+                    NewWindowLink = ContextMenu.SRC;
                     await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
                         ContextFlyout.Hide();
@@ -510,7 +513,6 @@ namespace SwiftBrowser.Views
                     FlyoutShowOptions ee = new FlyoutShowOptions();
                     ee.Position = pointerPosition;
                     ContextFlyoutImage.ShowAt(TabviewMain, ee);
-                    NewWindowLink = ContextMenu.SRC;
                     ContextMenu.SRC = null;
                 }
             }); 
@@ -534,8 +536,17 @@ namespace SwiftBrowser.Views
 
         private async void WebView_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
+            string mutefunctionString = @"var anchors = document.querySelectorAll('video');      
+     for (var i = 0; i < anchors.length; i += 1) {
+           anchors[i].oncontextmenu = function (e) {
+        var href = this.getAttribute('muted');
+    href = true;
+           };
+       }";
+
+            await webView.InvokeScriptAsync("eval", new string[] { mutefunctionString });
             NavigationTipGrid.Visibility = Visibility.Visible;
-            NavigationTip.Text = "Content for " + args.Uri.ToString() + " has finished loading";
+            NavigationTip.Text = "Navigation finishing...";
             string functionString = @"var anchors = document.querySelectorAll('a');      
      for (var i = 0; i < anchors.length; i += 1) {
            anchors[i].oncontextmenu = function (e) {
@@ -558,8 +569,37 @@ window.Context.setSRCCombination(src);
        }";
             // window.external.notify([oX.toString(), oY.toString(), href].toString());
             await webView.InvokeScriptAsync("eval", new string[] { functionImageString });
+            DOMloaded();
         }
-
+        public async void DOMloaded()
+        {
+            try
+            {
+                string x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
+                CurrentTab.Header = x;
+            }
+            catch
+            {
+                CurrentTab.Header = webView.Source;
+            }
+            Uri ArgsUri = new Uri(webView.Source.ToString());
+            string host = ArgsUri.Host;
+            CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.BitmapIconSource() { UriSource = new Uri("http://icons.duckduckgo.com/ip2/" + host + ".ico"), ShowAsMonochrome = false };
+            RefreshButtonIcon.Glyph = "\uE72C";
+            OnPropertyChanged(nameof(IsBackEnabled));
+            OnPropertyChanged(nameof(IsForwardEnabled));
+            if (webView.Source.ToString().Contains("https://www.ecosia.org/search?q="))
+            {
+                string stre = webView.Source.ToString().Replace("https://www.ecosia.org/search?q=", string.Empty);
+                SearchWebBox.Text = stre;
+            }
+            else
+            {
+                SearchWebBox.Text = webView.Source.ToString();
+            }
+            NavigationTip.Text = "Navigation finished";
+            NavigationTipGrid.Visibility = Visibility.Collapsed;
+        }
         public static bool IsMobileSiteEnabled = false;
         public Uri Source
         {
@@ -599,43 +639,10 @@ window.Context.setSRCCombination(src);
         ///////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////zsa
-        private async void OnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
+        private void OnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
-            NavigationTip.Text = "Navigation finished";
-            NavigationTipGrid.Visibility = Visibility.Collapsed;
-            IsloadingPanel.Visibility = Visibility.Collapsed;
-            Loading.Visibility = Visibility.Collapsed;
-            if (args.IsSuccess == true)
-            {
-                try
-                {
-                    string x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
-                    CurrentTab.Header = x;
-                }
-                catch
-                {
-                    CurrentTab.Header = webView.Source;
-                }
-                NavigationTipGrid.Visibility = Visibility.Collapsed;
-                NavigationTip.Text = "Navigation finishing...";
-                Uri ArgsUri = new Uri(webView.Source.ToString());
-                string host = ArgsUri.Host;
-                CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.BitmapIconSource() { UriSource = new Uri("http://icons.duckduckgo.com/ip2/" + host + ".ico"), ShowAsMonochrome = false };
-                RefreshButtonIcon.Glyph = "\uE72C";
-                OnPropertyChanged(nameof(IsBackEnabled));
-                OnPropertyChanged(nameof(IsForwardEnabled));
-                if (webView.Source.ToString().Contains("https://www.ecosia.org/search?q="))
-                {
-                    string stre = webView.Source.ToString().Replace("https://www.ecosia.org/search?q=", string.Empty);
-                    SearchWebBox.Text = stre;
-                }
-                else
-                {
-                    SearchWebBox.Text = webView.Source.ToString();
-                }
-            }
-            else
-            {
+            if (args.IsSuccess == false)
+            { 
                 if (webView.Source.ToString().Contains("https://www.ecosia.org/search?q=") == false)
                 {
                     //CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Globe };
@@ -1402,7 +1409,7 @@ window.Context.setSRCCombination(src);
 
                 // Static header
 
-                var header = new TextBlock { Text = "Windows Community Toolkit Sample App - Print Helper - Custom Print", Margin = new Thickness(0, 0, 0, 20) };
+                var header = new TextBlock { Text = "Swift browser web printing (beta)", Margin = new Thickness(0, 0, 0, 20) };
 
                 Grid.SetRow(header, 0);
 
@@ -1531,7 +1538,7 @@ window.Context.setSRCCombination(src);
 
             return wvBrush;
         }
-        private void InkingButton_Click(object sender, RoutedEventArgs e)
+        private async void InkingButton_Click(object sender, RoutedEventArgs e)
         { 
             BackButton.IsEnabled = false;
             ForwardButton.IsEnabled = false;
@@ -1542,7 +1549,7 @@ window.Context.setSRCCombination(src);
             MenuButton.Visibility = Visibility.Collapsed;
             InkingFrameGrid.Visibility = Visibility.Visible;
             GC.Collect();
-                HomePage.WebViewControl = webView;
+            HomePage.WebViewControl = webView;
             inkingPage.WebView = webView;
                InkingFrame.Navigate(typeof(inkingPage));
             CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Home };
@@ -1619,10 +1626,66 @@ await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " H
         {
             ClearSearch();
         }
+
+        private void TranslateFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            webView.Navigate(new Uri("https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=" + webView.Source));
+        }
+
+        private async void PageIMGFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+ 
+                RenderTargetBitmap rtb = new RenderTargetBitmap();
+                await rtb.RenderAsync(webView);
+
+                var pixelBuffer = await rtb.GetPixelsAsync();
+                var pixels = pixelBuffer.ToArray();
+                var displayInformation = DisplayInformation.GetForCurrentView();
+                var picker = new FileSavePicker();
+                picker.FileTypeChoices.Add("JPEG Image", new string[] { ".jpg" });
+                StorageFile file = await picker.PickSaveFileAsync();
+                using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                {
+                    var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+                    encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                                         BitmapAlphaMode.Premultiplied,
+                                         (uint)rtb.PixelWidth,
+                                         (uint)rtb.PixelHeight,
+                                          displayInformation.RawDpiX,
+                             displayInformation.RawDpiY,
+                                         pixels);
+                    await encoder.FlushAsync();
+                }
+                var m = new MessageDialog("Screen captured and Saved");
+                await m.ShowAsync();
+        }
+
+        private async void MuteFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            string mutefunctionString = @"var anchors = document.querySelectorAll('video');      
+     for (var i = 0; i < anchors.length; i += 1) {
+           anchors[i].oncontextmenu = function (e) {
+        var href = this.getAttribute('muted');
+    href = true;
+           };
+       }";
+
+            await webView.InvokeScriptAsync("eval", new string[] { mutefunctionString });
+        }
+        private async void unMuteFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            string unmutefunctionString = @"var videos = document.querySelectorAll('video');
+    var audios = document.querySelectorAll('audio');
+    [].forEach.call(videos, function(video) { video.muted = false; });
+    [].forEach.call(audios, function(audio) { audio.muted = false; }); ";
+
+            await webView.InvokeScriptAsync("eval", new string[] { unmutefunctionString });
+        }
+    }
         ////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////
     }
-    }
+    
 

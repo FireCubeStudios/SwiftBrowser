@@ -12,10 +12,10 @@
         <InkToolbar Canvas.ZIndex="2" TargetInkCanvas="{x:Bind InkCanvas}" VerticalAlignment="Top" HorizontalAlignment="Center"></InkToolbar>
         <Button Click="Button_Click" Canvas.ZIndex="2" VerticalAlignment="Top" HorizontalAlignment="Left">Save</Button>
         <!-- <ScrollViewer x:Name="ScrollPainter" Visibility="Collapsed" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto" ZoomMode="Enabled" MinZoomFactor="1">-->
-        <Grid Margin="0, 40, 0, 0" x:Name="Gridx">
+        <Grid Margin="0, 40, 0, 0">
             <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
-                <Grid>
-                    <Rectangle x:Name="Painter" Fill="Red"/>
+                <Grid x:Name="Gridx">
+                    <Rectangle x:Name="Painter" Fill="White"/>
 
                     <InkCanvas Canvas.ZIndex='1' x:Name="InkCanvas" />
                 </Grid>
