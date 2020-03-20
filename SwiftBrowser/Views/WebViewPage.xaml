@@ -214,7 +214,10 @@
                             <MenuFlyoutItem Text="History" Click="HisButton_Click"/>
                             <MenuFlyoutItem Text="Downloads" Click="DownlButton_Click"/>
                             <MenuFlyoutSubItem Text="Apps">
-                                <MenuFlyoutItem Text="Manage apps"/>
+                                <MenuFlyoutItem Text="Launch this site as an 'app'" Click="TempLaunchAppFlyoutItem_Click"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Install this site as an app (coming soon)" IsEnabled="False"/>
+                                <MenuFlyoutItem Text="Manage apps (coming soon)" IsEnabled="False"/>
                                 <MenuFlyoutSeparator/>
                                 
                             </MenuFlyoutSubItem>
@@ -244,9 +247,9 @@
                                 <MenuFlyoutSeparator/>
                                 <MenuFlyoutItem Text="Save page as .HTML" Click="SaveWebPageAsHTMLFlyoutItem_Click"/>
                                 <MenuFlyoutItem Text="Screenshot web page" Click="PageIMGFlyoutItem_Click"/>
-                                <MenuFlyoutItem Text="Cast page" />
+                                <MenuFlyoutItem Text="Webview snip" Click="SnipFlyoutItem_Click"></MenuFlyoutItem>
                                 <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="Browser task manager" />
+                                <MenuFlyoutItem Text="Browser task manager" Click="TaskMngFlyoutItem_Click"/>
                                 <MenuFlyoutItem Text="Dev Tools" />
                                 <MenuFlyoutItem Text="Advanced Dev Tools" Click="DevFlyoutItem_Click"/>
                             </MenuFlyoutSubItem>
@@ -298,5 +301,28 @@
 
             </Grid>
         </Grid>
+        <ContentDialog
+           x:Name="TaskMNG"
+        Title="Browser Task Manager"
+        CloseButtonText="Close"
+        DefaultButton="Close">
+
+            <StackPanel Orientation="Vertical"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <TextBlock>Cpu:</TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="CpuUsage"></TextBlock>
+                <TextBlock>Disk:</TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="DiskUsage"></TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="XDiskUsage"></TextBlock>
+                <TextBlock>Memory:</TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="MemUsage"></TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="XMemUsage"></TextBlock>
+                <TextBlock>Other:</TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="IdProcess"></TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="StartTime"></TextBlock>
+                <Button Click="RefreshTaskManagerButton_Click">Refresh</Button>
+            </StackPanel>
+
+        </ContentDialog>
     </Grid>
 </Page>
+

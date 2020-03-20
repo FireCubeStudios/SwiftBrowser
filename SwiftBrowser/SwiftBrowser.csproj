@@ -218,6 +218,9 @@
     <Compile Include="Views\ReadingModeFrame.xaml.cs">
       <DependentUpon>ReadingModeFrame.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SnipPage.xaml.cs">
+      <DependentUpon>SnipPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TabViewPage.xaml.cs">
       <DependentUpon>TabViewPage.xaml</DependentUpon>
     </Compile>
@@ -315,6 +318,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ReadingModeFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SnipPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -50,6 +50,8 @@ using Windows.Graphics.Imaging;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.Graphics.Display;
+using Windows.System.Diagnostics;
+using Windows.System;
 
 namespace SwiftBrowser.Views
 {
@@ -536,15 +538,6 @@ namespace SwiftBrowser.Views
 
         private async void WebView_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
-            string mutefunctionString = @"var anchors = document.querySelectorAll('video');      
-     for (var i = 0; i < anchors.length; i += 1) {
-           anchors[i].oncontextmenu = function (e) {
-        var href = this.getAttribute('muted');
-    href = true;
-           };
-       }";
-
-            await webView.InvokeScriptAsync("eval", new string[] { mutefunctionString });
             NavigationTipGrid.Visibility = Visibility.Visible;
             NavigationTip.Text = "Navigation finishing...";
             string functionString = @"var anchors = document.querySelectorAll('a');      
@@ -1538,7 +1531,7 @@ window.Context.setSRCCombination(src);
 
             return wvBrush;
         }
-        private async void InkingButton_Click(object sender, RoutedEventArgs e)
+        private  void InkingButton_Click(object sender, RoutedEventArgs e)
         { 
             BackButton.IsEnabled = false;
             ForwardButton.IsEnabled = false;
@@ -1662,13 +1655,10 @@ await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " H
 
         private async void MuteFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-            string mutefunctionString = @"var anchors = document.querySelectorAll('video');      
-     for (var i = 0; i < anchors.length; i += 1) {
-           anchors[i].oncontextmenu = function (e) {
-        var href = this.getAttribute('muted');
-    href = true;
-           };
-       }";
+            string mutefunctionString = @" var videos = document.querySelectorAll('video');
+    var audios = document.querySelectorAll('audio');
+    [].forEach.call(videos, function(video) { video.muted = true; });
+    [].forEach.call(audios, function(audio) { audio.muted = true; }); ";
 
             await webView.InvokeScriptAsync("eval", new string[] { mutefunctionString });
         }
@@ -1680,6 +1670,84 @@ await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " H
     [].forEach.call(audios, function(audio) { audio.muted = false; }); ";
 
             await webView.InvokeScriptAsync("eval", new string[] { unmutefunctionString });
+        }
+
+        private async void TempLaunchAppFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            string source = webView.Source.ToString();
+            CoreApplicationView newView = CoreApplication.CreateNewView();
+            int newViewId = 0;
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Frame frame = new Frame();
+                WebApp.WebViewNavigationString = source;
+                frame.Navigate(typeof(WebApp));
+                Window.Current.Content = frame;
+                // You have to activate the window in order to show it later.
+                Window.Current.Activate();
+
+                newViewId = ApplicationView.GetForCurrentView().Id;
+            });
+            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+        }
+
+        private async void SnipFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            BackButton.IsEnabled = false;
+            ForwardButton.IsEnabled = false;
+            RefreshButton.IsEnabled = false;
+            ExtensionsButton.IsEnabled = false;
+            MenuButton.IsEnabled = false;
+            MenuFrameButton.Visibility = Visibility.Visible;
+            MenuButton.Visibility = Visibility.Collapsed;
+            InkingFrameGrid.Visibility = Visibility.Visible;
+            GC.Collect();
+            HomePage.WebViewControl = webView;
+            inkingPage.WebView = webView;
+            InkingFrame.Navigate(typeof(SnipPage));
+            CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Cut };
+            CurrentTab.Header = "Snip Tab";
+            try
+            {
+                UnloadObject(webView);
+            }
+            catch
+            {
+                UnloadObject(InfoFrameGrid);
+            }
+        }
+
+        private async void TaskMngFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessMemoryUsageReport mu = ProcessDiagnosticInfo.GetForCurrentProcess().MemoryUsage.GetReport();
+            MemUsage.Text = "Memory Usage: " + MemoryManager.AppMemoryUsage.ToString() + "\r\nMemory Level: " + MemoryManager.AppMemoryUsageLevel.ToString();
+            XMemUsage.Text = "Memory Usage Limit: " + MemoryManager.AppMemoryUsageLimit.ToString() + "\r\nExpected Memory Usage Limit: " + MemoryManager.ExpectedAppMemoryUsageLimit.ToString();
+            ProcessDiskUsageReport du = ProcessDiagnosticInfo.GetForCurrentProcess().DiskUsage.GetReport();
+            DiskUsage.Text = "Bytes Written Count: " + du.BytesWrittenCount.ToString() + "\r\nBytes Read Count:" + du.BytesReadCount.ToString() + "\r\nOther Bytes Count:" + du.OtherBytesCount.ToString();
+            XDiskUsage.Text = "Write Operation Count: " + du.WriteOperationCount.ToString() + "\r\nRead Operation Count: " + du.ReadOperationCount.ToString() + "\r\nOther Operation Count:" + du.OtherOperationCount.ToString();
+            ProcessCpuUsageReport cu = ProcessDiagnosticInfo.GetForCurrentProcess().CpuUsage.GetReport();
+            CpuUsage.Text = "Cpu Kernel Time: " + cu.KernelTime.ToString() + "\r\nCpu User Time:" + cu.UserTime.ToString();
+            string id = ProcessDiagnosticInfo.GetForCurrentProcess().ProcessId.ToString();
+            IdProcess.Text = "Process Id: " + id;
+            string st = ProcessDiagnosticInfo.GetForCurrentProcess().ProcessStartTime.ToString();
+            StartTime.Text = "Start Time: " + st;
+            await TaskMNG.ShowAsync();
+        }
+
+        private void RefreshTaskManagerButton_Click(object sender, RoutedEventArgs e)
+        {
+            ProcessMemoryUsageReport mu = ProcessDiagnosticInfo.GetForCurrentProcess().MemoryUsage.GetReport();
+            MemUsage.Text = "Memory Usage: " + MemoryManager.AppMemoryUsage.ToString() + "\r\nMemory Level: " + MemoryManager.AppMemoryUsageLevel.ToString();
+            XMemUsage.Text = "Memory Usage Limit: " + MemoryManager.AppMemoryUsageLimit.ToString() + "\r\nExpected Memory Usage Limit: " + MemoryManager.ExpectedAppMemoryUsageLimit.ToString();
+            ProcessDiskUsageReport du = ProcessDiagnosticInfo.GetForCurrentProcess().DiskUsage.GetReport();
+            DiskUsage.Text = "Bytes Written Count: " + du.BytesWrittenCount.ToString() + "\r\nBytes Read Count:" + du.BytesReadCount.ToString() + "\r\nOther Bytes Count:" + du.OtherBytesCount.ToString();
+            XDiskUsage.Text = "Write Operation Count: " + du.WriteOperationCount.ToString() + "\r\nRead Operation Count: " + du.ReadOperationCount.ToString() + "\r\nOther Operation Count:" + du.OtherOperationCount.ToString();
+            ProcessCpuUsageReport cu = ProcessDiagnosticInfo.GetForCurrentProcess().CpuUsage.GetReport();
+            CpuUsage.Text = "Cpu Kernel Time: " + cu.KernelTime.ToString() + "\r\nCpu User Time:" + cu.UserTime.ToString();
+            string id = ProcessDiagnosticInfo.GetForCurrentProcess().ProcessId.ToString();
+            IdProcess.Text = "Process Id: " + id;
+            string st = ProcessDiagnosticInfo.GetForCurrentProcess().ProcessStartTime.ToString();
+            StartTime.Text = "Start Time: " + st;
         }
     }
         ////////////////////////////////////////////////////////////////
