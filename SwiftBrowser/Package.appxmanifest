@@ -51,20 +51,6 @@
         </uap:DefaultTile >
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
-
-      <Extensions>
-
-        <uap:Extension Category="windows.shareTarget">
-
-          <uap:ShareTarget Description="Open in Swift Browser">
-
-            <uap:SupportedFileTypes>
-            </uap:SupportedFileTypes>
-
-            <uap:DataFormat>URI</uap:DataFormat>
-          </uap:ShareTarget>
-        </uap:Extension>
-      </Extensions>
     </Application>
   </Applications>
 

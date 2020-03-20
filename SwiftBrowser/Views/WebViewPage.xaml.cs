@@ -227,14 +227,6 @@ namespace SwiftBrowser.Views
                 }
                 else
                 {
-                    try { 
-                    var m = new MessageDialog(localSettings.Values["SourceToGo"].ToString());
-                    m.ShowAsync();
-                    }
-                    catch
-                    {
-                        var x = "2";
-                    }
                     localSettings.Values["SourceToGo"] = null;
                     FindName("HomeFrame");
                     FindName("webView");
@@ -299,11 +291,15 @@ namespace SwiftBrowser.Views
             request.Data.Properties.Title = x;
             request.Data.Properties.Description = "Check out this image";
             request.Data.SetBitmap(RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink)));
+            var m = new MessageDialog(NewWindowLink.ToString());
+            await m.ShowAsync();
         }
 
-        private void ShareIMGItem_Click(object sender, RoutedEventArgs e)
+        private async void ShareIMGItem_Click(object sender, RoutedEventArgs e)
         {
             DataTransferManager.ShowShareUI();
+            var m = new MessageDialog("NewWindowLink.ToString()");
+            await m.ShowAsync();
         }
 
         private async void SaveIMGItem_Click(object sender, RoutedEventArgs e)
