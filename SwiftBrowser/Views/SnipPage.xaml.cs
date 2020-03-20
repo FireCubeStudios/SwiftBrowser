@@ -11,6 +11,7 @@ using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.System.Diagnostics;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -28,19 +29,19 @@ namespace SwiftBrowser.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class inkingPage : Page
+    public sealed partial class SnipPage : Page
     {
         public static WebView WebView { get; set; }
         int width;
         int height;
-        public inkingPage()
+        public SnipPage()
         {
             this.InitializeComponent();
             CaptureWebView();
         }
         private async Task CaptureWebView()
         {
-           
+
             var originalWidth = WebView.ActualWidth;
             var originalHeight = WebView.ActualHeight;
 
@@ -57,19 +58,41 @@ namespace SwiftBrowser.Views
             }
 
             // resize the webview to the content
-       // WebView.Width = width;
+            // WebView.Width = width;
             WebView.Height = height;
 
             var brush = new WebViewBrush();
             brush.SetSource(WebView);
             await Task.Delay(3000);
-            Painter.Width = width;
-            Painter.Height = height;
-            InkCanvas.Width = width;
-            InkCanvas.Height = height;
+            SnipCropper.Width = width;
+            SnipCropper.Height = height;
             Gridx.Height = height;
             Gridx.Width = width;
+            Painter.Width = width;
+            Painter.Height = height;
             Painter.Fill = brush;
+            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            await rtb.RenderAsync(Gridx);
+            var pixelBuffer = await rtb.GetPixelsAsync();
+            var pixels = pixelBuffer.ToArray();
+            IRandomAccessStream stream = null;
+         
+            WriteableBitmap bit = new WriteableBitmap(rtb.PixelWidth, rtb.PixelHeight);
+            await bit.SetSourceAsync(stream);
+            using (stream)
+            {
+                var displayInformation = DisplayInformation.GetForCurrentView();
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+                encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                                     BitmapAlphaMode.Premultiplied,
+                                     (uint)rtb.PixelWidth,
+                                     (uint)rtb.PixelHeight,
+                                      displayInformation.RawDpiX,
+                         displayInformation.RawDpiY,
+                                     pixels);
+                await encoder.FlushAsync();
+            }
+            SnipCropper.Source = bit;
             WebView.Height = 1000;
         }
 
@@ -97,8 +120,7 @@ namespace SwiftBrowser.Views
                 await encoder.FlushAsync();
             }
             var m = new MessageDialog("Screen captured and Saved");
-                await m.ShowAsync();
-            }
+            await m.ShowAsync();
         }
     }
-
+}

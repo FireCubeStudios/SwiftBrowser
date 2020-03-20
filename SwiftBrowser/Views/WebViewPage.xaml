@@ -214,7 +214,10 @@
                             <MenuFlyoutItem Text="History" Click="HisButton_Click"/>
                             <MenuFlyoutItem Text="Downloads" Click="DownlButton_Click"/>
                             <MenuFlyoutSubItem Text="Apps">
-                                <MenuFlyoutItem Text="Manage apps"/>
+                                <MenuFlyoutItem Text="Launch this site as an 'app'" Click="TempLaunchAppFlyoutItem_Click"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Install this site as an app (coming soon)" IsEnabled="False"/>
+                                <MenuFlyoutItem Text="Manage apps (coming soon)" IsEnabled="False"/>
                                 <MenuFlyoutSeparator/>
                                 
                             </MenuFlyoutSubItem>
@@ -223,23 +226,30 @@
 
                             </MenuFlyoutSubItem>
                             <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem Click="ZoomFlyoutItem_Click" Text="Zoom">
+                            </MenuFlyoutItem>
                                 <MenuFlyoutItem Text="Print (Beta)" Click="PrintFlyoutItem_Click"/>
                             <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
                             <MenuFlyoutItem Text="Share" Click="ShareFlyoutItem_Click"/>
-                            <MenuFlyoutItem Text="Find on page" />
+                            <MenuFlyoutItem Text="Find on page" Click="FindFlyoutItem_Click"/>
                                 <MenuFlyoutItem Text="Read aloud" />
                                 <MenuFlyoutSubItem Text="Pin" >
                                     <MenuFlyoutItem Text="Taskbar" IsEnabled="False"/>
                                     <MenuFlyoutItem Text="Livetile" Click="PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click"/>
                                 </MenuFlyoutSubItem>
                                 <MenuFlyoutSubItem Text="More tools">
-                                    <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
+                                <MenuFlyoutItem Text="Mute page (beta)" Click="MuteFlyoutItem_Click"/>
+                                <MenuFlyoutItem Text="UnMute page (beta)" Click="unMuteFlyoutItem_Click"/>
+                                <MenuFlyoutItem Text="Translate" Click="TranslateFlyoutItem_Click"/>
+                                <MenuFlyoutSeparator/>
+                                <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
                                     <MenuFlyoutItem Text="Share page" Click="ShareFlyoutItem_Click"/>
                                 <MenuFlyoutSeparator/>
                                 <MenuFlyoutItem Text="Save page as .HTML" Click="SaveWebPageAsHTMLFlyoutItem_Click"/>
-                                <MenuFlyoutItem Text="Cast page" />
+                                <MenuFlyoutItem Text="Screenshot web page" Click="PageIMGFlyoutItem_Click"/>
+                                <MenuFlyoutItem Text="Webview snip" Click="SnipFlyoutItem_Click"></MenuFlyoutItem>
                                 <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="Browser task manager" />
+                                <MenuFlyoutItem Text="Browser task manager" Click="TaskMngFlyoutItem_Click"/>
                                 <MenuFlyoutItem Text="Dev Tools" />
                                 <MenuFlyoutItem Text="Advanced Dev Tools" Click="DevFlyoutItem_Click"/>
                             </MenuFlyoutSubItem>
@@ -260,9 +270,59 @@
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" />
                 </Button>
             </StackPanel>
+            <controls:TeachingTip x:Name="ZoomTip"
+                                  IsLightDismissEnabled="True"
+                                  Canvas.ZIndex="3000"
+                   HorizontalAlignment="Right" VerticalAlignment="Top"
+	Title="Zoom">
+                <controls:TeachingTip.IconSource>
+                    <controls:SymbolIconSource Symbol="Zoom" />
+                </controls:TeachingTip.IconSource>
+                <controls:TeachingTip.Content>
+                    <Slider Minimum="-75" Maximum="90" Value="0" ValueChanged="ZoomSlider_ValueChanged" SnapsTo="Ticks" TickFrequency="1"/>
+                </controls:TeachingTip.Content>
+            </controls:TeachingTip>
+            <controls:TeachingTip x:Name="FindTip"
+                              CloseButtonClick="FindTip_CloseButtonClick"
+                                  Canvas.ZIndex="3000"
+                   HorizontalAlignment="Right" VerticalAlignment="Top"
+	Title="Find in page">
+                <controls:TeachingTip.IconSource>
+                    <controls:SymbolIconSource Symbol="Find" />
+                </controls:TeachingTip.IconSource>
+                <controls:TeachingTip.Content>
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <AutoSuggestBox x:Name="HighlightTerm" PlaceholderText="Enter text to search" Width="250" Margin="10" QueryIcon="Find" QuerySubmitted="HighlightTerm_QuerySubmitted"/>
+                        <Button Click="ClearHighlights" Content="Clear" Margin="10"/>
+                    </StackPanel>
+                </controls:TeachingTip.Content>
+            </controls:TeachingTip>
             <Grid x:Name="PrintPanel">
 
             </Grid>
         </Grid>
+        <ContentDialog
+           x:Name="TaskMNG"
+        Title="Browser Task Manager"
+        CloseButtonText="Close"
+        DefaultButton="Close">
+
+            <StackPanel Orientation="Vertical"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                <TextBlock>Cpu:</TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="CpuUsage"></TextBlock>
+                <TextBlock>Disk:</TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="DiskUsage"></TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="XDiskUsage"></TextBlock>
+                <TextBlock>Memory:</TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="MemUsage"></TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="XMemUsage"></TextBlock>
+                <TextBlock>Other:</TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="IdProcess"></TextBlock>
+                <TextBlock Margin="30, 10, 0, 10" x:Name="StartTime"></TextBlock>
+                <Button Click="RefreshTaskManagerButton_Click">Refresh</Button>
+            </StackPanel>
+
+        </ContentDialog>
     </Grid>
 </Page>
+

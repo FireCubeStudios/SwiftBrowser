@@ -41,20 +41,15 @@ namespace SwiftBrowser.Views
             webViewer = webView;
             webView.MinHeight = 300;
             webView.LongRunningScriptDetected += WebView_LongRunningScriptDetected;
-            webView.NavigationCompleted += WebView_NavigationCompleted;
-            webView.ContentLoading += WebView_ContentLoading;
             Thickness Margin = webView.Margin;
             Margin.Top = 40;
             webView.Margin = Margin;
-            webView.NavigationStarting += WebView_NavigationStarting;
             webView.DOMContentLoaded += WebView_DOMContentLoaded;
             webView.IsRightTapEnabled =true;
             webView.NewWindowRequested += WebView_NewWindowRequested;
             ContentGrid.Children.Add(webView);
             try
             {
-                var ms = new MessageDialog(WebViewNavigationString);
-                 ms.ShowAsync();
                 webView.Navigate(new Uri(WebViewNavigationString));
             }
             catch
@@ -69,20 +64,6 @@ namespace SwiftBrowser.Views
             string x = "X"; 
         }
 
-        private void WebView_NavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
-        {
-            string x = "X";
-        }
-
-        private void WebView_ContentLoading(WebView sender, WebViewContentLoadingEventArgs args)
-        {
-            string x = "X";
-        }
-
-        private void WebView_NavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
-        {
-            string x = "X";
-        }
 
         private void WebView_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
