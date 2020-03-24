@@ -52,6 +52,11 @@ using Windows.ApplicationModel;
 using Windows.Graphics.Display;
 using Windows.System.Diagnostics;
 using Windows.System;
+using System.Text.RegularExpressions;
+using System.Net;
+using HtmlAgilityPack;
+using System.Text;
+using Windows.Media.SpeechSynthesis;
 
 namespace SwiftBrowser.Views
 {
@@ -60,6 +65,7 @@ namespace SwiftBrowser.Views
         // TODO WTS: Set the URI of the page to show by default
         public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
         private Uri _source;
+        bool Iscompact;
         DarkMode DarkMode = new DarkMode();
         UserAgents UserAgents = new UserAgents();
         WebViewEvents WebViewEvents = new WebViewEvents();
@@ -77,6 +83,7 @@ namespace SwiftBrowser.Views
         public static Grid HomeFrameFrame { get; set; }
         bool ShareIMG = false;
         public static Boolean IncognitoModeStatic { get; set; }
+        MediaElement ReadAloudElement = new MediaElement();
         public Boolean IncognitoMode;
         TabViewItem CurrentTab;
         public static string SourceToGo { get; set; }
@@ -110,6 +117,7 @@ namespace SwiftBrowser.Views
                 CurrentMainTab = null;
                 MainTab = null;
             }
+            Window.Current.SizeChanged -= ViewElapsed;
             MenuFlyoutItem firstItem = new MenuFlyoutItem { Text = "Open in new tab- beta" };
             firstItem.Click += FirstItem_Click;
             ContextFlyout.Items.Add(firstItem);
@@ -140,9 +148,9 @@ namespace SwiftBrowser.Views
             Window.Current.SizeChanged += SearchWebBox_SizeChanged;
             DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += DataTransferManager_DataRequested;
-            webView = new WebView(WebViewExecutionMode.SameThread);
+            webView = new WebView(WebViewExecutionMode.SeparateProcess);
             webView.Name = "webView";
-            webView.Height = 1000;
+           webView.Height = 950;
             webView.MinHeight = 300;
             webView.LongRunningScriptDetected += webView_LongRunningScriptDetected;
             webView.NavigationCompleted += OnNavigationCompleted;
@@ -286,7 +294,6 @@ namespace SwiftBrowser.Views
             RightTimer.Elapsed += new ElapsedEventHandler(WebView_RightTapped);
             RightTimer.Interval = 50;
             RightTimer.Enabled = true;
-           
         }
 
         private void ShareIMGItem_Click(object sender, RoutedEventArgs e)
@@ -517,11 +524,27 @@ namespace SwiftBrowser.Views
                     ContextFlyoutImage.ShowAt(TabviewMain, ee);
                     ContextMenu.SRC = null;
                 }
-            }); 
+            });
         }
-
-
-        private async void FirstItem_Click(object sender, RoutedEventArgs e)
+        public async void ViewElapsed(object sender, WindowSizeChangedEventArgs e)
+        {
+            var view = ApplicationView.GetForCurrentView();
+            if (view.IsFullScreenMode == true)
+            {
+                await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.CompactOverlay);
+                Thickness Thicc = new Thickness();
+                Thicc.Top = -100;
+                TabviewMain.Margin = Thicc;
+            }
+            else
+            {
+                await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.CompactOverlay);
+                Thickness Thicc = new Thickness();
+                Thicc.Top = -10;
+                TabviewMain.Margin = Thicc;
+            }
+        }
+            private async void FirstItem_Click(object sender, RoutedEventArgs e)
         {
             localSettings.Values["SourceToGo"] = NewWindowLink;
             localSettings.Values["BackupSourceToGo"] = webView.Source + NewWindowLink;
@@ -766,41 +789,86 @@ window.Context.setSRCCombination(src);
         private void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             sender.IsSuggestionListOpen = false;
-            if (sender.Text != "")
+            if (args.QueryText != "")
             {
-                if (sender.Text.Contains("https:") || sender.Text.Contains("http:"))
+                ContextMenu winRTObject = new ContextMenu();
+                webView.AddWebAllowedObject("Context", winRTObject);
+                string result = Regex.Match(args.QueryText, @"(.{4})\s*$").ToString();
+                if (args.QueryText.Contains(" ") == false)
                 {
-                    //args.Uri..ToString().Replace("https://", string.Empty)
-                    ContextMenu winRTObject = new ContextMenu();
-                    webView.AddWebAllowedObject("Context", winRTObject);
-                    try {
-                    webView.Navigate(new Uri(sender.Text));
-                    }
-                    catch
+                    if (result.Contains(".") == true || args.QueryText.Contains("/"))
                     {
-                        webView.Navigate(new Uri("https://www.ecosia.org/search?q=" + sender.Text));
+                        if (args.QueryText.StartsWith("http://") || args.QueryText.StartsWith("https://")
+                            || args.QueryText.StartsWith("ftp://"))
+                        {
+                            webView.Navigate(new Uri(args.QueryText));
+                        }
+                        else
+                        {
+                            webView.Navigate(new Uri("http://" + args.QueryText));
+                        }
+                    }
+                    else
+                    {
+                        webView.Navigate(new Uri("https://www.ecosia.org/search?q=" + args.QueryText));
                     }
                 }
                 else
                 {
-                    /* try
-                     {
-                         webView.Navigate(new Uri("https://" + sender.Text));
-                     }
-                     catch
-                     {*/
-                    webView.Navigate(new Uri("https://www.ecosia.org/search?q=" + sender.Text));
-                    // }
+                    webView.Navigate(new Uri("https://www.ecosia.org/search?q=" + args.QueryText));
                 }
+
             }
         }
         ////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////
-        private void webView_ContainsFullScreenElementChanged(WebView sender, object args)
+        private async void webView_ContainsFullScreenElementChanged(WebView sender, object args)
         {
-            WebViewEvents.webView_ContainsFullScreenElementChanged(sender, args);
+            // WebViewEvents.webView_ContainsFullScreenElementChanged(sender, args);
+            var applicationView = ApplicationView.GetForCurrentView();
+            if (sender.ContainsFullScreenElement)
+            {
+                if (Iscompact == false)
+                {
+                    applicationView.TryEnterFullScreenMode();
+                    Thickness Thicc = new Thickness();
+                    webView.Height = 1100;
+                    Thicc.Top = -100;
+                    TabviewMain.Margin = Thicc;
+                }
+                else
+                {
+                    Thickness Thicc = new Thickness();
+                    Thicc.Top = -100;
+                    TabviewMain.Margin = Thicc;
+                    Iscompact = true;
+                    CompactButton.Visibility = Visibility.Visible;
+                    await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.CompactOverlay);
+                }
+            }
+            else if (applicationView.IsFullScreenMode)
+            {
+                if (Iscompact == false)
+                {
+                    applicationView.ExitFullScreenMode();
+                    Thickness Thicc = new Thickness();
+                    Thicc.Top = -10;
+                    webView.Height = 1000;
+                    TabviewMain.Margin = Thicc;
+                }
+                else
+                {
+                    Thickness Thicc = new Thickness();
+                    Thicc.Top = -100;
+                    TabviewMain.Margin = Thicc;
+                    Iscompact = true;
+                    CompactButton.Visibility = Visibility.Visible;
+                    await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.CompactOverlay);
+                }
+            }
+
         }
 
         private void webView_UnsupportedUriSchemeIdentified(WebView sender, WebViewUnsupportedUriSchemeIdentifiedEventArgs args)
@@ -1113,7 +1181,7 @@ window.Context.setSRCCombination(src);
             //  var dse = args.SelectedItem as SuggestionsClass;
 
             // webView.Navigate(new Uri("https://www.ecosia.org/search?q=" + sender.Text));
-            sender.Text = "https://www.ecosia.org/search?q=" + args.SelectedItem.ToString();
+            sender.Text = args.SelectedItem.ToString();
         }
         ////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////
@@ -1385,57 +1453,97 @@ window.Context.setSRCCombination(src);
              }
             Grid RectangleToPrint = new Grid();
           //  ItemsControl ee = new ItemsControl();
-            var print = await GetWebPages(webView, new Windows.Foundation.Size(1200d, 1200d));
+          //  var print = await GetWebPages(webView, new Windows.Foundation.Size(1200d, 1200d));
             //  RectangleToPrint.Children.Add(ee);
             //  ContentGrid.Children.Remove(webView);
             var pageNumber = 0;
-            foreach (var item in print)
-          {
-                var grid = new Grid();
-                grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+            /*  foreach (var item in print)
+            {
+                  var grid = new Grid();
+                  grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
-                grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                  grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
 
-                grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
-
-
-
-                // Static header
-
-                var header = new TextBlock { Text = "Swift browser web printing (beta)", Margin = new Thickness(0, 0, 0, 20) };
-
-                Grid.SetRow(header, 0);
-
-                grid.Children.Add(header);
+                  grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
 
 
 
-                // Main content with layout from data template
-                Windows.UI.Xaml.Shapes.Rectangle Rect = item as Windows.UI.Xaml.Shapes.Rectangle;
-                
-                Grid.SetRow(Rect, 1);
-            
-                grid.Children.Add(Rect);
+                  // Static header
+
+                  var header = new TextBlock { Text = "Swift browser web printing (beta)", Margin = new Thickness(0, 0, 0, 20) };
+
+                  Grid.SetRow(header, 0);
+
+                  grid.Children.Add(header);
 
 
 
-                // Footer with page number
+                  // Main content with layout from data template
+                  Windows.UI.Xaml.Shapes.Rectangle Rect = item as Windows.UI.Xaml.Shapes.Rectangle;
 
-                pageNumber++;
+                  Grid.SetRow(Rect, 1);
 
-                var footer = new TextBlock { Text = string.Format("page {0}", pageNumber), Margin = new Thickness(0, 20, 0, 0) };
+                  grid.Children.Add(Rect);
 
-                Grid.SetRow(footer, 2);
 
-                grid.Children.Add(footer);
-                 printHelper.AddFrameworkElementToPrint(grid);
-            }
-         //   printHelper.AddFrameworkElementToPrint(webView);
+
+                  // Footer with page number
+
+                  pageNumber++;
+
+                  var footer = new TextBlock { Text = string.Format("page {0}", pageNumber), Margin = new Thickness(0, 20, 0, 0) };
+
+                  Grid.SetRow(footer, 2);
+
+                  grid.Children.Add(footer);
+                   printHelper.AddFrameworkElementToPrint(grid);
+              }*/
+            var grid = new Grid();
+            grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+            grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+
+            grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+
+
+            // Static header
+
+            var header = new TextBlock { Text = "Swift browser web printing (beta)", Margin = new Thickness(0, 0, 0, 20) };
+
+            Grid.SetRow(header, 0);
+
+            grid.Children.Add(header);
+
+
+
+            // Main content with layout from data template
+            InMemoryRandomAccessStream Prints = new InMemoryRandomAccessStream();
+            await webView.CapturePreviewToStreamAsync(Prints);
+            Image bit = new Image();
+            BitmapImage ee = new BitmapImage();
+            ee.SetSource(Prints);
+            bit.Source = ee;
+            grid.Children.Add(bit);
+
+
+
+            // Footer with page number
+
+            pageNumber++;
+
+            var footer = new TextBlock { Text = string.Format("page {0}", pageNumber), Margin = new Thickness(0, 20, 0, 0) };
+
+            Grid.SetRow(footer, 2);
+
+            grid.Children.Add(footer);
+            printHelper.AddFrameworkElementToPrint(grid);
+            //   printHelper.AddFrameworkElementToPrint(webView);
             //printHelper.AddFrameworkElementToPrint(MyPrintPages);
             // webView.Visibility = Windows.UI.Xaml.Visibility.Visible;
             // Start printing process
 
-           await printHelper.ShowPrintUIAsync(x);
+            await printHelper.ShowPrintUIAsync(x);
 
         }
     
@@ -1556,7 +1664,36 @@ window.Context.setSRCCombination(src);
                 UnloadObject(InfoFrameGrid);
             }
         }
-
+        private async void FeedbackLink_Click(object sender, RoutedEventArgs e)
+        {
+            // This launcher is part of the Store Services SDK https://docs.microsoft.com/windows/uwp/monetize/microsoft-store-services-sdk
+            var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
+            await launcher.LaunchAsync();
+        }
+        public async void WhatNew(object sender, RoutedEventArgs e)
+        {
+            var dialog = new WhatsNewDialog();
+            await dialog.ShowAsync();
+        }
+        public void Exit(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Exit();
+        }
+        public async void Rate(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://review/?PFN={Package.Current.Id.FamilyName}"));
+        }
+        public async void About(object sender, RoutedEventArgs e)
+        {
+            String about = "About: " + "AppDisplayName".GetLocalized() + "\n" + Package.Current.Id + "\n" + Package.Current.Id.Version + "\n" + Package.Current.Id.Publisher;
+            var m = new MessageDialog(about);
+           await m.ShowAsync();
+        }
+        public async void Help(object sender, RoutedEventArgs e)
+        {
+            var dialog = new FirstRunDialog();
+            await dialog.ShowAsync();
+        }
         private async void PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click(object sender, RoutedEventArgs e)
         {
             string x = "";
@@ -1702,8 +1839,10 @@ await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " H
             MenuButton.Visibility = Visibility.Collapsed;
             InkingFrameGrid.Visibility = Visibility.Visible;
             GC.Collect();
+            InMemoryRandomAccessStream Snips = new InMemoryRandomAccessStream();
+            await webView.CapturePreviewToStreamAsync(Snips);
+            SnipPage.WebView = Snips;
             HomePage.WebViewControl = webView;
-            inkingPage.WebView = webView;
             InkingFrame.Navigate(typeof(SnipPage));
             CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Cut };
             CurrentTab.Header = "Snip Tab";
@@ -1748,6 +1887,117 @@ await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " H
             IdProcess.Text = "Process Id: " + id;
             string st = ProcessDiagnosticInfo.GetForCurrentProcess().ProcessStartTime.ToString();
             StartTime.Text = "Start Time: " + st;
+        }
+
+        private async void CompactFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (ApplicationView.GetForCurrentView().IsViewModeSupported(ApplicationViewMode.CompactOverlay))
+            {
+                    await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.CompactOverlay);
+                Thickness Thicc = new Thickness();
+                Thicc.Top = -100;
+                TabviewMain.Margin = Thicc;
+                CompactButton.Visibility = Visibility.Visible;
+                Iscompact = true;
+            }
+        }
+
+        private async void CompactButton_Click(object sender, RoutedEventArgs e)
+        {
+            await ApplicationView.GetForCurrentView().TryEnterViewModeAsync(ApplicationViewMode.Default);
+            Thickness Thicc = new Thickness();
+            Thicc.Top = -10;
+            TabviewMain.Margin = Thicc;
+            CompactButton.Visibility = Visibility.Collapsed;
+            Iscompact = false;
+        }
+
+        private async void ReadAloudButton_Click(object sender, RoutedEventArgs e)
+        {
+            string html;
+            // obtain some arbitrary html....
+            using (var client = new WebClient())
+            {
+                html = client.DownloadString(webView.Source);
+            }
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            StringBuilder sb = new StringBuilder();
+            doc.DocumentNode.SelectNodes("//style|//script").ToList().ForEach(n => n.Remove());
+            foreach (HtmlTextNode node in doc.DocumentNode.SelectNodes("//text()"))
+            {
+                sb.AppendLine(node.Text);
+            }
+            string final = sb.ToString();
+            var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
+            SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(final);
+
+            // Send the stream to the media object.
+            ReadAloudElement.SetSource(stream, stream.ContentType);
+            ReadAloudElement.Play();
+            ReadTip.IsOpen = true;
+        }
+
+      
+
+        private void ReadTip_CloseButtonClick(TeachingTip sender, object args)
+        {
+            ReadAloudElement.Stop();
+        }
+
+        private void ReadingSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            if(toggle.IsOn == true)
+            {
+                ReadAloudElement.Play();
+            }
+            else
+            {
+                ReadAloudElement.Pause();
+            }
+        }
+
+        private void ReadingModeButton_Click(object sender, RoutedEventArgs e)
+        {
+            string url = webView.Source.ToString();
+
+            var t = new NReadability.NReadabilityWebTranscoder();
+            bool b;
+            string page = t.Transcode(url, out b);
+
+            if (b)
+            {
+                HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+                doc.LoadHtml(page);
+
+                string title = doc.DocumentNode.SelectSingleNode("//title").InnerText;
+                var imgUrl = doc.DocumentNode.SelectSingleNode("//meta[@property='og:image']").Attributes["content"].Value;
+                string mainText = doc.DocumentNode.SelectSingleNode("//div[@id='readInner']").InnerText;
+                BackButton.IsEnabled = false;
+                ForwardButton.IsEnabled = false;
+                RefreshButton.IsEnabled = false;
+                ExtensionsButton.IsEnabled = false;
+                MenuButton.IsEnabled = false;
+                MenuFrameButton.Visibility = Visibility.Visible;
+                MenuButton.Visibility = Visibility.Collapsed;
+                InkingFrameGrid.Visibility = Visibility.Visible;
+                GC.Collect();
+                HomePage.WebViewControl = webView;
+                ReadingModeFrame.TitleString = title;
+                ReadingModeFrame.BodyString = mainText;
+                InkingFrame.Navigate(typeof(ReadingModeFrame));
+                CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Home };
+                CurrentTab.Header = "Reading Tab";
+                try
+                {
+                    UnloadObject(webView);
+                }
+                catch
+                {
+                    UnloadObject(InfoFrameGrid);
+                }
+            }
         }
     }
         ////////////////////////////////////////////////////////////////

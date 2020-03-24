@@ -22,9 +22,15 @@ namespace SwiftBrowser.Views
     /// </summary>
     public sealed partial class ReadingModeFrame : Page
     {
+        public static string TitleString { get; set; }
+        public static string ImageString { get; set; }
+        public static string BodyString { get; set; }
         public ReadingModeFrame()
         {
             this.InitializeComponent();
+            Title.Text = TitleString;
+            // ImageArticle.Source = new
+            RichBodyText.Text = BodyString;
         }
     }
 }

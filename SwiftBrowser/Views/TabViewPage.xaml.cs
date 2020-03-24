@@ -1,18 +1,29 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using SwiftBrowser.Models;
 using Windows.ApplicationModel.Core;
+using Windows.Graphics.Display;
+using Windows.Graphics.Imaging;
+using Windows.Storage.Streams;
+using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Shapes;
 using WinUI = Microsoft.UI.Xaml.Controls;
 
 namespace SwiftBrowser.Views
@@ -26,8 +37,9 @@ namespace SwiftBrowser.Views
         {
 
         };
-      public static TabView TabviewPageControl { get; set; }
-
+        ToolTip T = new ToolTip();
+        public static TabView TabviewPageControl { get; set; }
+        Flyout PreviewFlyout = new Flyout();
         public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
         public bool IncognitoMode;
         TabViewItem RightClickedItem;
@@ -35,18 +47,6 @@ namespace SwiftBrowser.Views
         public TabViewPage()
         {
             InitializeComponent();
-            /* Flyout.Items.Add(new MenuFlyoutItem()
-{
-// Icon = new FontIcon() { Glyph = "\uEC4F" },
-Icon 
-Text = "Move to new window"
-
-});*/
-            /* Flyout.Items.Add(new MenuFlyoutItem()
-            {
-                Icon = new SymbolIcon(Symbol.Add),
-                Text = "New Tab"
-            });*/
             SingletonReference = this;
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
@@ -61,18 +61,17 @@ Text = "Move to new window"
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-
+            OpenInnewwindow.IsEnabled = false;
             Flyout.Items.Add(new MenuFlyoutSeparator());
-            MenuFlyoutItem newtabF= new MenuFlyoutItem();
+            MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
             newtabF.Text = "New Tab";
             newtabF.Click += AddAll;
             Flyout.Items.Add(newtabF);
-
             MenuFlyoutItem newWindow = new MenuFlyoutItem();
             newWindow.Icon = new SymbolIcon(Symbol.Add);
             newWindow.Text = "New secondary window";
-            newWindow.Click += NewWindow_Click; 
+            newWindow.Click += NewWindow_Click;
             Flyout.Items.Add(newWindow);
 
             MenuFlyoutItem newIncognito = new MenuFlyoutItem();
@@ -99,6 +98,8 @@ Text = "Move to new window"
             Flyout.Items.Add(CloseAll);
 
             newTab.ContextFlyout = Flyout;
+            ToolTipService.SetToolTip(newTab, T);
+            newTab.PointerEntered += NewTab_PointerEntered;
             newTab.RightTapped += NewTab_RightTapped;
             // The Content of a TabViewItem is often a frame which hosts a page.
             Frame frame = new Frame();
@@ -114,9 +115,66 @@ Text = "Move to new window"
             WebViewPage.MainTab = this.TabsControl;
             TabsControl.SelectedItem = newTab;
             WebViewPage.MainTab = this.TabsControl;
+        
             GC.Collect();
              CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
              Window.Current.SetTitleBar(TitleGrid);
+        }
+
+        private void NewTab_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+           // PreviewFlyout.Hide();
+        }
+
+        private async void NewTab_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
+            var x = pointerPosition.X - Window.Current.Bounds.X;
+            var y = pointerPosition.Y;
+            FlyoutShowOptions ee = new FlyoutShowOptions();
+            ee.Position = pointerPosition;
+            TabViewItem Tab = sender as TabViewItem;
+            InMemoryRandomAccessStream Prints = new InMemoryRandomAccessStream();
+            await WebViewPage.WebviewControl.CapturePreviewToStreamAsync(Prints);
+                BitmapImage b = new BitmapImage();
+        await b.SetSourceAsync(Prints);
+            Image ThumbNail = new Image();
+            ThumbNail.Source = b;
+            ThumbNail.Width = 220;
+            ThumbNail.Stretch = Stretch.Fill;
+            Windows.UI.Xaml.Shapes.Rectangle r = new Windows.UI.Xaml.Shapes.Rectangle();
+                r.Fill = new SolidColorBrush(Colors.Green);
+
+            T.Content = ThumbNail;
+
+            // PreviewFlyout.ShowAt(Tab);
+        }
+        
+        private void NewTab_Holding(object sender, HoldingRoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async void OpenInnewwindow_Click(object sender, RoutedEventArgs e)
+        {
+            CoreApplicationView newView = CoreApplication.CreateNewView();
+            int newViewId = 0;
+
+
+
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                TabViewItem t = new TabViewItem();
+                t = RightClickedItem;
+                //TabViewPage.TabToAdd = t;
+                Frame frame = new Frame();
+                frame.Navigate(typeof(TabViewPage));
+                Window.Current.Content = frame;
+                Window.Current.Activate();
+
+                newViewId = ApplicationView.GetForCurrentView().Id;
+            });
+            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
         }
 
         private void CloseO_Click(object sender, RoutedEventArgs e)
@@ -139,7 +197,7 @@ Text = "Move to new window"
                     OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
                     OpenInnewwindow.Text = "Move to new window";
                     Flyout.Items.Add(OpenInnewwindow);
-
+                    OpenInnewwindow.IsEnabled = false;
                     Flyout.Items.Add(new MenuFlyoutSeparator());
                     MenuFlyoutItem newtabF = new MenuFlyoutItem();
                     newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -229,7 +287,7 @@ Text = "Move to new window"
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-
+            OpenInnewwindow.IsEnabled = false;
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -291,7 +349,7 @@ Text = "Move to new window"
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-
+            OpenInnewwindow.IsEnabled = false;
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -387,7 +445,7 @@ Text = "Move to new window"
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-
+            OpenInnewwindow.IsEnabled = false;
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -497,7 +555,7 @@ Text = "Move to new window"
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-
+            OpenInnewwindow.IsEnabled = false;
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -641,5 +699,29 @@ Text = "Move to new window"
         }
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        private async void TabsControl_TabDroppedOutside(TabView sender, TabViewTabDroppedOutsideEventArgs args)
+        {
+            CoreApplicationView newView = CoreApplication.CreateNewView();
+            int newViewId = 0;
+
+
+           // TabsControl.TabItems.Remove(args.Tab);
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Frame frame = new Frame();
+                TabViewItem t = new TabViewItem();
+                t = args.Tab;
+          //      TabViewPage.TabToAdd = t;
+                frame.Navigate(typeof(TabViewPage));
+                Window.Current.Content = frame;
+                // You have to activate the window in order to show it later.
+                Window.Current.Activate();
+
+                newViewId = ApplicationView.GetForCurrentView().Id;
+            });
+            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+        }
+
     }
 }

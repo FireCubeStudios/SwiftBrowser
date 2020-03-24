@@ -15,8 +15,8 @@
         <Grid Margin="0, 40, 0, 0">
             <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
                 <Grid x:Name="Gridx">
-                    <!--<Rectangle x:Name="Painter" Fill="White"/>-->
-                    <WebView x:Name="Painter"></WebView>
+                    <WebView x:Name="Painter"/>
+
                     <InkCanvas Canvas.ZIndex='1' x:Name="InkCanvas" />
                 </Grid>
             </ScrollViewer>

@@ -59,10 +59,6 @@ namespace SwiftBrowser.Views
             // resize the webview to the content
        // WebView.Width = width;
             WebView.Height = height;
-
-            var brush = new WebViewBrush();
-            brush.SetSource(WebView);
-            await Task.Delay(3000);
             Painter.Width = width;
             Painter.Height = height;
             InkCanvas.Width = width;
