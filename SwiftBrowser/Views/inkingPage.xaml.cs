@@ -69,7 +69,7 @@ namespace SwiftBrowser.Views
             InkCanvas.Height = height;
             Gridx.Height = height;
             Gridx.Width = width;
-            Painter.Fill = brush;
+            Painter.Source = WebView.Source;
             WebView.Height = 1000;
         }
 
