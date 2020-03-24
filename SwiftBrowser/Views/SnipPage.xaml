@@ -10,10 +10,11 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click">Save as PNG</Button>
         <Grid Margin="0, 40, 0, 0">
             <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
                 <Grid x:Name="Gridx">
-                    <controls:ImageCropper Background="Red" x:Name="SnipCropper" Canvas.ZIndex="1"/>
+                    <controls:ImageCropper Background="{ThemeResource SystemControlAcrylicWindowBrush}" x:Name="SnipCropper" Canvas.ZIndex="1"/>
                     <Rectangle x:Name="Painter" Fill="White"/>
                 </Grid>
             </ScrollViewer>

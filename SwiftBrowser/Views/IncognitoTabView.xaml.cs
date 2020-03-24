@@ -12,6 +12,7 @@ using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -40,7 +41,7 @@ namespace SwiftBrowser.Views
 
         public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
         public bool IncognitoMode;
-
+        WinUI.TabViewItem RightClickedItem;
         public static IncognitoTabView SingletonReference { get; set; }
         public IncognitoTabView()
         {
@@ -53,7 +54,7 @@ namespace SwiftBrowser.Views
             Window.Current.SetTitleBar(CustomDragRegion);
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
             Window.Current.SetTitleBar(TitleGrid);
-            FindName("TabsControl");
+            FindName("IncognitoTabsControl");
             TabviewPageControl = IncognitoTabsControl;
             var newTab = new WinUI.TabViewItem();
             MenuFlyout Flyout = new MenuFlyout();
@@ -85,6 +86,7 @@ namespace SwiftBrowser.Views
             MenuFlyoutItem CloseTab = new MenuFlyoutItem();
             CloseTab.Icon = new SymbolIcon(Symbol.Delete);
             CloseTab.Text = "Close Tab";
+            CloseTab.Click += CloseTab_Click;
             Flyout.Items.Add(CloseTab);
             MenuFlyoutItem CloseO = new MenuFlyoutItem();
             CloseO.Icon = new SymbolIcon(Symbol.Delete);
@@ -95,7 +97,9 @@ namespace SwiftBrowser.Views
             CloseAll.Text = "Close all tabs";
             CloseAll.Click += ClearAll;
             Flyout.Items.Add(CloseAll);
-
+            OpenInnewwindow.IsEnabled = false;
+            CloseO.Click += CloseO_Click;
+            newTab.RightTapped += NewTab_RightTapped;
             newTab.ContextFlyout = Flyout;
             newTab.IconSource= new WinUI.SymbolIconSource() { Symbol = Symbol.Home };
             newTab.Header = "Home Tab";
@@ -179,6 +183,7 @@ namespace SwiftBrowser.Views
             MenuFlyoutItem CloseTab = new MenuFlyoutItem();
             CloseTab.Icon = new SymbolIcon(Symbol.Delete);
             CloseTab.Text = "Close Tab";
+            CloseTab.Click += CloseTab_Click;
             Flyout.Items.Add(CloseTab);
             MenuFlyoutItem CloseO = new MenuFlyoutItem();
             CloseO.Icon = new SymbolIcon(Symbol.Delete);
@@ -189,7 +194,9 @@ namespace SwiftBrowser.Views
             CloseAll.Text = "Close all tabs";
             CloseAll.Click += ClearAll;
             Flyout.Items.Add(CloseAll);
-
+            OpenInnewwindow.IsEnabled = false;
+            CloseO.Click += CloseO_Click;
+            newTab.RightTapped += NewTab_RightTapped;
             newTab.ContextFlyout = Flyout;
             // The Content of a TabViewItem is often a frame which hosts a page.
             Frame frame = new Frame();
@@ -202,6 +209,94 @@ namespace SwiftBrowser.Views
             sender.TabItems.Add(newTab);
             sender.SelectedItem = newTab;
             GC.Collect();
+        }
+        private void CloseO_Click(object sender, RoutedEventArgs e)
+        {
+
+            IncognitoTabsControl.TabItems.Clear();
+            IncognitoTabsControl.TabItems.Add(RightClickedItem);
+        }
+
+        private async void CloseTab_Click(object sender, RoutedEventArgs e)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                if (IncognitoTabsControl.TabItems.Count <= 1)
+                {
+                    var newTab = new WinUI.TabViewItem();
+                    newTab.IconSource = new WinUI.SymbolIconSource() { Symbol = Symbol.Home };
+                    newTab.RightTapped += NewTab_RightTapped;
+                    newTab.Header = "Home Tab";
+                    MenuFlyout Flyout = new MenuFlyout();
+                    MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
+                    OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
+                    OpenInnewwindow.Text = "Move to new window";
+                    Flyout.Items.Add(OpenInnewwindow);
+                    OpenInnewwindow.IsEnabled = false;
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem newtabF = new MenuFlyoutItem();
+                    newtabF.Icon = new SymbolIcon(Symbol.Add);
+                    newtabF.Text = "New Tab";
+                    newtabF.Click += AddAll;
+                    Flyout.Items.Add(newtabF);
+
+                    MenuFlyoutItem newWindow = new MenuFlyoutItem();
+                    newWindow.Icon = new SymbolIcon(Symbol.Add);
+                    newWindow.Text = "New secondary window";
+                    newWindow.Click += NewWindow_Click;
+                    Flyout.Items.Add(newWindow);
+
+                    MenuFlyoutItem newIncognito = new MenuFlyoutItem();
+                    newIncognito.Icon = new SymbolIcon(Symbol.Add);
+                    newIncognito.Text = "New incognito window";
+                    newIncognito.Click += Incognito_Click;
+                    Flyout.Items.Add(newIncognito);
+
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem CloseTab = new MenuFlyoutItem();
+                    CloseTab.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseTab.Text = "Close Tab";
+                    CloseTab.Click += CloseTab_Click;
+                    Flyout.Items.Add(CloseTab);
+                    MenuFlyoutItem CloseO = new MenuFlyoutItem();
+                    CloseO.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseO.Text = "Close other tabs";
+                    CloseO.Click += CloseO_Click;
+                    Flyout.Items.Add(CloseO);
+                    MenuFlyoutItem CloseAll = new MenuFlyoutItem();
+                    CloseAll.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseAll.Text = "Close all tabs";
+                    CloseAll.Click += ClearAll;
+                    Flyout.Items.Add(CloseAll);
+                    OpenInnewwindow.IsEnabled = false;
+                    CloseO.Click += CloseO_Click;
+                    newTab.ContextFlyout = Flyout;
+                    // The Content of a TabViewItem is often a frame which hosts a page.
+                    Frame frame = new Frame();
+                    newTab.Content = frame;
+                    WebViewPage.IncognitoModeStatic = true;
+                    WebViewPage.CurrentMainTab = newTab;
+                    WebViewPage.MainTab = this.IncognitoTabsControl;
+                    frame.Navigate(typeof(WebViewPage));
+                    WebViewPage.IncognitoModeStatic = true;
+                    WebViewPage.MainTab = IncognitoTabsControl;
+                    IncognitoTabsControl.TabItems.Add(newTab);
+                    WebViewPage.MainTab = this.IncognitoTabsControl;
+                    IncognitoTabsControl.SelectedItem = newTab;
+                    IncognitoTabsControl.TabItems.Remove(RightClickedItem);
+                    GC.Collect();
+                }
+                else
+                {
+                    IncognitoTabsControl.TabItems.Remove(RightClickedItem);
+                    GC.Collect();
+                }
+            });
+        }
+        private  void NewTab_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+
+               RightClickedItem = sender as WinUI.TabViewItem;
         }
         private async void OnTabCloseRequested(WinUI.TabView sender, WinUI.TabViewTabCloseRequestedEventArgs args)
         {
@@ -241,6 +336,7 @@ namespace SwiftBrowser.Views
                     MenuFlyoutItem CloseTab = new MenuFlyoutItem();
                     CloseTab.Icon = new SymbolIcon(Symbol.Delete);
                     CloseTab.Text = "Close Tab";
+                    CloseTab.Click += CloseTab_Click;
                     Flyout.Items.Add(CloseTab);
                     MenuFlyoutItem CloseO = new MenuFlyoutItem();
                     CloseO.Icon = new SymbolIcon(Symbol.Delete);
@@ -251,7 +347,9 @@ namespace SwiftBrowser.Views
                     CloseAll.Text = "Close all tabs";
                     CloseAll.Click += ClearAll;
                     Flyout.Items.Add(CloseAll);
-
+                    OpenInnewwindow.IsEnabled = false;
+                    CloseO.Click += CloseO_Click;
+                    newTab.RightTapped += NewTab_RightTapped;
                     newTab.ContextFlyout = Flyout;
                     // The Content of a TabViewItem is often a frame which hosts a page.
                     Frame frame = new Frame();
@@ -321,6 +419,7 @@ namespace SwiftBrowser.Views
             MenuFlyoutItem CloseTab = new MenuFlyoutItem();
             CloseTab.Icon = new SymbolIcon(Symbol.Delete);
             CloseTab.Text = "Close Tab";
+            CloseTab.Click += CloseTab_Click;
             Flyout.Items.Add(CloseTab);
             MenuFlyoutItem CloseO = new MenuFlyoutItem();
             CloseO.Icon = new SymbolIcon(Symbol.Delete);
@@ -331,7 +430,9 @@ namespace SwiftBrowser.Views
             CloseAll.Text = "Close all tabs";
             CloseAll.Click += ClearAll;
             Flyout.Items.Add(CloseAll);
-
+            OpenInnewwindow.IsEnabled = false;
+            CloseO.Click += CloseO_Click;
+            newTab.RightTapped += NewTab_RightTapped;
             newTab.ContextFlyout = Flyout;
             newTab.Header = "Home Tab";
             // The Content of a TabViewItem is often a frame which hosts a page.
@@ -380,6 +481,7 @@ namespace SwiftBrowser.Views
             MenuFlyoutItem CloseTab = new MenuFlyoutItem();
             CloseTab.Icon = new SymbolIcon(Symbol.Delete);
             CloseTab.Text = "Close Tab";
+            CloseTab.Click += CloseTab_Click;
             Flyout.Items.Add(CloseTab);
             MenuFlyoutItem CloseO = new MenuFlyoutItem();
             CloseO.Icon = new SymbolIcon(Symbol.Delete);
@@ -390,7 +492,9 @@ namespace SwiftBrowser.Views
             CloseAll.Text = "Close all tabs";
             CloseAll.Click += ClearAll;
             Flyout.Items.Add(CloseAll);
-
+            OpenInnewwindow.IsEnabled = false;
+            CloseO.Click += CloseO_Click;
+            newTab.RightTapped += NewTab_RightTapped;
             newTab.ContextFlyout = Flyout;
             newTab.Header = "Home Tab";
             // The Content of a TabViewItem is often a frame which hosts a page.

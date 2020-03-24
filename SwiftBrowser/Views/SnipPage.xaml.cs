@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.UI.Controls;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace SwiftBrowser.Views
     /// </summary>
     public sealed partial class SnipPage : Page
     {
-        public static WebView WebView { get; set; }
+        public static IRandomAccessStream WebView { get; set; }
         int width;
         int height;
         public SnipPage()
@@ -42,85 +43,78 @@ namespace SwiftBrowser.Views
         private async Task CaptureWebView()
         {
 
-            var originalWidth = WebView.ActualWidth;
-            var originalHeight = WebView.ActualHeight;
+            /* var originalWidth = WebView.ActualWidth;
+             var originalHeight = WebView.ActualHeight;
 
-            var widthString = await WebView.InvokeScriptAsync("eval", new[] { "document.body.scrollWidth.toString()" });
-            var heightString = await WebView.InvokeScriptAsync("eval", new[] { "document.body.scrollHeight.toString()" });
+             var widthString = await WebView.InvokeScriptAsync("eval", new[] { "document.body.scrollWidth.toString()" });
+             var heightString = await WebView.InvokeScriptAsync("eval", new[] { "document.body.scrollHeight.toString()" });
 
-            if (!int.TryParse(widthString, out width))
-            {
-                throw new Exception("Unable to get page width");
-            }
-            if (!int.TryParse(heightString, out height))
-            {
-                throw new Exception("Unable to get page height");
-            }
+             if (!int.TryParse(widthString, out width))
+             {
+                 throw new Exception("Unable to get page width");
+             }
+             if (!int.TryParse(heightString, out height))
+             {
+                 throw new Exception("Unable to get page height");
+             }
 
-            // resize the webview to the content
-            // WebView.Width = width;
-            WebView.Height = height;
+             // resize the webview to the content
+             // WebView.Width = width;
+             WebView.Height = height;
 
-            var brush = new WebViewBrush();
-            brush.SetSource(WebView);
-            await Task.Delay(3000);
-            SnipCropper.Width = width;
-            SnipCropper.Height = height;
-            Gridx.Height = height;
-            Gridx.Width = width;
-            Painter.Width = width;
-            Painter.Height = height;
-            Painter.Fill = brush;
+             var brush = new WebViewBrush();
+             brush.SetSource(WebView);
+             await Task.Delay(3000);
+             SnipCropper.Width = width;
+             SnipCropper.Height = height;
+             Gridx.Height = height;
+             Gridx.Width = width;
+             Painter.Width = width;
+             Painter.Height = height;
+             Painter.Fill = brush;
+             RenderTargetBitmap rtb = new RenderTargetBitmap();
+             await rtb.RenderAsync(Gridx);
+             var pixelBuffer = await rtb.GetPixelsAsync();
+             var pixels = pixelBuffer.ToArray();
+             IRandomAccessStream stream = null;
+
+             WriteableBitmap bit = new WriteableBitmap(rtb.PixelWidth, rtb.PixelHeight);
+             await bit.SetSourceAsync(stream);
+             using (stream)
+             {
+                 var displayInformation = DisplayInformation.GetForCurrentView();
+                 var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+                 encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                                      BitmapAlphaMode.Premultiplied,
+                                      (uint)rtb.PixelWidth,
+                                      (uint)rtb.PixelHeight,
+                                       displayInformation.RawDpiX,
+                          displayInformation.RawDpiY,
+                                      pixels);
+                 await encoder.FlushAsync();
+             }
+             SnipCropper.Source = bit;
+             WebView.Height = 1000;*/
             RenderTargetBitmap rtb = new RenderTargetBitmap();
             await rtb.RenderAsync(Gridx);
-            var pixelBuffer = await rtb.GetPixelsAsync();
-            var pixels = pixelBuffer.ToArray();
-            IRandomAccessStream stream = null;
-         
-            WriteableBitmap bit = new WriteableBitmap(rtb.PixelWidth, rtb.PixelHeight);
-            await bit.SetSourceAsync(stream);
-            using (stream)
-            {
-                var displayInformation = DisplayInformation.GetForCurrentView();
-                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-                encoder.SetPixelData(BitmapPixelFormat.Bgra8,
-                                     BitmapAlphaMode.Premultiplied,
-                                     (uint)rtb.PixelWidth,
-                                     (uint)rtb.PixelHeight,
-                                      displayInformation.RawDpiX,
-                         displayInformation.RawDpiY,
-                                     pixels);
-                await encoder.FlushAsync();
-            }
-            SnipCropper.Source = bit;
-            WebView.Height = 1000;
+            WriteableBitmap WB = new WriteableBitmap(rtb.PixelWidth, rtb.PixelHeight);
+            WB.SetSource(WebView);
+            SnipCropper.Source = WB;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            RenderTargetBitmap rtb = new RenderTargetBitmap();
-            await rtb.RenderAsync(Gridx);
-
-            var pixelBuffer = await rtb.GetPixelsAsync();
-            var pixels = pixelBuffer.ToArray();
-            var displayInformation = DisplayInformation.GetForCurrentView();
             var picker = new FileSavePicker();
-            picker.FileTypeChoices.Add("JPEG Image", new string[] { ".jpg" });
+            picker.FileTypeChoices.Add("Png Image", new string[] { ".png" });
             StorageFile file = await picker.PickSaveFileAsync();
             using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
             {
-                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-                encoder.SetPixelData(BitmapPixelFormat.Bgra8,
-                                     BitmapAlphaMode.Premultiplied,
-                                     (uint)rtb.PixelWidth,
-                                     (uint)rtb.PixelHeight,
-                                      displayInformation.RawDpiX,
-                         displayInformation.RawDpiY,
-                                     pixels);
-                await encoder.FlushAsync();
+                await SnipCropper.SaveAsync(stream, BitmapFileFormat.Png);
+
             }
             var m = new MessageDialog("Screen captured and Saved");
             await m.ShowAsync();
         }
+
     }
 }

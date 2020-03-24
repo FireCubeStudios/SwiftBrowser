@@ -8,7 +8,15 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-
+    <Grid Background="NavajoWhite">
+        <ScrollViewer>
+        <StackPanel HorizontalAlignment="Center">
+            <TextBlock x:Name="Title" FontSize="40" Margin="100, 50, 100, 50" Foreground="Black"></TextBlock>
+            <Image Margin="5" x:Name="ImageArticle"></Image>
+            <TextBlock x:Name="RichBodyText" FontSize="20" Foreground="Black" Margin="300, 50, 300, 50" TextWrapping="WrapWholeWords">
+                
+            </TextBlock>
+        </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Page>
