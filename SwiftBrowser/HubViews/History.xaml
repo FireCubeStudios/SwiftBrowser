@@ -9,6 +9,23 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-     
+        <StackPanel>
+            <ListView Name="Output">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                            <Image Height="50" Width="50" Source="{Binding FavIconSQL}"></Image>
+                            <StackPanel>
+                                <TextBlock Text="{Binding HeaderSQL}"/>
+                                <TextBlock Text="{Binding UrlSQL}" Foreground="White"/>
+                            </StackPanel>
+                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                                <AppBarButton Icon="Delete" Label="Delete"  Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
+                            </CommandBar>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
     </Grid>
 </Page>

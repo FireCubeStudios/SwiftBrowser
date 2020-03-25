@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using SwiftBrowser.Assets;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -25,6 +28,7 @@ namespace SwiftBrowser.HubViews
         public History()
         {
             this.InitializeComponent();
+            Output.ItemsSource = DataAccess.GetData();
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
-
 using SwiftBrowser.Services;
-
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
+using Microsoft.Data.Sqlite;
+using System.IO;
+using Windows.Storage;
+using SwiftBrowser.Assets;
 
 namespace SwiftBrowser
 {
@@ -19,7 +21,7 @@ namespace SwiftBrowser
         public App()
         {
             InitializeComponent();
-
+            DataAccess.InitializeDatabase();
             // Deferred execution until used. Check https://msdn.microsoft.com/library/dd642331(v=vs.110).aspx for further info on Lazy<T> class.
             _activationService = new Lazy<ActivationService>(CreateActivationService);
         }
@@ -42,6 +44,12 @@ namespace SwiftBrowser
 
         protected override async void OnActivated(IActivatedEventArgs args)
         {
+                if (args.Kind == ActivationKind.Protocol)
+            {
+                ProtocolActivatedEventArgs eventArgs = args as ProtocolActivatedEventArgs;
+                localSettings.Values["SourceToGo"] = eventArgs.Uri.AbsoluteUri.ToString();
+                // The received URI is eventArgs.Uri.AbsoluteUri
+            }
             await ActivationService.ActivateAsync(args);
         }
 

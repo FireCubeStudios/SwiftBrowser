@@ -37,7 +37,7 @@ namespace SwiftBrowser.Views
         {
 
         };
-        ToolTip T = new ToolTip();
+      //  ToolTip T = new ToolTip();
         public static TabView TabviewPageControl { get; set; }
         Flyout PreviewFlyout = new Flyout();
         public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
@@ -60,8 +60,14 @@ namespace SwiftBrowser.Views
             MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
+            OpenInnewwindow.Click += OpenInnewwindow_Click1;
             Flyout.Items.Add(OpenInnewwindow);
-            OpenInnewwindow.IsEnabled = false;
+             Flyout.Items.Add(new MenuFlyoutSeparator());
+            MenuFlyoutItem Refresh = new MenuFlyoutItem();
+            Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+            Refresh.Text = "Refresh Tab";
+            Refresh.Click += Refresh_Click;
+            Flyout.Items.Add(Refresh);
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -98,7 +104,8 @@ namespace SwiftBrowser.Views
             Flyout.Items.Add(CloseAll);
 
             newTab.ContextFlyout = Flyout;
-            ToolTipService.SetToolTip(newTab, T);
+            ToolTip T = new ToolTip();
+
             newTab.PointerEntered += NewTab_PointerEntered;
             newTab.RightTapped += NewTab_RightTapped;
             // The Content of a TabViewItem is often a frame which hosts a page.
@@ -121,6 +128,39 @@ namespace SwiftBrowser.Views
              Window.Current.SetTitleBar(TitleGrid);
         }
 
+        private void Fav_Click(object sender, RoutedEventArgs e)
+        {
+            WebView FavW = RightClickedItem.Tag as WebView;
+
+        }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            WebView FavW = RightClickedItem.Tag as WebView;
+            FavW.Refresh();
+        }
+
+        private async void OpenInnewwindow_Click1(object sender, RoutedEventArgs e)
+        {
+            CoreApplicationView newView = CoreApplication.CreateNewView();
+            int newViewId = 0;
+            TabsControl.TabItems.Remove(RightClickedItem);
+            WebView tag = RightClickedItem.Tag as WebView;
+            localSettings.Values["SourceToGo"] = tag.Source.ToString();
+            // TabsControl.TabItems.Remove(args.Tab);
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                Frame frame = new Frame();
+                frame.Navigate(typeof(TabViewPage));
+                Window.Current.Content = frame;
+                // You have to activate the window in order to show it later.
+                Window.Current.Activate();
+
+                newViewId = ApplicationView.GetForCurrentView().Id;
+            });
+            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+        }
+
         private void NewTab_PointerExited(object sender, PointerRoutedEventArgs e)
         {
            // PreviewFlyout.Hide();
@@ -128,14 +168,17 @@ namespace SwiftBrowser.Views
 
         private async void NewTab_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
+            TabViewItem Tab = sender as TabViewItem;
+            ToolTip T = ToolTipService.GetToolTip(Tab) as ToolTip;
+            try { 
+            WebView eeeee = Tab.Tag as WebView;
             var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
             var x = pointerPosition.X - Window.Current.Bounds.X;
             var y = pointerPosition.Y;
             FlyoutShowOptions ee = new FlyoutShowOptions();
             ee.Position = pointerPosition;
-            TabViewItem Tab = sender as TabViewItem;
             InMemoryRandomAccessStream Prints = new InMemoryRandomAccessStream();
-            await WebViewPage.WebviewControl.CapturePreviewToStreamAsync(Prints);
+            await eeeee.CapturePreviewToStreamAsync(Prints);
                 BitmapImage b = new BitmapImage();
         await b.SetSourceAsync(Prints);
             Image ThumbNail = new Image();
@@ -144,16 +187,17 @@ namespace SwiftBrowser.Views
             ThumbNail.Stretch = Stretch.Fill;
             Windows.UI.Xaml.Shapes.Rectangle r = new Windows.UI.Xaml.Shapes.Rectangle();
                 r.Fill = new SolidColorBrush(Colors.Green);
-
             T.Content = ThumbNail;
+           // T.IsOpen = true;
+           }
+              catch
+              {
+                  T.Content = null;
+              }
 
             // PreviewFlyout.ShowAt(Tab);
         }
         
-        private void NewTab_Holding(object sender, HoldingRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         private async void OpenInnewwindow_Click(object sender, RoutedEventArgs e)
         {
@@ -197,7 +241,11 @@ namespace SwiftBrowser.Views
                     OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
                     OpenInnewwindow.Text = "Move to new window";
                     Flyout.Items.Add(OpenInnewwindow);
-                    OpenInnewwindow.IsEnabled = false;
+                     Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem Refresh = new MenuFlyoutItem();
+                    Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+                    Refresh.Text = "Refresh Tab";
+                    Refresh.Click += Refresh_Click;
                     Flyout.Items.Add(new MenuFlyoutSeparator());
                     MenuFlyoutItem newtabF = new MenuFlyoutItem();
                     newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -225,6 +273,10 @@ namespace SwiftBrowser.Views
                     MenuFlyoutItem CloseO = new MenuFlyoutItem();
                     CloseO.Icon = new SymbolIcon(Symbol.Delete);
                     CloseO.Text = "Close other tabs";
+
+                    ToolTip T = new ToolTip();
+                    ToolTipService.SetToolTip(newTab, T);
+
                     CloseO.Click += CloseO_Click;
                     Flyout.Items.Add(CloseO);
                     MenuFlyoutItem CloseAll = new MenuFlyoutItem();
@@ -282,12 +334,20 @@ namespace SwiftBrowser.Views
         {
             var newTab = new TabViewItem();
             newTab.IconSource = new WinUI.SymbolIconSource() { Symbol = Symbol.Home };
+
+            ToolTip T = new ToolTip();
+            ToolTipService.SetToolTip(newTab, T);
+
             MenuFlyout Flyout = new MenuFlyout();
             MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-            OpenInnewwindow.IsEnabled = false;
+             Flyout.Items.Add(new MenuFlyoutSeparator());
+            MenuFlyoutItem Refresh = new MenuFlyoutItem();
+            Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+            Refresh.Text = "Refresh Tab";
+            Refresh.Click += Refresh_Click;
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -348,8 +408,16 @@ namespace SwiftBrowser.Views
             MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
+
+            ToolTip T = new ToolTip();
+            ToolTipService.SetToolTip(newTab, T);
+
             Flyout.Items.Add(OpenInnewwindow);
-            OpenInnewwindow.IsEnabled = false;
+             Flyout.Items.Add(new MenuFlyoutSeparator());
+            MenuFlyoutItem Refresh = new MenuFlyoutItem();
+            Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+            Refresh.Text = "Refresh Tab";
+            Refresh.Click += Refresh_Click;
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -442,10 +510,18 @@ namespace SwiftBrowser.Views
             newTab.Header = "Home Tab";
             MenuFlyout Flyout = new MenuFlyout();
             MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
+
+            ToolTip T = new ToolTip();
+            ToolTipService.SetToolTip(newTab, T);
+
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-            OpenInnewwindow.IsEnabled = false;
+             Flyout.Items.Add(new MenuFlyoutSeparator());
+            MenuFlyoutItem Refresh = new MenuFlyoutItem();
+            Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+            Refresh.Text = "Refresh Tab";
+            Refresh.Click += Refresh_Click;
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -553,9 +629,17 @@ namespace SwiftBrowser.Views
             MenuFlyout Flyout = new MenuFlyout();
             MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
+
+            ToolTip T = new ToolTip();
+            ToolTipService.SetToolTip(newTab, T);
+
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-            OpenInnewwindow.IsEnabled = false;
+             Flyout.Items.Add(new MenuFlyoutSeparator());
+            MenuFlyoutItem Refresh = new MenuFlyoutItem();
+            Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+            Refresh.Text = "Refresh Tab";
+            Refresh.Click += Refresh_Click;
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -592,6 +676,7 @@ namespace SwiftBrowser.Views
             CloseAll.Click += ClearAll;
             Flyout.Items.Add(CloseAll);
             newTab.RightTapped += NewTab_RightTapped;
+            newTab.PointerEntered += NewTab_PointerEntered;
             newTab.ContextFlyout = Flyout;
             newTab.Header = "Home Tab";
             // The Content of a TabViewItem is often a frame which hosts a page.
@@ -626,6 +711,12 @@ namespace SwiftBrowser.Views
                     OpenInnewwindow.Text = "Move to new window";
                     Flyout.Items.Add(OpenInnewwindow);
 
+                    ToolTip T = new ToolTip();
+                    ToolTipService.SetToolTip(newTab, T);
+                    MenuFlyoutItem Refresh = new MenuFlyoutItem();
+                    Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+                    Refresh.Text = "Refresh Tab";
+                    Refresh.Click += Refresh_Click;
                     Flyout.Items.Add(new MenuFlyoutSeparator());
                     MenuFlyoutItem newtabF = new MenuFlyoutItem();
                     newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -700,28 +791,105 @@ namespace SwiftBrowser.Views
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private async void TabsControl_TabDroppedOutside(TabView sender, TabViewTabDroppedOutsideEventArgs args)
+ 
+
+
+        private void TabsControl_TabStripDrop(object sender, DragEventArgs e)
         {
-            CoreApplicationView newView = CoreApplication.CreateNewView();
-            int newViewId = 0;
+            var newTab = new TabViewItem();
+            newTab.IconSource = new WinUI.SymbolIconSource() { Symbol = Symbol.Home };
+            newTab.Header = "Home Tab";
+            MenuFlyout Flyout = new MenuFlyout();
+            MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
+            OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
+            OpenInnewwindow.Text = "Move to new window";
+            Flyout.Items.Add(OpenInnewwindow);
 
+            ToolTip T = new ToolTip();
+            ToolTipService.SetToolTip(newTab, T);
+            Flyout.Items.Add(new MenuFlyoutSeparator());
+            MenuFlyoutItem Refresh = new MenuFlyoutItem();
+            Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+            Refresh.Text = "Refresh Tab";
+            Refresh.Click += Refresh_Click;
+            Flyout.Items.Add(new MenuFlyoutSeparator());
+            MenuFlyoutItem newtabF = new MenuFlyoutItem();
+            newtabF.Icon = new SymbolIcon(Symbol.Add);
+            newtabF.Text = "New Tab";
+            newtabF.Click += AddAll;
+            Flyout.Items.Add(newtabF);
 
-           // TabsControl.TabItems.Remove(args.Tab);
-            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                Frame frame = new Frame();
-                TabViewItem t = new TabViewItem();
-                t = args.Tab;
-          //      TabViewPage.TabToAdd = t;
-                frame.Navigate(typeof(TabViewPage));
-                Window.Current.Content = frame;
-                // You have to activate the window in order to show it later.
-                Window.Current.Activate();
+            MenuFlyoutItem newWindow = new MenuFlyoutItem();
+            newWindow.Icon = new SymbolIcon(Symbol.Add);
+            newWindow.Text = "New secondary window";
+            newWindow.Click += NewWindow_Click;
+            Flyout.Items.Add(newWindow);
 
-                newViewId = ApplicationView.GetForCurrentView().Id;
-            });
-            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+            MenuFlyoutItem newIncognito = new MenuFlyoutItem();
+            newIncognito.Icon = new SymbolIcon(Symbol.Add);
+            newIncognito.Text = "New incognito window";
+            newIncognito.Click += Incognito_Click;
+            Flyout.Items.Add(newIncognito);
+
+            Flyout.Items.Add(new MenuFlyoutSeparator());
+            MenuFlyoutItem CloseTab = new MenuFlyoutItem();
+            CloseTab.Icon = new SymbolIcon(Symbol.Delete);
+            CloseTab.Text = "Close Tab";
+            Flyout.Items.Add(CloseTab);
+            MenuFlyoutItem CloseO = new MenuFlyoutItem();
+            CloseO.Icon = new SymbolIcon(Symbol.Delete);
+            CloseO.Text = "Close other tabs";
+            CloseO.Click += CloseO_Click;
+            Flyout.Items.Add(CloseO);
+            MenuFlyoutItem CloseAll = new MenuFlyoutItem();
+            CloseAll.Icon = new SymbolIcon(Symbol.Delete);
+            CloseAll.Text = "Close all tabs";
+            CloseAll.Click += ClearAll;
+            Flyout.Items.Add(CloseAll);
+            newTab.RightTapped += NewTab_RightTapped;
+            newTab.ContextFlyout = Flyout;
+            // The Content of a TabViewItem is often a frame which hosts a page.
+            Frame frame = new Frame();
+            newTab.Content = frame;
+            WebViewPage.IncognitoModeStatic = false;
+            WebViewPage.CurrentMainTab = newTab;
+            WebViewPage.MainTab = this.TabsControl;
+            frame.Navigate(typeof(WebViewPage));
+            WebViewPage.IncognitoModeStatic = false;
+            WebViewPage.MainTab = TabsControl;
+            TabsControl.TabItems.Add(newTab);
+            WebViewPage.MainTab = this.TabsControl;
+            TabsControl.SelectedItem = newTab;
         }
 
+        private async void TabsControl_TabDroppedOutside(TabView sender, TabViewTabDroppedOutsideEventArgs args)
+        {
+
+                CoreApplicationView newView = CoreApplication.CreateNewView();
+                int newViewId = 0;
+         TabsControl.TabItems.Remove(args.Tab);
+            WebView tag = args.Tab.Tag as WebView;
+            localSettings.Values["SourceToGo"] = tag.Source.ToString();
+            // TabsControl.TabItems.Remove(args.Tab);
+            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Frame frame = new Frame();
+                    frame.Navigate(typeof(TabViewPage));
+                    Window.Current.Content = frame;
+                    // You have to activate the window in order to show it later.
+                    Window.Current.Activate();
+
+                    newViewId = ApplicationView.GetForCurrentView().Id;
+                });
+                bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+            }
+
+        private void TabsControl_TabDragStarting(TabView sender, TabViewTabDragStartingEventArgs args)
+        {
+            WebView tag = args.Tab.Tag as WebView;
+            localSettings.Values["SourceToGo"] = tag.Source.ToString();
+        }
     }
+
+    
 }

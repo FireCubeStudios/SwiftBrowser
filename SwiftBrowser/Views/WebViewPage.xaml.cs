@@ -57,6 +57,8 @@ using System.Net;
 using HtmlAgilityPack;
 using System.Text;
 using Windows.Media.SpeechSynthesis;
+using Windows.ApplicationModel.UserActivities;
+using SwiftBrowser.Assets;
 
 namespace SwiftBrowser.Views
 {
@@ -87,6 +89,7 @@ namespace SwiftBrowser.Views
         public Boolean IncognitoMode;
         TabViewItem CurrentTab;
         public static string SourceToGo { get; set; }
+        UserActivitySession _currentActivity;
         TabView TabviewMain;
         public WebViewPage()
         {
@@ -119,6 +122,7 @@ namespace SwiftBrowser.Views
             }
             Window.Current.SizeChanged -= ViewElapsed;
             MenuFlyoutItem firstItem = new MenuFlyoutItem { Text = "Open in new tab- beta" };
+            CurrentTab.Tag = webView;
             firstItem.Click += FirstItem_Click;
             ContextFlyout.Items.Add(firstItem);
             MenuFlyoutItem WindowItem = new MenuFlyoutItem { Text = "Open in new window - beta" };
@@ -563,6 +567,8 @@ namespace SwiftBrowser.Views
         {
             NavigationTipGrid.Visibility = Visibility.Visible;
             NavigationTip.Text = "Navigation finishing...";
+            try {
+
             string functionString = @"var anchors = document.querySelectorAll('a');      
      for (var i = 0; i < anchors.length; i += 1) {
            anchors[i].oncontextmenu = function (e) {
@@ -586,9 +592,51 @@ window.Context.setSRCCombination(src);
             // window.external.notify([oX.toString(), oY.toString(), href].toString());
             await webView.InvokeScriptAsync("eval", new string[] { functionImageString });
             DOMloaded();
+            await GenerateActivityAsync();
+
+            }
+            catch
+            {
+                NavigationTip.Text = "Navigation finished";
+                NavigationTipGrid.Visibility = Visibility.Collapsed;
+            }
+        }
+        private async Task GenerateActivityAsync()
+        {
+            // Get the default UserActivityChannel and query it for our UserActivity. If the activity doesn't exist, one is created.
+            if (IncognitoMode == false)
+            {
+                UserActivityChannel channel = UserActivityChannel.GetDefault();
+                UserActivity userActivity = await channel.GetOrCreateUserActivityAsync(webView.Source.ToString());
+                string x;
+                try
+                {
+                    x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
+                }
+                catch
+                {
+                    x = webView.Source.ToString();
+                }
+                // Populate required properties
+                userActivity.VisualElements.DisplayText = x;
+                userActivity.VisualElements.Description = webView.Source.ToString();
+                userActivity.ActivationUri = new Uri(webView.Source.ToString());
+
+                //Save
+                await userActivity.SaveAsync(); //save the new metadata
+
+                // Dispose of any current UserActivitySession, and create a new one.
+                _currentActivity?.Dispose();
+                _currentActivity = userActivity.CreateSession();
+            }
         }
         public async void DOMloaded()
         {
+            if (IncognitoMode == false)
+            {
+                DataAccess.AddData(webView.Source.ToString());
+            }
+            CurrentTab.Tag = webView;
             try
             {
                 string x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
@@ -613,8 +661,6 @@ window.Context.setSRCCombination(src);
             {
                 SearchWebBox.Text = webView.Source.ToString();
             }
-            NavigationTip.Text = "Navigation finished";
-            NavigationTipGrid.Visibility = Visibility.Collapsed;
         }
         public static bool IsMobileSiteEnabled = false;
         public Uri Source
