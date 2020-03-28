@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
@@ -8,13 +9,16 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Newtonsoft.Json;
 using SwiftBrowser.Models;
 using Windows.ApplicationModel.Core;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
+using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Core.Preview;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -41,6 +45,7 @@ namespace SwiftBrowser.Views
         public static TabView TabviewPageControl { get; set; }
         Flyout PreviewFlyout = new Flyout();
         public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+        Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         public bool IncognitoMode;
         TabViewItem RightClickedItem;
         public static TabViewPage SingletonReference { get; set; }
@@ -122,12 +127,164 @@ namespace SwiftBrowser.Views
             WebViewPage.MainTab = this.TabsControl;
             TabsControl.SelectedItem = newTab;
             WebViewPage.MainTab = this.TabsControl;
-        
+            SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += App_CloseRequested;
+            Window.Current.Activate();
             GC.Collect();
              CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
              Window.Current.SetTitleBar(TitleGrid);
+            ShowRestoreDialog();
         }
+        public async void ShowRestoreDialog()
+        {
+            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile file = await folder.GetFileAsync("RestoreTabItems.json");
+            var text = await FileIO.ReadTextAsync(file);
+            TabsClass List = JsonConvert.DeserializeObject<TabsClass>(text);
+            if(List.Tabs.Count != 0)
+            { 
+            RestoreTip.IsOpen = true;
+            await Task.Delay(5000);
+            RestoreTip.IsOpen = false;
+            }
+        }
+        public async void LoadTabViewRestore()
+        {
+            String eeee = "";
+          // try {
+                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                StorageFile file = await folder.GetFileAsync("RestoreTabItems.json");
+                var text = await FileIO.ReadTextAsync(file);
+            TabsClass List = JsonConvert.DeserializeObject<TabsClass>(text);
 
+                foreach (var item in List.Tabs)
+                {
+                    localSettings.Values["SourceToGo"] = item.TabViewItemJSON;
+                    var newTab = new TabViewItem();
+                    newTab.IconSource = new WinUI.SymbolIconSource() { Symbol = Symbol.Home };
+                    newTab.Header = "Home Tab";
+                    MenuFlyout Flyout = new MenuFlyout();
+                    MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
+                    OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
+                    OpenInnewwindow.Text = "Move to new window";
+                    OpenInnewwindow.Click += OpenInnewwindow_Click1;
+                    Flyout.Items.Add(OpenInnewwindow);
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem Refresh = new MenuFlyoutItem();
+                    Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+                    Refresh.Text = "Refresh Tab";
+                    Refresh.Click += Refresh_Click;
+                    Flyout.Items.Add(Refresh);
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem newtabF = new MenuFlyoutItem();
+                    newtabF.Icon = new SymbolIcon(Symbol.Add);
+                    newtabF.Text = "New Tab";
+                    newtabF.Click += AddAll;
+                    Flyout.Items.Add(newtabF);
+                    MenuFlyoutItem newWindow = new MenuFlyoutItem();
+                    newWindow.Icon = new SymbolIcon(Symbol.Add);
+                    newWindow.Text = "New secondary window";
+                    newWindow.Click += NewWindow_Click;
+                    Flyout.Items.Add(newWindow);
+
+                    MenuFlyoutItem newIncognito = new MenuFlyoutItem();
+                    newIncognito.Icon = new SymbolIcon(Symbol.Add);
+                    newIncognito.Text = "New incognito window";
+                    newIncognito.Click += Incognito_Click;
+                    Flyout.Items.Add(newIncognito);
+
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem CloseTab = new MenuFlyoutItem();
+                    CloseTab.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseTab.Text = "Close Tab";
+                    CloseTab.Click += CloseTab_Click;
+                    Flyout.Items.Add(CloseTab);
+                    MenuFlyoutItem CloseO = new MenuFlyoutItem();
+                    CloseO.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseO.Text = "Close other tabs";
+                    CloseO.Click += CloseO_Click;
+                    Flyout.Items.Add(CloseO);
+                    MenuFlyoutItem CloseAll = new MenuFlyoutItem();
+                    CloseAll.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseAll.Text = "Close all tabs";
+                    CloseAll.Click += ClearAll;
+                    Flyout.Items.Add(CloseAll);
+
+                    newTab.ContextFlyout = Flyout;
+                    ToolTip T = new ToolTip();
+
+                    newTab.PointerEntered += NewTab_PointerEntered;
+                    newTab.RightTapped += NewTab_RightTapped;
+                    // The Content of a TabViewItem is often a frame which hosts a page.
+                    Frame frame = new Frame();
+                    WebViewPage.IncognitoModeStatic = false;
+                    newTab.Content = frame;
+                    WebViewPage.IncognitoModeStatic = false;
+                    WebViewPage.CurrentMainTab = newTab;
+                    WebViewPage.MainTab = this.TabsControl;
+                    frame.Navigate(typeof(WebViewPage));
+                    WebViewPage.IncognitoModeStatic = false;
+                    WebViewPage.MainTab = this.TabsControl;
+                    TabsControl.TabItems.Add(newTab);
+                    WebViewPage.MainTab = this.TabsControl;
+                    TabsControl.SelectedItem = newTab;
+                    WebViewPage.MainTab = this.TabsControl;
+            }
+          /* }
+            catch
+            {
+                return;
+            }*/
+        }
+        public class TabsClass
+        {
+            public List<TabsJSON> Tabs { get; set; }
+        }
+        public class TabsJSON
+        {
+            public string TabViewItemJSON { get; set; }
+        }
+        private async void App_CloseRequested(object sender, SystemNavigationCloseRequestedPreviewEventArgs e)
+        {
+            var deferral = e.GetDeferral();
+            /* List<TabsJSON> TabsList = new List<TabsJSON>();
+            foreach (var TabviewItems in TabsControl.TabItems)
+             {
+                TabViewItem TabListTab = TabviewItems as TabViewItem;
+                 WebView W = TabListTab.Tag as WebView;
+                 TabsList.Add(new TabsJSON()
+                 {
+                     TabViewItemJSON = "W",
+                 });
+             }
+           ;*/
+            string filepath = @"Assets\RestoreTabItems.json";
+            StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            StorageFile file = await folder.GetFileAsync(filepath);
+        String Text = await FileIO.ReadTextAsync(file);
+            TabsClass Tabslist = JsonConvert.DeserializeObject<TabsClass>(Text);
+            //  List<TabsClass> Tabslist = new List<TabsClass>();
+            foreach (TabViewItem TabviewItems in TabsControl.TabItems)
+            {
+                WebView tag = TabviewItems.Tag as WebView;
+                try
+                {
+                    Tabslist.Tabs.Add(new TabsJSON()
+                    {
+                        TabViewItemJSON = tag.Source.ToString()
+                    });
+                }
+                catch
+                {
+
+                }
+            }
+            StorageFile sampleFile = await localFolder.CreateFileAsync("RestoreTabItems.json", CreationCollisionOption.ReplaceExisting);
+            await Windows.Storage.FileIO.WriteTextAsync(sampleFile, JsonConvert.SerializeObject(Tabslist));
+            // var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
+         //   var SerializedObject = JsonConvert.SerializeObject(TabsList, Formatting.Indented);
+          //  e.Handled = true;
+            deferral.Complete();
+        }
         private void Fav_Click(object sender, RoutedEventArgs e)
         {
             WebView FavW = RightClickedItem.Tag as WebView;
@@ -864,7 +1021,7 @@ namespace SwiftBrowser.Views
 
         private async void TabsControl_TabDroppedOutside(TabView sender, TabViewTabDroppedOutsideEventArgs args)
         {
-
+            try { 
                 CoreApplicationView newView = CoreApplication.CreateNewView();
                 int newViewId = 0;
          TabsControl.TabItems.Remove(args.Tab);
@@ -883,11 +1040,28 @@ namespace SwiftBrowser.Views
                 });
                 bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
             }
+            catch
+            {
+                return;
+            }
+            }
 
         private void TabsControl_TabDragStarting(TabView sender, TabViewTabDragStartingEventArgs args)
         {
+            try { 
             WebView tag = args.Tab.Tag as WebView;
             localSettings.Values["SourceToGo"] = tag.Source.ToString();
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        private void RestoreTip_ActionButtonClick(TeachingTip sender, object args)
+        {
+            LoadTabViewRestore();
+            sender.IsOpen = false;
         }
     }
 

@@ -23,28 +23,27 @@ namespace SwiftBrowser.HubViews
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class Favourites : Page
+    public sealed partial class OfflinePage : Page
     {
-        public Favourites()
+        public OfflinePage()
         {
-            InitializeComponent();
-            LoadFavorites();
+            this.InitializeComponent();
         }
         Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
         public static WebView WebWeb { get; set; }
         public static Boolean BoolWeb { get; set; }
-        public class FavouritesClass
+        public class OfflineWebClass
         {
-            public List<FavouritesJSON> Websites { get; set; }
+            public List<FavouritesJSON> OfflineWebsites { get; set; }
         }
         List<FavouritesJSON> FavouritesList;
-      /*  public class Favourites
-        {
-            public string Header { get; set; }
-            public string Url { get; set; }
-            public string FavIcon { get; set; }
-        }*/
+        /*  public class Favourites
+          {
+              public string Header { get; set; }
+              public string Url { get; set; }
+              public string FavIcon { get; set; }
+          }*/
         public class FavouritesJSON
         {
             public string HeaderJSON { get; set; }
@@ -142,7 +141,7 @@ namespace SwiftBrowser.HubViews
                     FavIconJSON = " https://icons.duckduckgo.com/ip2/" + host + ".ico",
                     UrlJSON = UrlBox.Text,
                     HeaderJSON = Header
-                }); 
+                });
                 var SerializedObject = JsonConvert.SerializeObject(FavouritesListJSON, Formatting.Indented);
                 await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
                 var JSONDatas = await FileIO.ReadTextAsync(sampleFile);

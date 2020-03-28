@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using SwiftBrowser.Assets;
+using SwiftBrowser.Views;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using static SwiftBrowser.Assets.DataAccess;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -25,10 +27,34 @@ namespace SwiftBrowser.HubViews
     /// </summary>
     public sealed partial class History : Page
     {
+        private async void clear_click(object sender, RoutedEventArgs e)
+        {
+            StorageFile filed = await ApplicationData.Current.LocalFolder.GetFileAsync("sqliteHistory.db");
+            if (filed != null)
+            {
+                await filed.DeleteAsync();
+            }
+            DataAccess.InitializeDatabase();
+            Output.ItemsSource = null;
+        }
         public History()
         {
             this.InitializeComponent();
             Output.ItemsSource = DataAccess.GetData();
+        }
+        private void RemoveDataButton_Click(object sender, RoutedEventArgs e)
+        {
+            var ide = (FrameworkElement)sender;
+            var dataCxtx = ide.DataContext;
+            HistoryClass dataSauce = (HistoryClass)dataCxtx;
+            DataAccess.RemoveData(dataSauce);
+            Output.ItemsSource = DataAccess.GetData();
+        }
+
+        private void Output_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            HistoryClass Historyitemclicked = e.ClickedItem as HistoryClass;
+            WebViewPage.WebviewControl.Navigate(new Uri(Historyitemclicked.UrlSQL));
         }
     }
 }

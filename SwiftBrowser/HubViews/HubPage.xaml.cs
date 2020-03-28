@@ -48,6 +48,10 @@ namespace SwiftBrowser.HubViews
                     HubNav.SelectedItem = Dav;
                     contentFrame.Navigate(typeof(Downloads));
                     break;
+                case "O":
+                    HubNav.SelectedItem = Oav;
+                    contentFrame.Navigate(typeof(OfflinePage));
+                    break;
             }
         }
 
@@ -60,6 +64,10 @@ namespace SwiftBrowser.HubViews
             else if(args.InvokedItemContainer.Content.ToString() == "History")
             {
                 contentFrame.Navigate(typeof(History));
+            }
+            else if (args.InvokedItemContainer.Content.ToString() == "Offline")
+            {
+                contentFrame.Navigate(typeof(OfflinePage));
             }
             else
             {

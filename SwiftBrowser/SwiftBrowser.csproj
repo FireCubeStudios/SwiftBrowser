@@ -182,6 +182,9 @@
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
     <Compile Include="Helpers\TileDataSource.cs" />
     <Compile Include="Helpers\WebViewEvents.cs" />
+    <Compile Include="HubViews\OfflinePage.xaml.cs">
+      <DependentUpon>OfflinePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\PhotoDataItem.cs" />
     <Compile Include="Models\TabViewItemData.cs" />
     <Compile Include="Services\ActivationService.cs" />
@@ -263,6 +266,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="HubViews\OfflinePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SettingsViews\SettingsHubPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -459,6 +466,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="Assets\OfflinePages.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\QuickPinWeb.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -466,6 +476,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Assets\Photos\Photos.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\RestoreTabItems.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="SwiftBrowser_TemporaryKey.pfx" />

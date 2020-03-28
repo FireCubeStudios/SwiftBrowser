@@ -153,6 +153,7 @@ namespace SwiftBrowser.Views
             DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += DataTransferManager_DataRequested;
             webView = new WebView(WebViewExecutionMode.SeparateProcess);
+            HomePage.WebViewControl = webView;
             webView.Name = "webView";
            webView.Height = 950;
             webView.MinHeight = 300;
@@ -216,6 +217,7 @@ namespace SwiftBrowser.Views
                     MenuButton.IsEnabled = false;
                     HomeFrameFrameFrame.BackStack.Clear();
                     GC.Collect();
+                    HomePage.WebViewControl = webView;
                     HomeFrameFrameFrame.Navigate(typeof(Incognitomode));
                 }
             }
@@ -632,19 +634,22 @@ window.Context.setSRCCombination(src);
         }
         public async void DOMloaded()
         {
-            if (IncognitoMode == false)
-            {
-                DataAccess.AddData(webView.Source.ToString());
-            }
+         
             CurrentTab.Tag = webView;
+            string x;
             try
             {
-                string x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
+               x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
                 CurrentTab.Header = x;
             }
             catch
             {
                 CurrentTab.Header = webView.Source;
+                x = webView.Source.ToString();
+            }
+            if (IncognitoMode == false)
+            {
+                DataAccess.AddData(webView.Source.ToString(), x);
             }
             Uri ArgsUri = new Uri(webView.Source.ToString());
             string host = ArgsUri.Host;
@@ -1170,6 +1175,7 @@ window.Context.setSRCCombination(src);
             }
             else
             {
+                HomePage.WebViewControl = webView;
                 HomeFrameFrameFrame.Navigate(typeof(Incognitomode));
             }
             CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Home };

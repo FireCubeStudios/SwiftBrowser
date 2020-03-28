@@ -15,6 +15,7 @@
                 <muxc:NavigationViewItem  x:Name="Fav" Icon="SolidStar" Content="Favorites" />
                 <muxc:NavigationViewItem x:Name="Hav" Icon="Clock" Content="History"/>
                 <muxc:NavigationViewItem x:Name="Dav" Icon="Download" Content="Downloads"/>
+                <muxc:NavigationViewItem x:Name="Oav" Icon="Save" Content="Offline"/>
             </muxc:NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>
         </muxc:NavigationView>
