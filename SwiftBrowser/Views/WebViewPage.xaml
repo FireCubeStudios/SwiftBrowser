@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     Style="{StaticResource PageStyle}"
+    NavigationCacheMode="Required"
     mc:Ignorable="d">
     <Page.Resources>
         <Style x:Key="BrowserButtonStyle" TargetType="Button">
@@ -73,7 +74,7 @@
             </Setter>
         </Style>
     </Page.Resources>
-    <Grid x:Name="ContentGrid">
+    <Grid x:Name="ContentGrid" x:Load="True">
         <AppBarButton Canvas.ZIndex="600" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="70" CornerRadius="10" Foreground="Blue" Visibility="Collapsed" x:Name="CompactButton" Click="CompactButton_Click">
             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B9;" Foreground="Blue"/>
             <AppBarButton.Resources>
@@ -119,12 +120,12 @@
             <ProgressRing x:Name="Loading" IsActive="False"/>
             <TextBlock x:Uid="WebView_Loading" />
         </StackPanel>
-        <StackPanel Visibility="{x:Bind FailedMesageVisibility, Mode=OneWay}"
+       <!-- <StackPanel Visibility="{x:Bind FailedMesageVisibility, Mode=OneWay}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
             <TextBlock HorizontalAlignment="Center" x:Uid="WebView_FailedMessage" Foreground="Black" TextWrapping="WrapWholeWords" />
             <HyperlinkButton Click="OnRetry" x:Uid="WebView_Retry" HorizontalAlignment="Center" />
-        </StackPanel>
+        </StackPanel>-->
         <controls:TeachingTip x:Name="InfoTip" HorizontalAlignment="Center" VerticalAlignment="Center" Height="600" CloseButtonClick="InfoTip_CloseButtonClick" CloseButtonContent="Go back">
             <controls:TeachingTip.IconSource>
                 <controls:SymbolIconSource Symbol="Globe" />
@@ -194,7 +195,7 @@
                             <MenuFlyoutItem Text="Favourites" Click="HubButton_Click"/>
                             <MenuFlyoutItem Text="History" Click="HisButton_Click"/>
                             <MenuFlyoutItem Text="Downloads" Click="DownlButton_Click"/>
-                            <MenuFlyoutSubItem Text="Apps">
+                            <MenuFlyoutSubItem Text="Apps" IsEnabled="False">
                                 <MenuFlyoutItem Text="Manage apps"/>
                                 <MenuFlyoutSeparator/>
                             </MenuFlyoutSubItem>
@@ -252,7 +253,7 @@
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Favorite" Click="HubButton_Click" Margin="5" Label="Favorites"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Clock" Click="HisButton_Click" Margin="5" Label="History"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Download" Click="DownlButton_Click" Margin="5" Label="Downloads"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="AllApps" Margin="5" Label="Apps"></AppBarButton>
+                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="AllApps" Margin="5" Label="Apps" Click="NewAppItem_Click"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="SwitchApps" Margin="5" Label="Extensions"></AppBarButton>
                                             </StackPanel>
                                         </StackPanel>

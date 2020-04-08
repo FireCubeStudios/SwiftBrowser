@@ -13,7 +13,6 @@ namespace SwiftBrowser.Services
     public static class FirstRunDisplayService
     {
         private static bool shown = false;
-
         internal static async Task ShowIfAppropriateAsync()
         {
             await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
@@ -24,6 +23,11 @@ namespace SwiftBrowser.Services
                         shown = true;
                         var dialog = new FirstRunDialog();
                         await dialog.ShowAsync();
+                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = true;
+                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = true;
+                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = true;
+                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = true;
+                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = true;
                     }
                 });
         }

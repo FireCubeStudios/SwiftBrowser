@@ -10,7 +10,7 @@
     <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
         <StackPanel Width="400">
             <CommandBar  Background="{ThemeResource SystemControlAcrylicWindowBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="False" OverflowButtonVisibility="Collapsed">
-                <AppBarButton Icon="Add" Label="Add to offline pages" Click="AddFav"></AppBarButton>
+                <AppBarButton Icon="Add" Label="Add to offline pages" Click="AddOffline"></AppBarButton>
                 <AppBarButton Icon="Add" Label="Add a site">
                     <AppBarButton.Flyout>
                         <Flyout>
@@ -21,7 +21,7 @@
                                 <TextBox Margin="5" x:Name="UrlBox" Header="Url:" PlaceholderText="Enter valid URL">
 
                                 </TextBox>
-                                <Button Margin="5" Click="AddSiteFav" Content="Add" >
+                                <Button Margin="5" Click="AddSiteOffline" Content="Add" >
 
                                 </Button>
                             </StackPanel>
@@ -32,7 +32,7 @@
             <ListView
                    Background="{ThemeResource SystemControlAcrylicWindowBrush}"
   SelectionMode="None"
-    x:Name="Favorites"
+    x:Name="Offlines"
     HorizontalAlignment="Left">
                 <ListView.ItemTemplate>
                     <DataTemplate>
@@ -40,8 +40,8 @@
                             <Image Height="15" Width="15" Source="{Binding FavIconJSON}" Margin="5"/>
                             <TextBlock Text="{Binding HeaderJSON}" Margin="0,5,0,5"/>
                             <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-                                <AppBarButton Icon="OpenFile" Label="Open" Click="OpenFav" Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
-                                <AppBarButton Icon="Delete" Click="DeleteFav" Label="Delete"  Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
+                                <AppBarButton Icon="OpenFile" Label="Open" Click="OpenOffline" Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
+                                <AppBarButton Icon="Delete" Click="DeleteOffline" Label="Delete"  Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
                             </CommandBar>
                         </StackPanel>
                     </DataTemplate>

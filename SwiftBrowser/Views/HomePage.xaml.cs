@@ -41,6 +41,71 @@ namespace SwiftBrowser.Views
             LoadQuickPinned();
             HomeGrid = FavouritesGridView;
             webViewControl = WebViewControl;
+            try { 
+            tICO.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
+                if((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] == true)
+                {
+                    icon.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    icon.Visibility = Visibility.Collapsed;
+                }
+            TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
+                if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] == true)
+                {
+                    FavouritesGridView.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    FavouritesGridView.Visibility = Visibility.Collapsed;
+                }
+                TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
+                if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] == true)
+                {
+                    QuickPinnedGrid.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    QuickPinnedGrid.Visibility = Visibility.Collapsed;
+                }
+                TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
+                if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] == true)
+                {
+              loadcontentmore.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                   loadcontentmore.Visibility = Visibility.Collapsed;
+                }
+                TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
+                if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] == true)
+                {
+                    SearchBox.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    SearchBox.Visibility = Visibility.Collapsed;
+                }
+            }
+            catch
+            {
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = true;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = true;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = true;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = true;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = true;
+                tICO.IsOn = (bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
+                QuickPinnedGrid.Visibility = Visibility.Visible;
+                loadcontentmore.Visibility = Visibility.Visible;
+                FavouritesGridView.Visibility = Visibility.Visible;
+                icon.Visibility = Visibility.Visible;
+                TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
+                TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
+                TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
+                TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
+                SearchBox.Visibility = Visibility.Visible;
+            }
         }
         List<FavouritesJSON> FavouritesList;
         List<FavouritesJSON> FavouritesListQuick;
@@ -171,7 +236,7 @@ namespace SwiftBrowser.Views
 
         private void NewsHomePage_NewWindowRequested(WebView sender, WebViewNewWindowRequestedEventArgs args)
         {
-            WebViewPage.WebviewControl.Navigate(args.Uri);
+            webViewControl.Navigate(args.Uri);
             WebViewPage.HomeFrameFrame.Visibility = Visibility.Collapsed;
             args.Handled = true;
         }
@@ -189,12 +254,12 @@ namespace SwiftBrowser.Views
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
             FavouritesJSON SenderPost = DataContext as FavouritesJSON;
-        WebViewPage.WebviewControl.Navigate(new Uri(SenderPost.UrlJSON));
+          webViewControl.Navigate(new Uri(SenderPost.UrlJSON));
         }
 
         private void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            WebViewPage.WebviewControl.Navigate(new Uri("https://www.ecosia.org/search?q=" + sender.Text));
+           webViewControl.Navigate(new Uri("https://www.ecosia.org/search?q=" + sender.Text));
         }
 
         private void QGrid_Tapped(object sender, TappedRoutedEventArgs e)
@@ -202,7 +267,7 @@ namespace SwiftBrowser.Views
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
             FavouritesJSON SenderPost = DataContext as FavouritesJSON;
-            WebViewPage.WebviewControl.Navigate(new Uri(SenderPost.UrlJSON));
+            webViewControl.Navigate(new Uri(SenderPost.UrlJSON));
         }
 
         private async void AddItemButton_Click(object sender, RoutedEventArgs e)
@@ -249,6 +314,77 @@ namespace SwiftBrowser.Views
             catch
             {
                 return;
+            }
+        }
+
+        private void TICO_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = toggle.IsOn;
+            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] == true)
+            {
+                icon.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                icon.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void TfAV_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = toggle.IsOn;
+            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] == true)
+            {
+                FavouritesGridView.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                FavouritesGridView.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void TqUI_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = toggle.IsOn;
+            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] == true)
+            {
+                QuickPinnedGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                QuickPinnedGrid.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void TmOR_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = toggle.IsOn;
+            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] == true)
+                {
+                loadcontentmore.Visibility = Visibility.Visible;
+            }
+                else
+            {
+                loadcontentmore.Visibility = Visibility.Collapsed;
+            }
+            
+        }
+
+        private void TSea_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = toggle.IsOn;
+            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] == true)
+            {
+                SearchBox.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SearchBox.Visibility = Visibility.Collapsed;
             }
         }
     }

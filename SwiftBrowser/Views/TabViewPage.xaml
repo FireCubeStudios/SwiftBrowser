@@ -21,6 +21,7 @@
             </winui:TeachingTip.IconSource>
         </winui:TeachingTip>
         <winui:TabView
+            CornerRadius="2"
             x:Load="False"
             Background="{ThemeResource SystemControlAcrylicWindowBrush}"
         x:Name="TabsControl"

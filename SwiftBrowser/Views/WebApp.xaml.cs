@@ -36,7 +36,7 @@ namespace SwiftBrowser.Views
             webView.Name = "webViewApp";
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
-            Window.Current.SetTitleBar(BackgroundElement);
+            Window.Current.SetTitleBar(bACKGROUND);
             webView.Height = 1000;
             webViewer = webView;
             webView.MinHeight = 300;

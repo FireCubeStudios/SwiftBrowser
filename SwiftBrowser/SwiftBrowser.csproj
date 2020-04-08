@@ -234,6 +234,9 @@
     <Compile Include="Views\NoInternetFrame.xaml.cs">
       <DependentUpon>NoInternetFrame.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\OfflineModePage.xaml.cs">
+      <DependentUpon>OfflineModePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PorcessLost.xaml.cs">
       <DependentUpon>PorcessLost.xaml</DependentUpon>
     </Compile>
@@ -335,6 +338,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\NoInternetFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OfflineModePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

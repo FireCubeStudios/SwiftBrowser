@@ -7,13 +7,17 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
+using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -28,32 +32,34 @@ namespace SwiftBrowser.HubViews
         public OfflinePage()
         {
             this.InitializeComponent();
+            LoadOfflines();
         }
         Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
         public static WebView WebWeb { get; set; }
+        public static Frame ImageFrame { get; set; }
         public static Boolean BoolWeb { get; set; }
-        public class OfflineWebClass
+        public class OfflineClass
         {
-            public List<FavouritesJSON> OfflineWebsites { get; set; }
+            public List<OfflineJSON> OfflineWebsites { get; set; }
         }
-        List<FavouritesJSON> FavouritesList;
+        List<OfflineJSON> OfflineList;
         /*  public class Favourites
           {
               public string Header { get; set; }
               public string Url { get; set; }
               public string FavIcon { get; set; }
           }*/
-        public class FavouritesJSON
+        public class OfflineJSON
         {
             public string HeaderJSON { get; set; }
-            public string UrlJSON { get; set; }
+            public string ImageUrlJSON { get; set; }
             public string FavIconJSON { get; set; }
         }
-        private async void LoadFavorites()
+        private async void LoadOfflines()
         {
-            FavouritesList = new List<FavouritesJSON>();
-            string filepath = @"Assets\Favorites.json";
+            OfflineList = new List<OfflineJSON>();
+            string filepath = @"Assets\OfflinePages.json";
             StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
             StorageFile file = await folder.GetFileAsync(filepath); // error here
             var JSONData = "e";
@@ -62,62 +68,62 @@ namespace SwiftBrowser.HubViews
                 if ((bool)localSettings.Values["FirstFavRun"] == true)
                 {
                     localSettings.Values["FirstFavRun"] = false;
-                    StorageFile sfile = await localFolder.CreateFileAsync("Favorites.json", CreationCollisionOption.ReplaceExisting);
+                    StorageFile sfile = await localFolder.CreateFileAsync("OfflinePages.json", CreationCollisionOption.ReplaceExisting);
                     await FileIO.WriteTextAsync(sfile, JSONData);
                     JSONData = await Windows.Storage.FileIO.ReadTextAsync(file);
                 }
                 else
                 {
                     localSettings.Values["FirstFavRun"] = false;
-                    StorageFile ssfile = await localFolder.GetFileAsync("Favorites.json");
+                    StorageFile ssfile = await localFolder.GetFileAsync("OfflinePages.json");
                     JSONData = await FileIO.ReadTextAsync(ssfile);
                 }
             }
             catch
             {
                 localSettings.Values["FirstFavRun"] = false;
-                StorageFile sssfile = await localFolder.CreateFileAsync("Favorites.json", CreationCollisionOption.ReplaceExisting);
+                StorageFile sssfile = await localFolder.CreateFileAsync("OfflinePages.json", CreationCollisionOption.ReplaceExisting);
                 await FileIO.WriteTextAsync(sssfile, JSONData);
                 JSONData = await Windows.Storage.FileIO.ReadTextAsync(file);
             }
             localSettings.Values["FirstFavRun"] = false;
-            StorageFile sampleFile = await localFolder.CreateFileAsync("Favorites.json", CreationCollisionOption.ReplaceExisting);
+            StorageFile sampleFile = await localFolder.CreateFileAsync("OfflinePages.json", CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteTextAsync(sampleFile, JSONData);
-            FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
-            foreach (var item in FavouritesListJSON.Websites)
+            OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
+            foreach (var item in OfflineListJSON.OfflineWebsites)
             {
-                FavouritesList.Add(new FavouritesJSON()
+                OfflineList.Add(new OfflineJSON()
                 {
                     HeaderJSON = item.HeaderJSON,
-                    UrlJSON = item.UrlJSON,
+                    ImageUrlJSON = item.ImageUrlJSON,
                     FavIconJSON = item.FavIconJSON,
                 });
             }
-            Favorites.ItemsSource = FavouritesList;
+            Offlines.ItemsSource = OfflineList;
 
         }
-        public async void LoadFav()
+        public async void LoadOffline()
         {
-            StorageFile sampleFile = await localFolder.GetFileAsync("Favorites.json");
+            StorageFile sampleFile = await localFolder.GetFileAsync("OfflinePages.json");
             var JSONData = await FileIO.ReadTextAsync(sampleFile);
-            FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
-            foreach (var item in FavouritesListJSON.Websites)
+            OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
+            foreach (var item in OfflineListJSON.OfflineWebsites)
             {
-                FavouritesList.Add(new FavouritesJSON()
+                OfflineList.Add(new OfflineJSON()
                 {
                     HeaderJSON = item.HeaderJSON,
-                    UrlJSON = item.UrlJSON,
+                    ImageUrlJSON = item.ImageUrlJSON,
                     FavIconJSON = item.FavIconJSON,
                 });
             }
-            Favorites.ItemsSource = null;
-            UnloadObject(Favorites);
-            FindName("Favorites");
-            Favorites.ItemsSource = FavouritesList;
+            Offlines.ItemsSource = null;
+            UnloadObject(Offlines);
+            FindName("Offlines");
+            Offlines.ItemsSource = OfflineList;
             HomePage.HomeGrid.ItemsSource = null;
-            HomePage.HomeGrid.ItemsSource = FavouritesList;
+            HomePage.HomeGrid.ItemsSource = OfflineList;
         }
-        private async void AddSiteFav(object sender, RoutedEventArgs e)
+        private async void AddSiteOffline(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -133,19 +139,19 @@ namespace SwiftBrowser.HubViews
                 {
                     Header = NameBox.Text;
                 }
-                StorageFile sampleFile = await localFolder.GetFileAsync("Favorites.json");
+                StorageFile sampleFile = await localFolder.GetFileAsync("OfflinePages.json");
                 var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
-                FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
-                FavouritesListJSON.Websites.Add(new FavouritesJSON()
+                OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
+                OfflineListJSON.OfflineWebsites.Add(new OfflineJSON()
                 {
                     FavIconJSON = " https://icons.duckduckgo.com/ip2/" + host + ".ico",
-                    UrlJSON = UrlBox.Text,
+                    ImageUrlJSON = UrlBox.Text,
                     HeaderJSON = Header
                 });
-                var SerializedObject = JsonConvert.SerializeObject(FavouritesListJSON, Formatting.Indented);
+                var SerializedObject = JsonConvert.SerializeObject(OfflineListJSON, Formatting.Indented);
                 await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
                 var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
-                LoadFav();
+                LoadOffline();
             }
             catch
             {
@@ -153,74 +159,78 @@ namespace SwiftBrowser.HubViews
             }
         }
 
-        private async void DeleteFav(object sender, RoutedEventArgs e)
+        private async void DeleteOffline(object sender, RoutedEventArgs e)
         {
-            StorageFile sampleFile = await localFolder.GetFileAsync("Favorites.json");
+            StorageFile sampleFile = await localFolder.GetFileAsync("OfflinePages.json");
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
-            FavouritesJSON SenderPost = DataContext as FavouritesJSON;
-            //  List<Favourites> OpenList = Favorites.ItemsSource as List<Favourites>;
+            OfflineJSON SenderPost = DataContext as OfflineJSON;
+            //  List<Favourites> OpenList = Offlines.ItemsSource as List<Favourites>;
             //  OpenList.Remove(SenderPost);
             var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
-            FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
+            OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
             //i had a better way to do it before but accidently permanently deleted it and cant remember how. This method is shorter and simpler
-            FavouritesJSON FoundItem = FavouritesListJSON.Websites.Find(x => x.UrlJSON == SenderPost.UrlJSON);
-            FavouritesListJSON.Websites.Remove(FoundItem);
-            var SerializedObject = JsonConvert.SerializeObject(FavouritesListJSON, Formatting.Indented);
+            OfflineJSON FoundItem = OfflineListJSON.OfflineWebsites.Find(x => x.ImageUrlJSON == SenderPost.ImageUrlJSON);
+            OfflineListJSON.OfflineWebsites.Remove(FoundItem);
+            var SerializedObject = JsonConvert.SerializeObject(OfflineListJSON, Formatting.Indented);
             await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
             var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
-            LoadFav();
+            LoadOffline();
         }
 
-        private async void AddFav(object sender, RoutedEventArgs e)
+        private async void AddOffline(object sender, RoutedEventArgs e)
         {
-            if (BoolWeb == true)
-            {
-                StorageFile sampleFile = await localFolder.GetFileAsync("Favorites.json");
-                var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
-                FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
+            //  if (BoolWeb == true)
+            //   {
+            StorageFile sampleFile = await localFolder.GetFileAsync("OfflinePages.json");
+
+            var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
+                OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
                 Uri ArgsUri = new Uri(WebWeb.Source.ToString());
                 string host = ArgsUri.Host;
                 string x = "";
-                try
-                {
-                    x = await WebWeb.InvokeScriptAsync("eval", new string[] { "document.title;" });
-                }
-                catch
-                {
                     x = WebWeb.Source.ToString();
-                }
-                FavouritesListJSON.Websites.Add(new FavouritesJSON()
-                {
-                    FavIconJSON = " https://icons.duckduckgo.com/ip2/" + host + ".ico",
-                    UrlJSON = WebWeb.Source.ToString(),
-                    HeaderJSON = x
-                }); ;
-                var SerializedObject = JsonConvert.SerializeObject(FavouritesListJSON, Formatting.Indented);
-                await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
-                var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
-                LoadFav();
-            }
-            else
+               
+            OfflineListJSON.OfflineWebsites.Add(new OfflineJSON()
             {
-                return;
-            }
+                FavIconJSON = " https://icons.duckduckgo.com/ip2/" + host + ".ico",
+                ImageUrlJSON = "xxx" + ".jpg",
+                HeaderJSON = x
+            }); ;
+            var SerializedObject = JsonConvert.SerializeObject(OfflineListJSON, Formatting.Indented);
+            await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
+            var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
+            WebViewPage.SingletonReference.CreateRTBOffline();
+                LoadOffline();
+                var m = new MessageDialog(x + ".jpg");
+                await m.ShowAsync();
+           // }
+           // else
+           // {
+           //     return;
+           // }
         }
 
-        private void OpenFav(object sender, RoutedEventArgs e)
+        private async void OpenOffline(object sender, RoutedEventArgs e)
         {
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
-            FavouritesJSON SenderPost = DataContext as FavouritesJSON;
-            WebWeb.Navigate(new Uri(SenderPost.UrlJSON));
+            OfflineJSON SenderPost = DataContext as OfflineJSON;
+            var m = new MessageDialog(SenderPost.ImageUrlJSON);
+            await m.ShowAsync();
+            WebViewPage.SingletonReference.Churros();
+            ImageFrame.Visibility = Visibility.Visible;
+            ImageFrame.Navigate(typeof(OfflineModePage));
+            OfflineModePage.OiMage.Source = new BitmapImage(new Uri(SenderPost.ImageUrlJSON, UriKind.Absolute));
+            //  WebWeb.Navigate(new Uri(SenderPost.ImageUrlJSON));
         }
 
         private void StackPanel_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
-            FavouritesJSON SenderPost = DataContext as FavouritesJSON;
-            WebWeb.Navigate(new Uri(SenderPost.UrlJSON));
+            OfflineJSON SenderPost = DataContext as OfflineJSON;
+            WebWeb.Navigate(new Uri(SenderPost.ImageUrlJSON));
         }
     }
 }

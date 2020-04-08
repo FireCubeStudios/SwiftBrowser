@@ -52,9 +52,9 @@ namespace SwiftBrowser.Helpers
 
         public void webView_UnsupportedUriSchemeIdentified(WebView sender, WebViewUnsupportedUriSchemeIdentifiedEventArgs args)
         {
-            WebViewPage.InfoDialog.IsOpen = true;
+            /*WebViewPage.InfoDialog.IsOpen = true;
             WebViewPage.InfoDialog.Title = "Unsupported uri scheme detected";
-            WebViewPage.InfoDialog.IsLightDismissEnabled = false;
+            WebViewPage.InfoDialog.IsLightDismissEnabled = false;*/
         }
 
         public void webView_UnsafeContentWarningDisplaying(WebView sender, object args)
@@ -68,11 +68,11 @@ namespace SwiftBrowser.Helpers
 
         public void webView_UnviewableContentIdentified(WebView sender, WebViewUnviewableContentIdentifiedEventArgs args)
         {
-            WebViewPage.InfoDialog.IsOpen = true;
+          /*  WebViewPage.InfoDialog.IsOpen = true;
             WebViewPage.InfoDialog.Title = "Unviewable content";
             WebViewPage.InfoDialog.IsLightDismissEnabled = false;
             WebViewPage.InfoDialog.ActionButtonContent = "Launch content";
-            WebViewPage.InfoDialog.ActionButtonClick += LaunchUnviewable;
+            WebViewPage.InfoDialog.ActionButtonClick += LaunchUnviewable;*/
         }
         public void LaunchUnviewable(Microsoft.UI.Xaml.Controls.TeachingTip sender, object args)
         {

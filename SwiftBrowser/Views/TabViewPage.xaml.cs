@@ -2,24 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
 using SwiftBrowser.Models;
 using Windows.ApplicationModel.Core;
-using Windows.Graphics.Display;
-using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Core.Preview;
-using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -27,7 +20,6 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Shapes;
 using WinUI = Microsoft.UI.Xaml.Controls;
 
 namespace SwiftBrowser.Views
@@ -49,6 +41,7 @@ namespace SwiftBrowser.Views
         public bool IncognitoMode;
         TabViewItem RightClickedItem;
         public static TabViewPage SingletonReference { get; set; }
+
         public TabViewPage()
         {
             InitializeComponent();
@@ -137,6 +130,8 @@ namespace SwiftBrowser.Views
         public async void ShowRestoreDialog()
         {
             StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            try
+            {
             StorageFile file = await folder.GetFileAsync("RestoreTabItems.json");
             var text = await FileIO.ReadTextAsync(file);
             TabsClass List = JsonConvert.DeserializeObject<TabsClass>(text);
@@ -145,6 +140,11 @@ namespace SwiftBrowser.Views
             RestoreTip.IsOpen = true;
             await Task.Delay(5000);
             RestoreTip.IsOpen = false;
+            }
+            }
+            catch
+            {
+                return;
             }
         }
         public async void LoadTabViewRestore()
@@ -455,11 +455,13 @@ namespace SwiftBrowser.Views
                     TabsControl.TabItems.Add(newTab);
                     WebViewPage.MainTab = this.TabsControl;
                     TabsControl.SelectedItem = newTab;
+                    RightClickedItem.Content = null;
                     TabsControl.TabItems.Remove(RightClickedItem);
                     GC.Collect();
                 }
                 else
                 {
+                    RightClickedItem.Content = null;
                     TabsControl.TabItems.Remove(RightClickedItem);
                     GC.Collect();
                 }
@@ -848,14 +850,13 @@ namespace SwiftBrowser.Views
             WebViewPage.MainTab = TabsControl;
             sender.TabItems.Add(newTab);
             WebViewPage.MainTab = this.TabsControl;
-            sender.SelectedItem = newTab;
-           // WebViewPage.CurrentMainTab = TabsControl.SelectedItem as TabViewItem;
-            GC.Collect();
+            WebViewPage.CurrentMainTab = newTab;
+            GC.Collect(2);
         }
 
         private async void OnTabCloseRequested(WinUI.TabView sender, WinUI.TabViewTabCloseRequestedEventArgs args)
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async() =>
             {
                 if (sender.TabItems.Count <= 1)
                 {
@@ -922,13 +923,55 @@ namespace SwiftBrowser.Views
                     sender.TabItems.Add(newTab);
                     WebViewPage.MainTab = this.TabsControl;
                     sender.SelectedItem = newTab;
+                    try
+                    {
+                        WebView es = args.Tab.Tag as WebView;
+                        WebViewPage we = es.Tag as WebViewPage;
+                        we.Dispose();
+                        es = null;
+                    }
+                    catch
+                    {
+
+                    }
+                    args.Tab.Content = null;
+                    args.Tab.ContextFlyout = null;
+                    args.Tab.Tag = null;
+                    args.Tab.PointerEntered -= NewTab_PointerEntered;
+                    args.Tab.PointerExited -= NewTab_PointerExited;
+                    args.Tab.RightTapped -= NewTab_RightTapped;
+                    VisualTreeHelper.DisconnectChildrenRecursive(args.Tab);
+                    //  ((IDisposable)sender.TabItems).Dispose();
                     sender.TabItems.Remove(args.Tab);
-                    GC.Collect();
+                    await Task.Delay(500);
+                    GC.Collect(2);
+                    GC.WaitForPendingFinalizers();
                 }
                 else
                 {
+                    try
+                    {
+                        WebView es = args.Tab.Tag as WebView;
+                        WebViewPage we = es.Tag as WebViewPage;
+                        we.Dispose();
+                        es = null;
+                    }
+                    catch
+                    {
+
+                    }
+                    args.Tab.Content = null;
+                    args.Tab.ContextFlyout = null;
+                    args.Tab.Tag = null;
+                    args.Tab.PointerEntered -= NewTab_PointerEntered;
+                    args.Tab.PointerExited -= NewTab_PointerExited;
+                    args.Tab.RightTapped -= NewTab_RightTapped;
+                    VisualTreeHelper.DisconnectChildrenRecursive(args.Tab);
+                    //  ((IDisposable)sender.TabItems).Dispose();
                     sender.TabItems.Remove(args.Tab);
-                    GC.Collect();
+                    await Task.Delay(500);
+                    GC.Collect(2);
+                    GC.WaitForPendingFinalizers();
                 }
             });
         }

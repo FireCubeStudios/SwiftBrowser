@@ -9,8 +9,8 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid x:Name="ContentGrid">
-        <Rectangle />
-        <CommandBar x:Name="BackgroundElement" HorizontalAlignment="Left" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
+        <Rectangle x:Name="bACKGROUND" Fill="{ThemeResource SystemControlAcrylicWindowBrush}" Width="1000" Margin="80, 0, 0, 0"/>
+        <CommandBar x:Name="BackgroundElement" Width="140" HorizontalAlignment="Left" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
             <AppBarButton Icon="Back" Click="BackBarButton_Click"></AppBarButton>
             <AppBarButton Icon="Refresh" Click="RefreshBarButton_Click"></AppBarButton>
         </CommandBar>
