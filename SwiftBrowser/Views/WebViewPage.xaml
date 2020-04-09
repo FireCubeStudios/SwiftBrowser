@@ -75,6 +75,12 @@
         </Style>
     </Page.Resources>
     <Grid x:Name="ContentGrid" x:Load="True">
+        <controls1:InAppNotification x:Name="DownloadNotification" Canvas.ZIndex="9999" VerticalAlignment="Bottom">
+            <StackPanel>
+                <TextBlock Margin="5">Downloading isnt supported yet. Launch default app for download?</TextBlock>
+                <Button Margin="5">Launch default app</Button>
+            </StackPanel>
+        </controls1:InAppNotification>
         <AppBarButton Canvas.ZIndex="600" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="70" CornerRadius="10" Foreground="Blue" Visibility="Collapsed" x:Name="CompactButton" Click="CompactButton_Click">
             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B9;" Foreground="Blue"/>
             <AppBarButton.Resources>
