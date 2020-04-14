@@ -9,6 +9,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-        <TextBlock>Downloads go here</TextBlock>
+        <TextBlock>Downloads arent supported yet</TextBlock>
     </Grid>
 </Page>

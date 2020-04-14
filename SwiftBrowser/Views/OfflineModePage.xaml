@@ -7,8 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
-    <Grid Background="Red">
-        <Image x:Name="OfflineImage" Stretch="Fill" Source="https://cdn.discordapp.com/attachments/687419864444305459/693446708104790026/unknown.png"></Image>
-    </Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
+        <Grid>
+            <Image x:Name="OfflineImage" Stretch="Fill"></Image>
+        </Grid>
+    </ScrollViewer>
 </Page>

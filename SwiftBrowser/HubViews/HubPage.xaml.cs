@@ -52,6 +52,10 @@ namespace SwiftBrowser.HubViews
                     HubNav.SelectedItem = Oav;
                     contentFrame.Navigate(typeof(OfflinePage));
                     break;
+                case "P":
+                    HubNav.SelectedItem = Pav;
+                    contentFrame.Navigate(typeof(PasswordMasterDetails));
+                    break;
             }
         }
 
@@ -68,6 +72,10 @@ namespace SwiftBrowser.HubViews
             else if (args.InvokedItemContainer.Content.ToString() == "Offline")
             {
                 contentFrame.Navigate(typeof(OfflinePage));
+            }
+            else if (args.InvokedItemContainer.Content.ToString() == "Passwords")
+            {
+                contentFrame.Navigate(typeof(PasswordMasterDetails));
             }
             else
             {

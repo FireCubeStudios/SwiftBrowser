@@ -9,7 +9,7 @@
     NavigationCacheMode="Required"
     mc:Ignorable="d"
     >
-    <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
+    <Grid  Height="1000"    Background="{ThemeResource SystemControlAcrylicElementBrush}">
         <ScrollViewer>
             <StackPanel Margin="0,0,0,0">
                 <controls:AdaptiveGridView HorizontalAlignment="Left" VerticalAlignment="Top" SelectionMode="None" OneRowModeEnabled="True"  ItemHeight="40" IsItemClickEnabled="True" x:Name="FavouritesGridView" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Visible">

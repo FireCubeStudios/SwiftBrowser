@@ -47,6 +47,9 @@ using Windows.ApplicationModel.UserActivities;
 using SwiftBrowser.Assets;
 using Windows.Networking.BackgroundTransfer;
 using System.Threading;
+using Windows.Web.Http.Filters;
+using Windows.UI.WindowManagement;
+using Windows.UI.Xaml.Hosting;
 
 namespace SwiftBrowser.Views
 {
@@ -123,25 +126,25 @@ namespace SwiftBrowser.Views
                 MainTab = null;
             }
             Window.Current.SizeChanged -= ViewElapsed;
-           firstItem = new MenuFlyoutItem { Text = "Open in new tab- beta" };
+            firstItem = new MenuFlyoutItem { Text = "Open in new tab- beta" };
             CurrentTab.Tag = webView;
             firstItem.Click += FirstItem_Click;
             ContextFlyout.Items.Add(firstItem);
-           WindowItem = new MenuFlyoutItem { Text = "Open in new window - beta" };
+            WindowItem = new MenuFlyoutItem { Text = "Open in new window - beta" };
             WindowItem.Click += WindowItem_Click;
             ContextFlyout.Items.Add(WindowItem);
             IncognitoItem = new MenuFlyoutItem { Text = "Open in new incognito - beta" };
             ContextFlyout.Items.Add(IncognitoItem);
             IncognitoItem.Click += IncognitoItem_Click;
-             AppItem = new MenuFlyoutItem { Text = "Open as app - beta" };
+            AppItem = new MenuFlyoutItem { Text = "Open as app - beta" };
             AppItem.Click += AppItem_Click;
             ContextFlyout.Items.Add(AppItem);
-             CopyItem = new MenuFlyoutItem { Text = "Copy link - beta" };
+            CopyItem = new MenuFlyoutItem { Text = "Copy link - beta" };
             CopyItem.Click += CopyItem_Click;
             ContextFlyout.Items.Add(CopyItem);
             CopyIMGItem = new MenuFlyoutItem { Text = "Copy image - beta" };
             CopyIMGItem.Click += CopyIMGItem_Click;
-             SaveIMGItem = new MenuFlyoutItem { Text = "Save image as .png - beta" };
+            SaveIMGItem = new MenuFlyoutItem { Text = "Save image as .png - beta" };
             SaveIMGItem.Click += SaveIMGItem_Click;
             ShareIMGItem = new MenuFlyoutItem { Text = "Share image - beta" };
             ShareIMGItem.Click += ShareIMGItem_Click;
@@ -154,11 +157,9 @@ namespace SwiftBrowser.Views
             Window.Current.SizeChanged += SearchWebBox_SizeChanged;
             DataTransferManager dataTransferManager = DataTransferManager.GetForCurrentView();
             dataTransferManager.DataRequested += DataTransferManager_DataRequested;
-            webView = new WebView(WebViewExecutionMode.SeparateProcess);
+            webView = new WebView(WebViewExecutionMode.SeparateThread);
             HomePage.WebViewControl = webView;
             webView.Name = "webView";
-           webView.Height = 950;
-            webView.MinHeight = 300;
             webView.LongRunningScriptDetected += webView_LongRunningScriptDetected;
             webView.NavigationCompleted += OnNavigationCompleted;
             webView.ContentLoading += WebView_ContentLoading;
@@ -167,6 +168,8 @@ namespace SwiftBrowser.Views
             Margin.Top = 60;
             webView.Margin = Margin;
             webView.NavigationStarting += webView_NavigationStarting;
+            webView.Height = Window.Current.Bounds.Height - 80;
+            webView.SizeChanged += WebView_SizeChanged;
             //    webView.ScriptNotify += webView_ScriptNotify;
             //   webView.Loaded += WebView_Loaded;
             webView.DOMContentLoaded += WebView_DOMContentLoaded;
@@ -294,7 +297,7 @@ namespace SwiftBrowser.Views
                   }
               }*/
             StorageFile HighlightFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///WebFiles/highlight.js"));
-            HighlightFunctionJS = await FileIO.ReadTextAsync(HighlightFile);  
+            HighlightFunctionJS = await FileIO.ReadTextAsync(HighlightFile);
             WebviewControl = webView;
             HomeFrameFrame = HomeFrame;
             RightTimer = new System.Timers.Timer();
@@ -302,8 +305,8 @@ namespace SwiftBrowser.Views
             RightTimer.Interval = 50;
             RightTimer.Enabled = true;
             MemoryTimer = new System.Timers.Timer();
-            RightTimer.Elapsed += new ElapsedEventHandler(WebView_Memory);
-            RightTimer.Interval = 300000;
+            MemoryTimer.Elapsed += new ElapsedEventHandler(WebView_Memory);
+            RightTimer.Interval = 3000;
             RightTimer.Enabled = true;
             try
             {
@@ -314,15 +317,21 @@ namespace SwiftBrowser.Views
                 SearchWebBox.Width = 900;
             }
         }
+
+        private void WebView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            webView.Height = Window.Current.Bounds.Height - 80;
+        }
+
         private async void WebView_Memory(object source, ElapsedEventArgs e)
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                    GC.Collect(2);
+                GC.Collect(2);
             });
-           
+
         }
-            private void ShareIMGItem_Click(object sender, RoutedEventArgs e)
+        private void ShareIMGItem_Click(object sender, RoutedEventArgs e)
         {
             ShareIMG = true;
             DataTransferManager.ShowShareUI();
@@ -331,7 +340,7 @@ namespace SwiftBrowser.Views
         {
             string func = String.Format("document.documentElement.style.zoom = (1.0 - " + e.NewValue + " * 0.01); ");       //" function ZoomFunction(" + e.NewValue.ToString() + ") { var mybody = document.body;  if (Percentage < 100){  mybody.style.overflow = 'hidden'; NewWidth = (100 * OriginalWidth) / Percentage; NewHeight = (100 * OriginalHeight) / Percentage;  } else if (Percentage == 100) {mybody.style.overflow = 'hidden'; NewWidth = OriginalWidth; NewHeight = OriginalHeight;}  else{  mybody.style.overflow = 'auto'; NewWidth = OriginalWidth * (Percentage / 100);   NewHeight = OriginalHeight * (Percentage / 10);    } }";
             if (webView != null)
-            { 
+            {
                 await webView.InvokeScriptAsync("eval", new string[] { func });
             }
         }
@@ -352,7 +361,7 @@ namespace SwiftBrowser.Views
             webView.UnviewableContentIdentified -= webView_UnviewableContentIdentified;
             webView.NavigationFailed -= OnNavigationFailed;
             this.ContentGrid.Children.Remove(webView);
-           VisualTreeHelper.DisconnectChildrenRecursive(webView);
+            VisualTreeHelper.DisconnectChildrenRecursive(webView);
             webView = null;
             GC.Collect();
             try
@@ -386,32 +395,32 @@ namespace SwiftBrowser.Views
             UnloadObject(this.ContentGrid);
             this.Content = null;
             VisualTreeHelper.DisconnectChildrenRecursive(this);
-         
-         //   ((IDisposable)ContentGrid.Children).Dispose();
+
+            //   ((IDisposable)ContentGrid.Children).Dispose();
         }
         private async void SaveIMGItem_Click(object sender, RoutedEventArgs e)
         {
-           try
-           {
-            var savePicker = new FileSavePicker
+            try
+            {
+                var savePicker = new FileSavePicker
                 {
                     SuggestedStartLocation = PickerLocationId.PicturesLibrary
                 };
                 savePicker.FileTypeChoices.Add("png image", new List<string>() { ".png" });
-                savePicker.SuggestedFileName = "Saved image";        
+                savePicker.SuggestedFileName = "Saved image";
                 StorageFile sFile = await savePicker.PickSaveFileAsync();
                 if (sFile != null)
                 {
                     CachedFileManager.DeferUpdates(sFile);
 
 
-                System.Net.Http.HttpClient client = new System.Net.Http.HttpClient(); // Create HttpClient
-                byte[] bBuffer = await client.GetByteArrayAsync(new Uri(NewWindowLink)); // Download file
-                using (Stream sstream = await sFile.OpenStreamForWriteAsync())
-                    sstream.Write(bBuffer, 0, bBuffer.Length); // Save
+                    System.Net.Http.HttpClient client = new System.Net.Http.HttpClient(); // Create HttpClient
+                    byte[] bBuffer = await client.GetByteArrayAsync(new Uri(NewWindowLink)); // Download file
+                    using (Stream sstream = await sFile.OpenStreamForWriteAsync())
+                        sstream.Write(bBuffer, 0, bBuffer.Length); // Save
 
 
-                FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(sFile);
+                    FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(sFile);
                 }
             }
             catch
@@ -430,20 +439,20 @@ namespace SwiftBrowser.Views
         }
         private async void CopyIMGItem_Click(object sender, RoutedEventArgs e)
         {
-           try { 
-            DataPackage dataPackage = new DataPackage();
-            dataPackage.RequestedOperation = DataPackageOperation.Copy;
-            var CopyImage = RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink));
-            IRandomAccessStream stream = await CopyImage.OpenReadAsync();
-            dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink)));
+            try {
+                DataPackage dataPackage = new DataPackage();
+                dataPackage.RequestedOperation = DataPackageOperation.Copy;
+                var CopyImage = RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink));
+                IRandomAccessStream stream = await CopyImage.OpenReadAsync();
+                dataPackage.SetBitmap(RandomAccessStreamReference.CreateFromUri(new Uri(NewWindowLink)));
                 Clipboard.SetContent(dataPackage);
-            await stream.FlushAsync();
-              }
-               catch
-               {
-                   var m = new MessageDialog("could not copy this image. Images embedded in webpages cant be copied yet :(");
-                  await m.ShowAsync();
-               }
+                await stream.FlushAsync();
+            }
+            catch
+            {
+                var m = new MessageDialog("could not copy this image. Images embedded in webpages cant be copied yet :(");
+                await m.ShowAsync();
+            }
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 ContextFlyoutImage.Hide();
@@ -465,9 +474,9 @@ namespace SwiftBrowser.Views
             }
             catch
             {
-                    var ms = new MessageDialog("Unfortunately we werent able to copy the link");
-                    await ms.ShowAsync();
-                
+                var ms = new MessageDialog("Unfortunately we werent able to copy the link");
+                await ms.ShowAsync();
+
             }
             Clipboard.SetContent(dataPackage);
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -587,14 +596,14 @@ namespace SwiftBrowser.Views
 
         public async void WebView_RightTapped(object source, ElapsedEventArgs e)
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async() =>
-            { 
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
                 //your code here
                 var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
                 var x = pointerPosition.X - Window.Current.Bounds.X;
                 var y = pointerPosition.Y;
                 if (String.IsNullOrEmpty(ContextMenu.hrefLink) == false && ContextMenu.hrefLink.Contains("http") == true)
-             {
+                {
                     NewWindowLink = ContextMenu.hrefLink;
                     CurrentTab.Header = ContextMenu.hrefLink;
                     await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -607,10 +616,10 @@ namespace SwiftBrowser.Views
                     });
                     //   TabviewMain.ContextFlyout = ContextFlyout;
                     FlyoutShowOptions ee = new FlyoutShowOptions();
-                ee.Position = pointerPosition;
-                ContextFlyout.ShowAt(TabviewMain,ee);
-                ContextMenu.hrefLink = null;
-           }
+                    ee.Position = pointerPosition;
+                    ContextFlyout.ShowAt(TabviewMain, ee);
+                    ContextMenu.hrefLink = null;
+                }
                 if (String.IsNullOrEmpty(ContextMenu.SRC) == false && ContextMenu.SRC.Contains("http") == true)
                 {
                     NewWindowLink = ContextMenu.SRC;
@@ -648,7 +657,7 @@ namespace SwiftBrowser.Views
                 TabviewMain.Margin = Thicc;
             }
         }
-            private async void FirstItem_Click(object sender, RoutedEventArgs e)
+        private async void FirstItem_Click(object sender, RoutedEventArgs e)
         {
             localSettings.Values["SourceToGo"] = NewWindowLink;
             localSettings.Values["BackupSourceToGo"] = webView.Source + NewWindowLink;
@@ -665,13 +674,15 @@ namespace SwiftBrowser.Views
 
         private async void WebView_DOMContentLoaded(WebView sender, WebViewDOMContentLoadedEventArgs args)
         {
+            SearchWebBox.ItemsSource = null;
             if (disposing == false)
             {
                 NavigationTip.Text = "Navigation finished";
                 NavigationTipGrid.Visibility = Visibility.Collapsed;
                 try
-                {
-
+               {
+                    string ConsoleFunctionString = "window.onerror = function(error, url, line) {var r = 'ERR:' + error + ' url' + url + ' Line: ' + line; Window.ConsoleWinRT.setLogCombination(r); };";
+                    await webView.InvokeScriptAsync("eval", new string[] { ConsoleFunctionString });
                     string functionString = @"var anchors = document.querySelectorAll('a');      
      for (var i = 0; i < anchors.length; i += 1) {
            anchors[i].oncontextmenu = function (e) {
@@ -703,6 +714,7 @@ window.Context.setSRCCombination(src);
                     NavigationTip.Text = "Navigation finished";
                     NavigationTipGrid.Visibility = Visibility.Collapsed;
                 }
+                SearchWebBox.ItemsSource = null;
             }
         }
         private async Task GenerateActivityAsync()
@@ -736,82 +748,115 @@ window.Context.setSRCCombination(src);
         }
         public async void DOMloaded()
         {
-         
-            CurrentTab.Tag = webView;
-            string x;
             try
             {
-               x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
-                CurrentTab.Header = x;
+                CurrentTab.Tag = webView;
+                string x;
+                try
+                {
+                    x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
+                    CurrentTab.Header = x;
+                }
+                catch
+                {
+                    CurrentTab.Header = webView.Source;
+                    x = webView.Source.ToString();
+                }
+                if (IncognitoMode == false)
+                {
+                    DataAccess.AddData(webView.Source.ToString(), x);
+                }
+                Uri ArgsUri = new Uri(webView.Source.ToString());
+                string host = ArgsUri.Host;
+                CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.BitmapIconSource() { UriSource = new Uri("http://icons.duckduckgo.com/ip2/" + host + ".ico"), ShowAsMonochrome = false };
+                RefreshButtonIcon.Glyph = "\uE72C";
+                OnPropertyChanged(nameof(IsBackEnabled));
+                OnPropertyChanged(nameof(IsForwardEnabled));
+                if (webView.Source.ToString().Contains("https://www.ecosia.org/search?q="))
+                {
+                    string stre = webView.Source.ToString().Replace("https://www.ecosia.org/search?q=", string.Empty);
+                    SearchWebBox.Text = stre;
+                }
+                else
+                {
+                    SearchWebBox.Text = webView.Source.ToString();
+                }
             }
             catch
             {
-                CurrentTab.Header = webView.Source;
-                x = webView.Source.ToString();
-            }
-            if (IncognitoMode == false)
-            {
-                DataAccess.AddData(webView.Source.ToString(), x);
-            }
-            Uri ArgsUri = new Uri(webView.Source.ToString());
-            string host = ArgsUri.Host;
-            CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.BitmapIconSource() { UriSource = new Uri("http://icons.duckduckgo.com/ip2/" + host + ".ico"), ShowAsMonochrome = false };
-            RefreshButtonIcon.Glyph = "\uE72C";
-            OnPropertyChanged(nameof(IsBackEnabled));
-            OnPropertyChanged(nameof(IsForwardEnabled));
-            if (webView.Source.ToString().Contains("https://www.ecosia.org/search?q="))
-            {
-                string stre = webView.Source.ToString().Replace("https://www.ecosia.org/search?q=", string.Empty);
-                SearchWebBox.Text = stre;
-            }
-            else
-            {
-                SearchWebBox.Text = webView.Source.ToString();
+
             }
         }
-      public static bool IsMobileSiteEnabled = false;
-       /* public Uri Source
-        {
-            get { return _source; }
-            set { Set(ref _source, value); }
-        }
+        public static bool IsMobileSiteEnabled = false;
+        /* public Uri Source
+         {
+             get { return _source; }
+             set { Set(ref _source, value); }
+         }
 
-        private bool _isShowingFailedMessage;
+         private bool _isShowingFailedMessage;
 
-        public bool IsShowingFailedMessage
-        {
-            get
-            {
-                return _isShowingFailedMessage;
-            }
+         public bool IsShowingFailedMessage
+         {
+             get
+             {
+                 return _isShowingFailedMessage;
+             }
 
-            set
-            {
-                if (value)
-                {
-                    // IsLoading = false;
-                }
+             set
+             {
+                 if (value)
+                 {
+                     // IsLoading = false;
+                 }
 
-                Set(ref _isShowingFailedMessage, value);
-                FailedMesageVisibility = value ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+                 Set(ref _isShowingFailedMessage, value);
+                 FailedMesageVisibility = value ? Visibility.Visible : Visibility.Collapsed;
+             }
+         }
 
-        private Visibility _failedMesageVisibility;
-   
-        public Visibility FailedMesageVisibility
-        {
-            get { return _failedMesageVisibility; }
-            set { Set(ref _failedMesageVisibility, value); }
-        }*/
+         private Visibility _failedMesageVisibility;
+
+         public Visibility FailedMesageVisibility
+         {
+             get { return _failedMesageVisibility; }
+             set { Set(ref _failedMesageVisibility, value); }
+         }*/
         ////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////
         /////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////zsa
         private void OnNavigationCompleted(WebView sender, WebViewNavigationCompletedEventArgs args)
         {
+            SearchWebBox.ItemsSource = null;
             if (disposing == false)
             {
+                if(IncognitoMode == true)
+                {
+                    Uri gotouri = args.Uri;
+                    HttpBaseProtocolFilter myFilter = new HttpBaseProtocolFilter();
+                    HttpCookieManager cookieManager = myFilter.CookieManager;
+                    myFilter.ClearAuthenticationCache();
+                    myFilter.CacheControl.WriteBehavior = HttpCacheWriteBehavior.NoCache;
+                    myFilter.CacheControl.WriteBehavior = Windows.Web.Http.Filters.HttpCacheWriteBehavior.NoCache;
+                    myFilter.CacheControl.ReadBehavior = Windows.Web.Http.Filters.HttpCacheReadBehavior.Default;
+                    HttpCookieCollection myCookieJar = cookieManager.GetCookies(gotouri);
+                    foreach (HttpCookie cookie in myCookieJar)
+                    {
+                        cookieManager.DeleteCookie(cookie);
+                    }
+                    myFilter.Dispose();
+                }
+                else
+                {
+                    Uri gotouri = args.Uri;
+                    HttpBaseProtocolFilter myFilter = new HttpBaseProtocolFilter();
+                    HttpCookieManager cookieManager = myFilter.CookieManager;
+                    myFilter.ClearAuthenticationCache();
+                    myFilter.CacheControl.WriteBehavior = HttpCacheWriteBehavior.NoCache;
+                    myFilter.CacheControl.WriteBehavior = Windows.Web.Http.Filters.HttpCacheWriteBehavior.Default;
+                    myFilter.CacheControl.ReadBehavior = Windows.Web.Http.Filters.HttpCacheReadBehavior.Default;
+                }
                 if (args.IsSuccess == false)
                 {
                     if (webView.Source.ToString().Contains("https://www.ecosia.org/search?q=") == false)
@@ -838,11 +883,14 @@ window.Context.setSRCCombination(src);
                         ContextFlyout.ShowAt(webView, e);
                         ContextMenu.hrefLink = null;
                     }*/
+                SearchWebBox.ItemsSource = null;
             }
+            SearchWebBox.ItemsSource = null;
         }
 
         private void OnNavigationFailed(object sender, WebViewNavigationFailedEventArgs e)
         {
+            SearchWebBox.ItemsSource = null;
             if (disposing == false)
             {
                 NavigationTip.Text = "Navigation failed";
@@ -869,7 +917,7 @@ window.Context.setSRCCombination(src);
 
         private void OnRetry(object sender, RoutedEventArgs e)
         {
-        //   IsShowingFailedMessage = false;
+            //   IsShowingFailedMessage = false;
 
             webView.Refresh();
         }
@@ -952,6 +1000,8 @@ window.Context.setSRCCombination(src);
             {
                 ContextMenu winRTObject = new ContextMenu();
                 webView.AddWebAllowedObject("Context", winRTObject);
+                ConsoleLog winRTConsole = new ConsoleLog();
+                webView.AddWebAllowedObject("ConsoleWinRT", winRTConsole);
                 string result = Regex.Match(args.QueryText, @"(.{4})\s*$").ToString();
                 if (args.QueryText.Contains(" ") == false)
                 {
@@ -1029,12 +1079,33 @@ window.Context.setSRCCombination(src);
             }
 
         }
-
+        public async void CreateWebViewBitmap()
+        {
+            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            await rtb.RenderAsync(webView);
+            Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            var pixelBuffer = await rtb.GetPixelsAsync();
+            var pixels = pixelBuffer.ToArray();
+            var displayInformation = DisplayInformation.GetForCurrentView();
+            StorageFile file = await localFolder.CreateFileAsync("xyzyx" + ".jpg");
+            using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
+            {
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
+                encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                                     BitmapAlphaMode.Premultiplied,
+                                     (uint)rtb.PixelWidth,
+                                     (uint)rtb.PixelHeight,
+                                      displayInformation.RawDpiX,
+                         displayInformation.RawDpiY,
+                                     pixels);
+                await encoder.FlushAsync();
+            }
+        }
         private async void webView_UnsupportedUriSchemeIdentified(WebView sender, WebViewUnsupportedUriSchemeIdentifiedEventArgs args)
         {
 
-                await Windows.System.Launcher.LaunchUriAsync(args.Uri);
-            
+            await Windows.System.Launcher.LaunchUriAsync(args.Uri);
+
         }
 
         private void webView_UnsafeContentWarningDisplaying(WebView sender, object args)
@@ -1045,10 +1116,17 @@ window.Context.setSRCCombination(src);
         {
             if (disposing == false)
             {
-                CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Refresh };
-                CurrentTab.Header = "Loading...";
-                NavigationTipGrid.Visibility = Visibility.Visible;
-                NavigationTip.Text = "Loading content for " + args.Uri.ToString();
+                try
+                {
+                    CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Refresh };
+                    CurrentTab.Header = "Loading...";
+                    NavigationTipGrid.Visibility = Visibility.Visible;
+                    NavigationTip.Text = "Loading content for " + args.Uri.ToString();
+                }
+                catch
+                {
+
+                }
             }
         }
 
@@ -1067,59 +1145,68 @@ window.Context.setSRCCombination(src);
             }
             //never realized i spell wrong
         }
-    
+        Uri downloadSource;
         private async void webView_UnviewableContentIdentified(WebView sender, WebViewUnviewableContentIdentifiedEventArgs args)
         {
-            // WebViewEvents.webView_UnviewableContentIdentified(sender, args);
-               Uri source = new Uri(args.Uri.ToString().Trim());
-            string path2 = String.Format("{0}{1}{2}{3}", source.Scheme, Uri.SchemeDelimiter, source.Authority, source.AbsolutePath);
-            if (Path.HasExtension(path2) == true)
+            try
             {
-                var m = new MessageDialog(source.AbsoluteUri);
-                await m.ShowAsync();
-             //   WebClient webClient = new WebClient();
-                //  webClient.Headers.Add("Accept: text/html, application/xhtml+xml, */*");
-               /* webClient.Headers.Add("User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
-                webClient.DownloadFileAsync(new Uri(source.AbsoluteUri), System.IO.Path.GetFileName(source.LocalPath));
-                while (webClient.IsBusy) { }*/
-                FolderPicker picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.Downloads };
-                picker.FileTypeFilter.Add("*");
-                StorageFolder folder = await picker.PickSingleFolderAsync();
-                //  StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(args.Uri);
-                if (folder != null)
-                {
-                    StorageFile testfile = await folder.CreateFileAsync("System.IO.Path.GetFileName(source.LocalPath)", CreationCollisionOption.OpenIfExists);
-                    /*  WebClient downloader = new WebClient();
-                      downloader.DownloadFileCompleted += new AsyncCompletedEventHandler(Downloader_DownloadFileCompleted);
-                      downloader.DownloadProgressChanged +=
-                          new DownloadProgressChangedEventHandler(Downloader_DownloadProgressChanged);
-                      downloader.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0)");
-                    downloader.DownloadFile(new Uri(source.AbsoluteUri), @"C:\Downloads\" + System.IO.Path.GetFileName(args.Uri.LocalPath));
-                      while (downloader.IsBusy) { }*/
+                downloadSource = args.Uri;
+                DownloadNotification.Show();
+            }
+            catch
+            {
 
-                    BackgroundDownloader downloader = new BackgroundDownloader();
-                     DownloadOperation download = downloader.CreateDownload(new Uri(path2), testfile);
-                    var md = new MessageDialog(download.ResultFile.FileType + download.ResultFile.Name + download.ResultFile.ContentType);
-                    await md.ShowAsync();
-                    await download.StartAsync();
-                    while (download.Progress.Status != BackgroundTransferStatus.Completed)
-                    {
-                        string pro = String.Format("{0} of {1} kb. downloaded - %{2} complete.", download.Progress.BytesReceived / 1024, download.Progress.TotalBytesToReceive / 1024, download.Progress.Status.ToString());
-                        var me = new MessageDialog(pro);
-                        await me.ShowAsync();
-                    }
+            }
+            // WebViewEvents.webView_UnviewableContentIdentified(sender, args);
+            /*      Uri source = new Uri(args.Uri.ToString().Trim());
+               string path2 = String.Format("{0}{1}{2}{3}", source.Scheme, Uri.SchemeDelimiter, source.Authority, source.AbsolutePath);
+               if (Path.HasExtension(path2) == true)
+               {
+                   var m = new MessageDialog(source.AbsoluteUri);
+                   await m.ShowAsync();
+                //   WebClient webClient = new WebClient();*/
+            //  webClient.Headers.Add("Accept: text/html, application/xhtml+xml, */*");
+            /* webClient.Headers.Add("User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)");
+             webClient.DownloadFileAsync(new Uri(source.AbsoluteUri), System.IO.Path.GetFileName(source.LocalPath));
+             while (webClient.IsBusy) { }*/
+            /* FolderPicker picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.Downloads };
+             picker.FileTypeFilter.Add("*");
+             StorageFolder folder = await picker.PickSingleFolderAsync();
+             //  StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(args.Uri);
+             if (folder != null)
+             {
+                 StorageFile testfile = await folder.CreateFileAsync("System.IO.Path.GetFileName(source.LocalPath)", CreationCollisionOption.OpenIfExists);
+                 /*  WebClient downloader = new WebClient();
+                   downloader.DownloadFileCompleted += new AsyncCompletedEventHandler(Downloader_DownloadFileCompleted);
+                   downloader.DownloadProgressChanged +=
+                       new DownloadProgressChangedEventHandler(Downloader_DownloadProgressChanged);
+                   downloader.Headers.Add("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0)");
+                 downloader.DownloadFile(new Uri(source.AbsoluteUri), @"C:\Downloads\" + System.IO.Path.GetFileName(args.Uri.LocalPath));
+                   while (downloader.IsBusy) { }*/
+
+            /*    BackgroundDownloader downloader = new BackgroundDownloader();
+                 DownloadOperation download = downloader.CreateDownload(new Uri(path2), testfile);
+                var md = new MessageDialog(download.ResultFile.FileType + download.ResultFile.Name + download.ResultFile.ContentType);
+                await md.ShowAsync();
+                await download.StartAsync();
+                while (download.Progress.Status != BackgroundTransferStatus.Completed)
+                {
+                    string pro = String.Format("{0} of {1} kb. downloaded - %{2} complete.", download.Progress.BytesReceived / 1024, download.Progress.TotalBytesToReceive / 1024, download.Progress.Status.ToString());
+                    var me = new MessageDialog(pro);
+                    await me.ShowAsync();
                 }
             }
-            else
-            {
-                await Windows.System.Launcher.LaunchUriAsync(args.Uri);
-            }
+        }
+        else
+        {
+            await Windows.System.Launcher.LaunchUriAsync(args.Uri);
+        }*/
         }
 
         private async void Downloader_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             // print progress of download.
-           var m = new MessageDialog(e.BytesReceived + " " + e.ProgressPercentage);
+            var m = new MessageDialog(e.BytesReceived + " " + e.ProgressPercentage);
             await m.ShowAsync();
         }
 
@@ -1131,7 +1218,7 @@ window.Context.setSRCCombination(src);
             else
                 Console.WriteLine("Download Completed!!!");
         }
-   
+
 
         private void InfoTip_CloseButtonClick(Microsoft.UI.Xaml.Controls.TeachingTip sender, object args)
         {
@@ -1182,6 +1269,7 @@ window.Context.setSRCCombination(src);
         {
             if (disposing == false)
             {
+
                 UnloadObject(HomeFrame);
                 ContextMenu winRTObject = new ContextMenu();
                 webView.AddWebAllowedObject("Context", winRTObject);
@@ -1195,7 +1283,7 @@ window.Context.setSRCCombination(src);
                 MenuButton.Visibility = Visibility.Visible;
                 NavigationTipGrid.Visibility = Visibility.Visible;
                 NavigationTip.Text = "Navigation Starting...";
-
+                SearchWebBox.ItemsSource = null;
 
 
                 var connectionProfile = NetworkInformation.GetInternetConnectionProfile();
@@ -1446,8 +1534,8 @@ window.Context.setSRCCombination(src);
                 Frame frame = new Frame();
                 frame.Navigate(typeof(IncognitoTabView), null);
                 Window.Current.Content = frame;
-                  // You have to activate the window in order to show it later.
-                  Window.Current.Activate();
+                // You have to activate the window in order to show it later.
+                Window.Current.Activate();
 
                 newViewId = ApplicationView.GetForCurrentView().Id;
             });
@@ -1517,7 +1605,7 @@ window.Context.setSRCCombination(src);
                 }
                 else
                 {
-                   var m = new MessageDialog("File " + file.Name + " couldn't be saved.");
+                    var m = new MessageDialog("File " + file.Name + " couldn't be saved.");
                     await m.ShowAsync();
                 }
             }
@@ -1535,15 +1623,15 @@ window.Context.setSRCCombination(src);
 
         private async void DataTransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
-            if(ShareIMG == false)
-            { 
-            DataRequest request = args.Request;
-            string x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
-            request.Data.Properties.Title = x;
-            Uri ArgsUri = new Uri(webView.Source.ToString());
-            string host = ArgsUri.Host;
-            request.Data.Properties.Description = host;
-            request.Data.SetText(webView.Source.ToString());
+            if (ShareIMG == false)
+            {
+                DataRequest request = args.Request;
+                string x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
+                request.Data.Properties.Title = x;
+                Uri ArgsUri = new Uri(webView.Source.ToString());
+                string host = ArgsUri.Host;
+                request.Data.Properties.Description = host;
+                request.Data.SetText(webView.Source.ToString());
             }
             else
             {
@@ -1671,21 +1759,21 @@ window.Context.setSRCCombination(src);
 
         private async void PrintFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
-             var printHelper = new PrintHelper(PrintPanel);
-             // Add controls that you want to print
-         
-             string x = "e";
-             try
-             {
-                 x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
-             }
-             catch
-             {
-                 x = webView.Source.ToString();
-             }
+            var printHelper = new PrintHelper(PrintPanel);
+            // Add controls that you want to print
+
+            string x = "e";
+            try
+            {
+                x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
+            }
+            catch
+            {
+                x = webView.Source.ToString();
+            }
             Grid RectangleToPrint = new Grid();
-          //  ItemsControl ee = new ItemsControl();
-          //  var print = await GetWebPages(webView, new Windows.Foundation.Size(1200d, 1200d));
+            //  ItemsControl ee = new ItemsControl();
+            //  var print = await GetWebPages(webView, new Windows.Foundation.Size(1200d, 1200d));
             //  RectangleToPrint.Children.Add(ee);
             //  ContentGrid.Children.Remove(webView);
             var pageNumber = 0;
@@ -1778,7 +1866,7 @@ window.Context.setSRCCombination(src);
             await printHelper.ShowPrintUIAsync(x);
 
         }
-    
+
         async Task<IEnumerable<FrameworkElement>> GetWebPages(WebView webView, Windows.Foundation.Size pageSize)
         {
             // GETTING WIDTH FROM WEVIEW CONTENT
@@ -1842,7 +1930,7 @@ window.Context.setSRCCombination(src);
             int contentWidth;
             if (!int.TryParse(widthFromView, out contentWidth))
                 throw new Exception(string.Format("failure/width:{0}", widthFromView));
-          //  webView.Width = contentWidth;
+            //  webView.Width = contentWidth;
 
             // ASSINGING ORIGINAL CONTENT HEIGHT
             var originalHeight = webView.Height;
@@ -1852,7 +1940,7 @@ window.Context.setSRCCombination(src);
             int contentHeight;
             if (!int.TryParse(heightFromView, out contentHeight))
                 throw new Exception(string.Format("failure/height:{0}", heightFromView));
-           // webView.Height = contentWidth;
+            // webView.Height = contentWidth;
 
             // CREATING BRUSH
             var originalVisibilty = webView.Visibility;
@@ -1864,15 +1952,15 @@ window.Context.setSRCCombination(src);
                 Stretch = Stretch.Uniform
             };
             wvBrush.Redraw();
-           // await Task.Delay(1000);
-          //  webView.Width = originalWidth;
-          //  webView.Height = originalHeight;
+            // await Task.Delay(1000);
+            //  webView.Width = originalWidth;
+            //  webView.Height = originalHeight;
             webView.Visibility = originalVisibilty;
 
             return wvBrush;
         }
-        private  void InkingButton_Click(object sender, RoutedEventArgs e)
-        { 
+        private void InkingButton_Click(object sender, RoutedEventArgs e)
+        {
             BackButton.IsEnabled = false;
             ForwardButton.IsEnabled = false;
             RefreshButton.IsEnabled = false;
@@ -1884,7 +1972,7 @@ window.Context.setSRCCombination(src);
             GC.Collect();
             HomePage.WebViewControl = webView;
             inkingPage.WebView = webView;
-               InkingFrame.Navigate(typeof(inkingPage));
+            InkingFrame.Navigate(typeof(inkingPage));
             CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Home };
             CurrentTab.Header = "Inking Tab";
             try
@@ -1898,7 +1986,12 @@ window.Context.setSRCCombination(src);
         }
         public void Churros()
         {
-            BackButton.IsEnabled = false;
+            try
+            {
+                BackButton.IsEnabled = false;
+            }
+            catch
+            { }
             ForwardButton.IsEnabled = false;
             RefreshButton.IsEnabled = false;
             ExtensionsButton.IsEnabled = false;
@@ -1938,7 +2031,7 @@ window.Context.setSRCCombination(src);
         {
             String about = "About: " + "AppDisplayName".GetLocalized() + "\n" + Package.Current.Id + "\n" + Package.Current.Id.Version + "\n" + Package.Current.Id.Publisher;
             var m = new MessageDialog(about);
-           await m.ShowAsync();
+            await m.ShowAsync();
         }
         public async void Help(object sender, RoutedEventArgs e)
         {
@@ -1950,7 +2043,7 @@ window.Context.setSRCCombination(src);
             string x = "";
             try
             {
-               x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
+                x = await webView.InvokeScriptAsync("eval", new string[] { "document.title;" });
                 CurrentTab.Header = x;
             }
             catch
@@ -1967,12 +2060,12 @@ window.Context.setSRCCombination(src);
             Uri ArgsUri = new Uri(webView.Source.ToString());
             string host = ArgsUri.Host;
             // Initialize the tile with required arguments
-              SecondaryTile tile = new SecondaryTile(
-                 TileId,
-                  displayName,
-                  arguments,
-            square150x150Logo: new Uri("ms-appx:///Assets/Square150x150Logo.png"),
-                  TileSize.Default);
+            SecondaryTile tile = new SecondaryTile(
+               TileId,
+                displayName,
+                arguments,
+          square150x150Logo: new Uri("ms-appx:///Assets/Square150x150Logo.png"),
+                TileSize.Default);
             tile.VisualElements.ShowNameOnSquare150x150Logo = true;
             await tile.RequestCreateAsync();
         }
@@ -1994,7 +2087,7 @@ window.Context.setSRCCombination(src);
         private async void HighlightTerm_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
             if (!Cleared) ClearSearch();
-await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " HighlightFunction('" + args.QueryText + "');" });
+            await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " HighlightFunction('" + args.QueryText + "');" });
             Cleared = false;
         }
         public async void ClearSearch()
@@ -2012,16 +2105,45 @@ await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " H
         {
             webView.Navigate(new Uri("https://translate.google.com/translate?hl=en&sl=auto&tl=en&u=" + webView.Source));
         }
-        public async void CreateRTBOffline()
+        public async void CreateRTBOffline(string Name)
         {
-            Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            BackButton.IsEnabled = false;
+            ForwardButton.IsEnabled = false;
+            RefreshButton.IsEnabled = false;
+            ExtensionsButton.IsEnabled = false;
+            MenuButton.IsEnabled = false;
+            MenuFrameButton.Visibility = Visibility.Visible;
+            MenuButton.Visibility = Visibility.Collapsed;
+            InkingFrameGrid.Visibility = Visibility.Visible;
+            GC.Collect();
+            InMemoryRandomAccessStream Snips = new InMemoryRandomAccessStream();
+            await webView.CapturePreviewToStreamAsync(Snips);
+            OfflineCreatePage.webView = webView;
+            OfflineCreatePage.Name = Name;
+            InkingFrame.Navigate(typeof(OfflineCreatePage));
+            CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.ZeroBars };
+            CurrentTab.Header = "Offline Tab";
+            try
+            {
+                UnloadObject(webView);
+            }
+            catch
+            {
+                UnloadObject(InfoFrameGrid);
+            }
+        }
+        private async void PageIMGFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            try { 
+                RenderTargetBitmap rtb = new RenderTargetBitmap();
             await rtb.RenderAsync(webView);
 
             var pixelBuffer = await rtb.GetPixelsAsync();
             var pixels = pixelBuffer.ToArray();
             var displayInformation = DisplayInformation.GetForCurrentView();
-            StorageFile file = await localFolder.CreateFileAsync("xxx" + ".jpg");
+            var picker = new FileSavePicker();
+            picker.FileTypeChoices.Add("JPEG Image", new string[] { ".jpg" });
+            StorageFile file = await picker.PickSaveFileAsync();
             using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
             {
                 var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
@@ -2037,34 +2159,11 @@ await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " H
             var m = new MessageDialog("Screen captured and Saved");
             await m.ShowAsync();
         }
-        private async void PageIMGFlyoutItem_Click(object sender, RoutedEventArgs e)
+        catch
         {
- 
-                RenderTargetBitmap rtb = new RenderTargetBitmap();
-                await rtb.RenderAsync(webView);
 
-                var pixelBuffer = await rtb.GetPixelsAsync();
-                var pixels = pixelBuffer.ToArray();
-                var displayInformation = DisplayInformation.GetForCurrentView();
-                var picker = new FileSavePicker();
-                picker.FileTypeChoices.Add("JPEG Image", new string[] { ".jpg" });
-                StorageFile file = await picker.PickSaveFileAsync();
-                using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
-                {
-                    var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, stream);
-                    encoder.SetPixelData(BitmapPixelFormat.Bgra8,
-                                         BitmapAlphaMode.Premultiplied,
-                                         (uint)rtb.PixelWidth,
-                                         (uint)rtb.PixelHeight,
-                                          displayInformation.RawDpiX,
-                             displayInformation.RawDpiY,
-                                         pixels);
-                    await encoder.FlushAsync();
-                }
-                var m = new MessageDialog("Screen captured and Saved");
-                await m.ShowAsync();
         }
-
+}
         private async void MuteFlyoutItem_Click(object sender, RoutedEventArgs e)
         {
             string mutefunctionString = @" var videos = document.querySelectorAll('video');
@@ -2273,6 +2372,26 @@ await webView.InvokeScriptAsync("eval", new string[] { HighlightFunctionJS + " H
                     UnloadObject(InfoFrameGrid);
                 }
             }
+        }
+
+        private async void LaunchButton_Click(object sender, RoutedEventArgs e)
+        {
+            await Windows.System.Launcher.LaunchUriAsync(downloadSource);
+        }
+
+        private async void DevButton_Click(object sender, RoutedEventArgs e)
+        {
+            AppWindow appWindow = await AppWindow.TryCreateAsync();
+            Frame appWindowContentFrame = new Frame();
+            Devtools.DevView = webView;
+            appWindowContentFrame.Navigate(typeof(Devtools));
+            ElementCompositionPreview.SetAppWindowContent(appWindow, appWindowContentFrame);
+            await appWindow.TryShowAsync();
+            appWindow.Closed += delegate
+            {
+                appWindowContentFrame.Content = null;
+                appWindow = null;
+            };
         }
     }
         ////////////////////////////////////////////////////////////////

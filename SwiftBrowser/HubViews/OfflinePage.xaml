@@ -10,24 +10,7 @@
     <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
         <StackPanel Width="400">
             <CommandBar  Background="{ThemeResource SystemControlAcrylicWindowBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="False" OverflowButtonVisibility="Collapsed">
-                <AppBarButton Icon="Add" Label="Add to offline pages" Click="AddOffline"></AppBarButton>
-                <AppBarButton Icon="Add" Label="Add a site">
-                    <AppBarButton.Flyout>
-                        <Flyout>
-                            <StackPanel Orientation="Vertical" Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="200">
-                                <TextBox Margin="5" x:Name="NameBox" Header="Name: " PlaceholderText="Dont leave blank">
-
-                                </TextBox>
-                                <TextBox Margin="5" x:Name="UrlBox" Header="Url:" PlaceholderText="Enter valid URL">
-
-                                </TextBox>
-                                <Button Margin="5" Click="AddSiteOffline" Content="Add" >
-
-                                </Button>
-                            </StackPanel>
-                        </Flyout>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
+                <AppBarButton x:Name="Ortb" Icon="Add" Label="Save current site offline" Click="AddOffline"></AppBarButton>
             </CommandBar>
             <ListView
                    Background="{ThemeResource SystemControlAcrylicWindowBrush}"

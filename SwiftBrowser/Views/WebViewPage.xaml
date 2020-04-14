@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+    xmlns:controls1="using:Microsoft.Toolkit.Uwp.UI.Controls"
     Style="{StaticResource PageStyle}"
     NavigationCacheMode="Required"
     mc:Ignorable="d">
@@ -74,11 +75,12 @@
             </Setter>
         </Style>
     </Page.Resources>
+
     <Grid x:Name="ContentGrid" x:Load="True">
         <controls1:InAppNotification x:Name="DownloadNotification" Canvas.ZIndex="9999" VerticalAlignment="Bottom">
             <StackPanel>
                 <TextBlock Margin="5">Downloading isnt supported yet. Launch default app for download?</TextBlock>
-                <Button Margin="5">Launch default app</Button>
+                <Button Margin="5" Click="LaunchButton_Click">Launch default app</Button>
             </StackPanel>
         </controls1:InAppNotification>
         <AppBarButton Canvas.ZIndex="600" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="70" CornerRadius="10" Foreground="Blue" Visibility="Collapsed" x:Name="CompactButton" Click="CompactButton_Click">
@@ -101,7 +103,7 @@
         <Grid x:Name="HomeFrame" x:Load="True" Canvas.ZIndex="1" Margin="0, 60, 0, 0">
             <!--<AutoSuggestBox Canvas.ZIndex="2" VerticalAlignment="Top" Margin="50" Foreground="{ThemeResource SystemControlAcrylicElementBrush}" QueryIcon="Find" HorizontalAlignment="Center" MinWidth="300" Width="600" Height="50" PlaceholderText="Quick search" x:Name="SearchBox" QuerySubmitted="QuickSearchBox_QuerySubmitted"></AutoSuggestBox>-->
             <Frame x:Name="HomeFrameFrameFrame" >
-<!---_the werid name because the searchboxes weree in homepage and this frame was called homeframe but now grid is called hmeframe to smooth the change so i cALLED IT homeframeframeframe from homeframe because homeframeframe exists-->
+                <!---_the werid name because the searchboxes weree in homepage and this frame was called homeframe but now grid is called hmeframe to smooth the change so i cALLED IT homeframeframeframe from homeframe because homeframeframe exists-->
             </Frame>
         </Grid>
         <Grid x:Name="InfoFrameGrid" x:Load="False" Margin="0, 60, 0, 0" Canvas.ZIndex="1">
@@ -118,15 +120,15 @@
         </Grid>
         <Grid x:Name="NavigationTipGrid" VerticalAlignment="Bottom" Background="{ThemeResource SystemControlAccentDark1AcrylicElementAccentDark1Brush}" CornerRadius="10" Padding="5" HorizontalAlignment="Left" Canvas.ZIndex="6000" Visibility="Collapsed" Margin="30">
             <TextBlock x:Name="NavigationTip"></TextBlock>
-                </Grid>
-                <StackPanel x:Name="IsloadingPanel"
+        </Grid>
+        <StackPanel x:Name="IsloadingPanel"
                     Visibility="Visible"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
             <ProgressRing x:Name="Loading" IsActive="False"/>
             <TextBlock x:Uid="WebView_Loading" />
         </StackPanel>
-       <!-- <StackPanel Visibility="{x:Bind FailedMesageVisibility, Mode=OneWay}"
+        <!-- <StackPanel Visibility="{x:Bind FailedMesageVisibility, Mode=OneWay}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center">
             <TextBlock HorizontalAlignment="Center" x:Uid="WebView_FailedMessage" Foreground="Black" TextWrapping="WrapWholeWords" />
@@ -229,22 +231,22 @@
                     <Button.Flyout>
                         <Flyout>
                             <Flyout.FlyoutPresenterStyle>
-                                    <Style TargetType="FlyoutPresenter">
-                                        <Setter Property="ScrollViewer.ZoomMode" Value="Enabled"/>
-                                        <Setter Property="Background" Value="Transparent"/>
+                                <Style TargetType="FlyoutPresenter">
+                                    <Setter Property="ScrollViewer.ZoomMode" Value="Enabled"/>
+                                    <Setter Property="Background" Value="Transparent"/>
                                     <Setter Property="CornerRadius" Value="10"/>
                                     <Setter Property="Height" Value="900"/>
                                     <Setter Property="MaxHeight" Value="Infinity" />
                                     <Setter Property="BorderThickness" Value="0"/>
                                     <Setter Property="IsDefaultShadowEnabled" Value="False" />
                                 </Style>
-                                </Flyout.FlyoutPresenterStyle>
+                            </Flyout.FlyoutPresenterStyle>
                             <Grid Background="Transparent" Width="400" Height="900">
                                 <StackPanel>
                                     <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 5, 0, 5">
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                              <!--  <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" CornerRadius="10" Icon="globe" Margin="5" Label="Open in browser" Width="100"></AppBarButton>-->
+                                                <!--  <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" CornerRadius="10" Icon="globe" Margin="5" Label="Open in browser" Width="100"></AppBarButton>-->
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="add" Margin="5" Label="New tab" Width="100" Click="NewTabItem_Click"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="NewWindow" Margin="5" Label="New window" Click="NewWindow_Click" Width="100"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Label="New incognito" Click="Incognito_Click" Width="100">
@@ -254,7 +256,7 @@
                                         </StackPanel>
                                     </Grid>
                                     <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 0, 0, 5">
-                                    <StackPanel>
+                                        <StackPanel>
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Favorite" Click="HubButton_Click" Margin="5" Label="Favorites"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Clock" Click="HisButton_Click" Margin="5" Label="History"></AppBarButton>
@@ -263,91 +265,91 @@
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="SwitchApps" Margin="5" Label="Extensions"></AppBarButton>
                                             </StackPanel>
                                         </StackPanel>
-                                </Grid>
-                                <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 0, 0, 5">
-                                    <Slider Margin="10" HorizontalAlignment="Center" Header="Zoom:" Minimum="-75" Width="300" Maximum="90" Value="0" ValueChanged="ZoomSlider_ValueChanged" SnapsTo="Ticks" TickFrequency="1"/>
-                                </Grid>
-                                <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="400" Margin="0, 0, 0, 5">
-                                    <StackPanel>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                    </Grid>
+                                    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 0, 0, 5">
+                                        <Slider Margin="10" HorizontalAlignment="Center" Header="Zoom:" Minimum="-75" Width="300" Maximum="90" Value="0" ValueChanged="ZoomSlider_ValueChanged" SnapsTo="Ticks" TickFrequency="1"/>
+                                    </Grid>
+                                    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="400" Margin="0, 0, 0, 5">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Print" Margin="5" Label=" Screenshot Print" Click="PrintFlyoutItem_Click" Width="100"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Edit" Margin="5" Label="Ink" Click="InkingButton_Click" Width="100"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Share" Margin="5" Label="Share" Click="ShareFlyoutItem_Click" Width="100"></AppBarButton>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Find" Click="FindFlyoutItem_Click" Margin="5" Label="Find in page"  Width="100"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Read" Margin="5" Label="Reading Mode" Click="ReadingModeButton_Click" Width="100"></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Volume" Margin="5" Label="Read aloud" Click="ReadAloudButton_Click" Width="100"></AppBarButton>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Bold" Margin="5" Click="TranslateFlyoutItem_Click" Label="Translate" Width="100" >></AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Pictures" Margin="5" Click="CompactFlyoutItem_Click" Label="Compact overlay" Width="100">>
-                                            </AppBarButton>
+                                                </AppBarButton>
                                                 <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Save" Click="SaveWebPageAsHTMLFlyoutItem_Click" Margin="5" Label="Save as .HTML" Width="100"></AppBarButton>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                                                 <controls:DropDownButton Width="100" CornerRadius="10"  Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55" Margin="5" Content="Pin">
-                                                <controls:DropDownButton.Flyout>
-                                                    <MenuFlyout>
-                                                        <MenuFlyoutItem Text="Taskbar" IsEnabled="False"/>
-                                                        <MenuFlyoutItem Text="Livetile" Click="PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click"/>
-                                                    </MenuFlyout>
-                                                </controls:DropDownButton.Flyout>
-                                            </controls:DropDownButton>
+                                                    <controls:DropDownButton.Flyout>
+                                                        <MenuFlyout>
+                                                            <MenuFlyoutItem Text="Taskbar" IsEnabled="False"/>
+                                                            <MenuFlyoutItem Text="Livetile" Click="PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click"/>
+                                                        </MenuFlyout>
+                                                    </controls:DropDownButton.Flyout>
+                                                </controls:DropDownButton>
                                                 <controls:DropDownButton Width="100" CornerRadius="10"  Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55" Margin="5" Content="Mute">
-                                                <controls:DropDownButton.Flyout>
-                                                    <MenuFlyout>
-                                                        <MenuFlyoutItem Text="Mute page (beta)" Click="MuteFlyoutItem_Click"/>
-                                                        <MenuFlyoutItem Text="UnMute page (beta)" Click="unMuteFlyoutItem_Click"/>
-                                                    </MenuFlyout>
-                                                </controls:DropDownButton.Flyout>
-                                            </controls:DropDownButton>
+                                                    <controls:DropDownButton.Flyout>
+                                                        <MenuFlyout>
+                                                            <MenuFlyoutItem Text="Mute page (beta)" Click="MuteFlyoutItem_Click"/>
+                                                            <MenuFlyoutItem Text="UnMute page (beta)" Click="unMuteFlyoutItem_Click"/>
+                                                        </MenuFlyout>
+                                                    </controls:DropDownButton.Flyout>
+                                                </controls:DropDownButton>
                                                 <controls:DropDownButton CornerRadius="10"  Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55" Margin="5" Content="Screenshot webpage">
+                                                    <controls:DropDownButton.Flyout>
+                                                        <MenuFlyout>
+                                                            <MenuFlyoutItem Text="Screenshot web page" Click="PageIMGFlyoutItem_Click"/>
+                                                            <MenuFlyoutItem Text="Webview snip" Click="SnipFlyoutItem_Click"></MenuFlyoutItem>
+                                                        </MenuFlyout>
+                                                    </controls:DropDownButton.Flyout>
+                                                </controls:DropDownButton>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Click="TaskMngFlyoutItem_Click" Icon="Manage" Margin="5" Width="100" Label="Task manager"></AppBarButton>
+                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Click="DevButton_Click" Width="100" Label="Devtools">
+                                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE943;"/>
+                                                </AppBarButton>
+                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Click="DevFlyoutItem_Click" Label="Advanced tools" Width="100">
+                                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE821;"/>
+                                                </AppBarButton>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Height="100" Margin="0, 0, 0, 5">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                            <controls:DropDownButton Margin="5" CornerRadius="10" VerticalAlignment="Center" Content="Help and feedback" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55">
                                                 <controls:DropDownButton.Flyout>
                                                     <MenuFlyout>
-                                                        <MenuFlyoutItem Text="Screenshot web page" Click="PageIMGFlyoutItem_Click"/>
-                                                        <MenuFlyoutItem Text="Webview snip" Click="SnipFlyoutItem_Click"></MenuFlyoutItem>
+                                                        <MenuFlyoutItem Click="Help" Text="Help"/>
+                                                        <MenuFlyoutSeparator/>
+                                                        <MenuFlyoutItem Text="Send feedback" Click="FeedbackLink_Click"/>
+                                                        <MenuFlyoutItem Text="Rate" Click="Rate"/>
+                                                        <MenuFlyoutSeparator/>
+                                                        <MenuFlyoutItem Text="What's new" Click="WhatNew"/>
+                                                        <MenuFlyoutItem Text="About" Click="About"/>
                                                     </MenuFlyout>
                                                 </controls:DropDownButton.Flyout>
                                             </controls:DropDownButton>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Click="TaskMngFlyoutItem_Click" Icon="Manage" Margin="5" Width="100" Label="Task manager"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5"  Width="100" Label="Devtools">
-                                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE943;"/>
-                                            </AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Click="DevFlyoutItem_Click" Label="Advanced tools" Width="100">
-                                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE821;"/>
-                                            </AppBarButton>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Grid>
-                                <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Height="100" Margin="0, 0, 0, 5">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                            <controls:DropDownButton Margin="5" CornerRadius="10" VerticalAlignment="Center" Content="Help and feedback" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55">
-                                            <controls:DropDownButton.Flyout>
-                                                <MenuFlyout>
-                                                    <MenuFlyoutItem Click="Help" Text="Help"/>
-                                                    <MenuFlyoutSeparator/>
-                                                    <MenuFlyoutItem Text="Send feedback" Click="FeedbackLink_Click"/>
-                                                    <MenuFlyoutItem Text="Rate" Click="Rate"/>
-                                                    <MenuFlyoutSeparator/>
-                                                    <MenuFlyoutItem Text="What's new" Click="WhatNew"/>
-                                                    <MenuFlyoutItem Text="About" Click="About"/>
-                                                </MenuFlyout>
-                                            </controls:DropDownButton.Flyout>
-                                        </controls:DropDownButton>
                                             <AppBarButton Style="{ThemeResource AppBarButtonRevealStyle}" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Click="SettingsButton_Click" VerticalAlignment="Center" CornerRadius="10" Icon="Setting" Margin="5" Label="Settings"  Width="100">
-                                        </AppBarButton>
+                                            </AppBarButton>
                                             <AppBarButton Style="{ThemeResource AppBarButtonRevealStyle}" Click="Exit" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" VerticalAlignment="Center" CornerRadius="10" Margin="5" Label="Exit" Width="100">
-                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8BB;"/>
-                                        </AppBarButton>
-                                    </StackPanel>
-                                </Grid>
+                                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8BB;"/>
+                                            </AppBarButton>
+                                        </StackPanel>
+                                    </Grid>
                                 </StackPanel>
                             </Grid>
                         </Flyout>
-                       <!-- <MenuFlyout>
+                        <!-- <MenuFlyout>
                             <MenuFlyoutItem Text="Open in browser" Click="OnOpenInBrowser" Width="300" Icon="Globe"/>
                             <MenuFlyoutItem Text="New Tab" Click="NewTabItem_Click"/>
                             <MenuFlyoutItem Text="New secondary window" Click="NewWindow_Click"/>
