@@ -28,6 +28,8 @@ namespace SwiftBrowser.Services
                         Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = true;
                         Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = true;
                         Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = true;
+                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePathBool"] = false;
+                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePath"] = "";
                     }
                 });
         }

@@ -209,6 +209,27 @@
     <Compile Include="HubViews\PasswordMasterDetails.xaml.cs">
       <DependentUpon>PasswordMasterDetails.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Lastpass\src\Account.cs" />
+    <Compile Include="Lastpass\src\Asn1.cs" />
+    <Compile Include="Lastpass\src\BaseException.cs" />
+    <Compile Include="Lastpass\src\Blob.cs" />
+    <Compile Include="Lastpass\src\ClientInfo.cs" />
+    <Compile Include="Lastpass\src\Extensions.cs" />
+    <Compile Include="Lastpass\src\Fetcher.cs" />
+    <Compile Include="Lastpass\src\FetcherHelper.cs" />
+    <Compile Include="Lastpass\src\FetchException.cs" />
+    <Compile Include="Lastpass\src\IWebClient.cs" />
+    <Compile Include="Lastpass\src\LoginException.cs" />
+    <Compile Include="Lastpass\src\LogoutException.cs" />
+    <Compile Include="Lastpass\src\ParseException.cs" />
+    <Compile Include="Lastpass\src\ParserHelper.cs" />
+    <Compile Include="Lastpass\src\Pbkdf2.cs" />
+    <Compile Include="Lastpass\src\Platform.cs" />
+    <Compile Include="Lastpass\src\Session.cs" />
+    <Compile Include="Lastpass\src\SharedFolder.cs" />
+    <Compile Include="Lastpass\src\Ui.cs" />
+    <Compile Include="Lastpass\src\Vault.cs" />
+    <Compile Include="Lastpass\src\WebClient.cs" />
     <Compile Include="Models\PhotoDataItem.cs" />
     <Compile Include="Models\TabViewItemData.cs" />
     <Compile Include="Services\ActivationService.cs" />
@@ -233,6 +254,9 @@
     </Compile>
     <Compile Include="Views\Devtools.xaml.cs">
       <DependentUpon>Devtools.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ExtensionsStore.xaml.cs">
+      <DependentUpon>ExtensionsStore.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FirstRunDialog.xaml.cs">
       <DependentUpon>FirstRunDialog.xaml</DependentUpon>
@@ -340,6 +364,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Devtools.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ExtensionsStore.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -499,6 +527,7 @@
     <Content Include="Assets\Wide310x150Logo.scale-125.png" />
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <Content Include="HomeView\Failed.html" />
     <Content Include="WebFiles\global.css" />
     <Content Include="WebFiles\highlight.js" />
     <Content Include="WebFiles\readingmode.js" />
@@ -527,9 +556,13 @@
     <None Include="Assets\Photos\Photos.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\Extensions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\RestoreTabItems.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Lastpass\src\LastPass.csproj" />
     <None Include="SwiftBrowser_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -557,6 +590,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Extensions\Assets\" />
+    <Folder Include="Extensions\Helpers\" />
+    <Folder Include="Extensions\Models\" />
+    <Folder Include="Extensions\Services\" />
+    <Folder Include="Extensions\Views\" />
     <Folder Include="Themes\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

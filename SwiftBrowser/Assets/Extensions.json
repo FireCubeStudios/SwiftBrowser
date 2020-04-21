@@ -1,0 +1,22 @@
+﻿{
+  "Extensions": [
+    {
+      "DescriptionJSON": "Block ads",
+      "IconJSON": "/Assets/BrowserIcons/Nointernet.png",
+      "Id": 69420,
+      "IsEnabledJSON": false,
+      "IsIncognitoEnabled": false,
+      "IsToolbar": false,
+      "NameJSON": "Adblocker pro"
+    },
+    {
+      "DescriptionJSON": "Dark mode so that your eyes arent blinded",
+      "IconJSON": "/Assets/BrowserIcons/Nointernet.png",
+      "Id": 42069,
+      "IsEnabledJSON": false,
+      "IsIncognitoEnabled": false,
+      "IsToolbar": false,
+      "NameJSON": "Dark mode"
+    }
+  ]
+}

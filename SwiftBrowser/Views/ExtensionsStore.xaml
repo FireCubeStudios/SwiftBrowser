@@ -1,0 +1,32 @@
+﻿<Page
+    x:Class="SwiftBrowser.Views.ExtensionsStore"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <StackPanel>
+            <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="30">Extensions store manager for browser extensions for the browser that you are browsing</TextBlock>
+            <ListView x:Name="ExtensionsList" Margin="5">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel>
+                                <Image Height="50" Width="50" Source="{Binding }" Margin="2"></Image>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="{Binding }" Margin="2" FontSize="25"></TextBlock>
+                                <TextBlock Text="{Binding }" Margin="2"></TextBlock>
+                            </StackPanel>
+                            <ToggleSwitch x:Name="Toggle" IsOn="{Binding }" Margin="5" Header="Enable:" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+    </Grid>
+</Page>

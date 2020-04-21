@@ -9,11 +9,11 @@ namespace SwiftBrowser_Runtime_Component
 	[AllowForWeb]
 	public sealed class ContextMenu
 	{
-		public static string hrefLink { get; set; }
+		public static bool hrefLink { get; set; }
 		public static string SRC { get; set; }
-		public void setHREFCombination(string href)
+		public void setHREFCombination()
 		{
-			hrefLink = href;
+			hrefLink = true;
 		}
 		public void setSRCCombination(string src)
 		{

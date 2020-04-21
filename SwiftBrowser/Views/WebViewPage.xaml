@@ -159,6 +159,18 @@
                 <Button Style="{StaticResource BrowserButtonStyle}" Click="HomeButton_Click" x:Uid="WebView_RefreshBrowserButton">
                     <SymbolIcon Symbol="Home"/>
                 </Button>
+                <Button Style="{StaticResource BrowserButtonStyle}" Click="TemporarySecure_Click" x:Name="TemporarySecure">
+                    <FontIcon Glyph="&#xE72E;"/>
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel>
+                                <TextBlock x:Name="SecureTextTemporary" Margin="5"></TextBlock>
+                                <TextBlock Margin="5">Certificate: </TextBlock>
+                                <TextBlock x:Name="SecureCertificateTemporary" Margin="5"></TextBlock>
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
                 <AutoSuggestBox PlaceholderText="Search web"
                                 TextChanged="SearchWebBox_TextChanged"
                                 Margin="5, 0, 5, 0"

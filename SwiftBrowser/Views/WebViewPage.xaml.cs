@@ -50,6 +50,7 @@ using System.Threading;
 using Windows.Web.Http.Filters;
 using Windows.UI.WindowManagement;
 using Windows.UI.Xaml.Hosting;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SwiftBrowser.Views
 {
@@ -69,6 +70,7 @@ namespace SwiftBrowser.Views
         MenuFlyout ContextFlyout = new MenuFlyout();
         MenuFlyout ContextFlyoutImage = new MenuFlyout();
         string NewWindowLink;
+        DataPackage WebviewDataPackage;
         public static Button UserAgentbuttonControl { get; set; }
         public WebViewLongRunningScriptDetectedEventArgs e;
         public string HighlightFunctionJS;
@@ -105,6 +107,7 @@ namespace SwiftBrowser.Views
         }
         public async void Startup()
         {
+            SearchWebBox.Text = "";
             if (IncognitoMode == true)
             {
                 // await Task.Delay(2000);
@@ -149,6 +152,7 @@ namespace SwiftBrowser.Views
             ShareIMGItem = new MenuFlyoutItem { Text = "Share image - beta" };
             ShareIMGItem.Click += ShareIMGItem_Click;
             DevItem = new MenuFlyoutItem { Text = "DevTools" };
+            DevItem.Click += DevItem_Click;
             ContextFlyout.Items.Add(DevItem);
             ContextFlyoutImage.Items.Add(CopyIMGItem);
             ContextFlyoutImage.Items.Add(SaveIMGItem);
@@ -217,6 +221,7 @@ namespace SwiftBrowser.Views
                     BackButton.IsEnabled = false;
                     ForwardButton.IsEnabled = false;
                     RefreshButton.IsEnabled = false;
+                    TemporarySecure.IsEnabled = false;
                     ExtensionsButton.IsEnabled = false;
                     MenuFrameButton.Visibility = Visibility.Visible;
                     MenuButton.Visibility = Visibility.Collapsed;
@@ -258,6 +263,7 @@ namespace SwiftBrowser.Views
                     MenuFrameButton.Visibility = Visibility.Visible;
                     MenuButton.Visibility = Visibility.Collapsed;
                     RefreshButton.IsEnabled = false;
+                    TemporarySecure.IsEnabled = false;
                     ExtensionsButton.IsEnabled = false;
                     MenuButton.IsEnabled = false;
                     HomeFrameFrameFrame.BackStack.Clear();
@@ -290,6 +296,7 @@ namespace SwiftBrowser.Views
                       MenuButton.Visibility = Visibility.Collapsed;
                       RefreshButton.IsEnabled = false;
                       ExtensionsButton.IsEnabled = false;
+                      TemporarySecure.IsEnabled = false;
                       MenuButton.IsEnabled = false;
                       HomeFrameFrameFrame.BackStack.Clear();
                       GC.Collect();
@@ -310,12 +317,27 @@ namespace SwiftBrowser.Views
             RightTimer.Enabled = true;
             try
             {
-                SearchWebBox.Width = Window.Current.Bounds.Width - 300;
+                SearchWebBox.Width = Window.Current.Bounds.Width - 340;
             }
             catch
             {
                 SearchWebBox.Width = 900;
             }
+        }
+
+        private async void DevItem_Click(object sender, RoutedEventArgs e)
+        {
+            AppWindow appWindow = await AppWindow.TryCreateAsync();
+            Frame appWindowContentFrame = new Frame();
+            Devtools.DevView = webView;
+            appWindowContentFrame.Navigate(typeof(Devtools));
+            ElementCompositionPreview.SetAppWindowContent(appWindow, appWindowContentFrame);
+            await appWindow.TryShowAsync();
+            appWindow.Closed += delegate
+            {
+                appWindowContentFrame.Content = null;
+                appWindow = null;
+            };
         }
 
         private void WebView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -599,44 +621,58 @@ namespace SwiftBrowser.Views
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 //your code here
-                var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
-                var x = pointerPosition.X - Window.Current.Bounds.X;
-                var y = pointerPosition.Y;
-                if (String.IsNullOrEmpty(ContextMenu.hrefLink) == false && ContextMenu.hrefLink.Contains("http") == true)
+                WebviewDataPackage = await webView.CaptureSelectedContentToDataPackageAsync();
+                if (WebviewDataPackage != null && ContextMenu.hrefLink == true)
                 {
-                    NewWindowLink = ContextMenu.hrefLink;
-                    CurrentTab.Header = ContextMenu.hrefLink;
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    try
                     {
-                        ContextFlyout.Hide();
-                    });
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
+                        var x = pointerPosition.X - Window.Current.Bounds.X;
+                        var y = pointerPosition.Y;
+                        DataPackageView d = WebviewDataPackage.GetView();
+                        if (d.GetWebLinkAsync() != null)
+                        {
+                            Uri u = await d.GetWebLinkAsync() as System.Uri;
+                            NewWindowLink = u.ToString();
+                            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                ContextFlyout.Hide();
+                            });
+                            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                ContextFlyoutImage.Hide();
+                            });
+                            //   TabviewMain.ContextFlyout = ContextFlyout;
+                            FlyoutShowOptions ee = new FlyoutShowOptions();
+                            ee.Position = pointerPosition;
+                            ContextFlyout.ShowAt(TabviewMain, ee);
+                            ContextMenu.hrefLink = false;
+                            WebviewDataPackage = null;
+                        }
+                        else if(d != null && ContextMenu.SRC != null)
+                        {
+                            NewWindowLink = ContextMenu.SRC;
+                            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                ContextFlyout.Hide();
+                            });
+                            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                ContextFlyoutImage.Hide();
+                            });
+                            //  TabviewMain.ContextFlyout = ContextFlyoutImage;
+                            FlyoutShowOptions ee = new FlyoutShowOptions();
+                            ee.Position = pointerPosition;
+                            ContextFlyoutImage.ShowAt(TabviewMain, ee);
+                            ContextMenu.SRC = null;
+                        }
+                    }
+                    catch
                     {
-                        ContextFlyoutImage.Hide();
-                    });
-                    //   TabviewMain.ContextFlyout = ContextFlyout;
-                    FlyoutShowOptions ee = new FlyoutShowOptions();
-                    ee.Position = pointerPosition;
-                    ContextFlyout.ShowAt(TabviewMain, ee);
-                    ContextMenu.hrefLink = null;
+
+                    }
                 }
-                if (String.IsNullOrEmpty(ContextMenu.SRC) == false && ContextMenu.SRC.Contains("http") == true)
-                {
-                    NewWindowLink = ContextMenu.SRC;
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        ContextFlyout.Hide();
-                    });
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        ContextFlyoutImage.Hide();
-                    });
-                    //  TabviewMain.ContextFlyout = ContextFlyoutImage;
-                    FlyoutShowOptions ee = new FlyoutShowOptions();
-                    ee.Position = pointerPosition;
-                    ContextFlyoutImage.ShowAt(TabviewMain, ee);
-                    ContextMenu.SRC = null;
-                }
+                
             });
         }
         public async void ViewElapsed(object sender, WindowSizeChangedEventArgs e)
@@ -659,8 +695,8 @@ namespace SwiftBrowser.Views
         }
         private async void FirstItem_Click(object sender, RoutedEventArgs e)
         {
-            localSettings.Values["SourceToGo"] = NewWindowLink;
-            localSettings.Values["BackupSourceToGo"] = webView.Source + NewWindowLink;
+            localSettings.Values["SourceToGo"] = NewWindowLink; 
+            localSettings.Values["BackupSourceToGo"] = NewWindowLink;//webView.Source + NewWindowLink;
             NewTabItem_Click(sender, e);
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
@@ -683,18 +719,21 @@ namespace SwiftBrowser.Views
                {
                     string ConsoleFunctionString = "window.onerror = function(error, url, line) {var r = 'ERR:' + error + ' url' + url + ' Line: ' + line; Window.ConsoleWinRT.setLogCombination(r); };";
                     await webView.InvokeScriptAsync("eval", new string[] { ConsoleFunctionString });
-                    string functionString = @"var anchors = document.querySelectorAll('a');      
-     for (var i = 0; i < anchors.length; i += 1) {
-           anchors[i].oncontextmenu = function (e) {
-        var href = this.getAttribute('href');
- if (window.Context) {
-window.Context.setHREFCombination(href);
-}
-           };
-       }";
+                    /*  string functionString = @"var anchors = document.querySelectorAll('a');      
+       for (var i = 0; i < anchors.length; i += 1) {
+             anchors[i].oncontextmenu = function (e) {
+          var href = this.getAttribute('href');
+   if (window.Context) {
+  window.Context.setHREFCombination(href);
+  }
+             };
+         }";*/
+                    string functionString = @"document.oncontextmenu = function (e) {
+window.Context.setHREFCombination();
+};";
                     // window.external.notify([oX.toString(), oY.toString(), href].toString());
                     await webView.InvokeScriptAsync("eval", new string[] { functionString });
-                    string functionImageString = @"var anchors = document.querySelectorAll('img');      
+                 /*   string functionImageString = @"var anchors = document.querySelectorAll('img');      
      for (var i = 0; i < anchors.length; i += 1) {
            anchors[i].oncontextmenu = function (e) {
         var src = this.getAttribute('src');
@@ -702,9 +741,9 @@ window.Context.setHREFCombination(href);
 window.Context.setSRCCombination(src);
 }
            };
-       }";
+       }";*/
                     // window.external.notify([oX.toString(), oY.toString(), href].toString());
-                    await webView.InvokeScriptAsync("eval", new string[] { functionImageString });
+                //    await webView.InvokeScriptAsync("eval", new string[] { functionImageString });
                     DOMloaded();
                     await GenerateActivityAsync();
 
@@ -848,14 +887,7 @@ window.Context.setSRCCombination(src);
                     myFilter.Dispose();
                 }
                 else
-                {
-                    Uri gotouri = args.Uri;
-                    HttpBaseProtocolFilter myFilter = new HttpBaseProtocolFilter();
-                    HttpCookieManager cookieManager = myFilter.CookieManager;
-                    myFilter.ClearAuthenticationCache();
-                    myFilter.CacheControl.WriteBehavior = HttpCacheWriteBehavior.NoCache;
-                    myFilter.CacheControl.WriteBehavior = Windows.Web.Http.Filters.HttpCacheWriteBehavior.Default;
-                    myFilter.CacheControl.ReadBehavior = Windows.Web.Http.Filters.HttpCacheReadBehavior.Default;
+                { 
                 }
                 if (args.IsSuccess == false)
                 {
@@ -1026,8 +1058,9 @@ window.Context.setSRCCombination(src);
                 {
                     webView.Navigate(new Uri("https://www.ecosia.org/search?q=" + args.QueryText));
                 }
-
+              //  webView.Navigate(new Uri("ms-appx-web:///HomeView/Failed.html"));
             }
+          //  webView.Navigate(new Uri("ms-appx-web:///HomeView/Failed.html"));
         }
         ////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////
@@ -1277,6 +1310,7 @@ window.Context.setSRCCombination(src);
                 BackButton.IsEnabled = true;
                 ForwardButton.IsEnabled = true;
                 RefreshButton.IsEnabled = true;
+                TemporarySecure.IsEnabled = true;
                 ExtensionsButton.IsEnabled = true;
                 MenuButton.IsEnabled = true;
                 MenuFrameButton.Visibility = Visibility.Collapsed;
@@ -1426,6 +1460,7 @@ window.Context.setSRCCombination(src);
             SearchWebBox.Text = "";
             BackButton.IsEnabled = false;
             ForwardButton.IsEnabled = false;
+            TemporarySecure.IsEnabled = false;
             RefreshButton.IsEnabled = false;
             ExtensionsButton.IsEnabled = false;
             MenuButton.IsEnabled = false;
@@ -1964,6 +1999,7 @@ window.Context.setSRCCombination(src);
             BackButton.IsEnabled = false;
             ForwardButton.IsEnabled = false;
             RefreshButton.IsEnabled = false;
+            TemporarySecure.IsEnabled = false;
             ExtensionsButton.IsEnabled = false;
             MenuButton.IsEnabled = false;
             MenuFrameButton.Visibility = Visibility.Visible;
@@ -1994,6 +2030,7 @@ window.Context.setSRCCombination(src);
             { }
             ForwardButton.IsEnabled = false;
             RefreshButton.IsEnabled = false;
+            TemporarySecure.IsEnabled = false;
             ExtensionsButton.IsEnabled = false;
             InkingFrameGrid.Visibility = Visibility.Visible;
             MenuButton.IsEnabled = false;
@@ -2110,6 +2147,7 @@ window.Context.setSRCCombination(src);
             BackButton.IsEnabled = false;
             ForwardButton.IsEnabled = false;
             RefreshButton.IsEnabled = false;
+            TemporarySecure.IsEnabled = false;
             ExtensionsButton.IsEnabled = false;
             MenuButton.IsEnabled = false;
             MenuFrameButton.Visibility = Visibility.Visible;
@@ -2207,6 +2245,7 @@ window.Context.setSRCCombination(src);
             BackButton.IsEnabled = false;
             ForwardButton.IsEnabled = false;
             RefreshButton.IsEnabled = false;
+            TemporarySecure.IsEnabled = false;
             ExtensionsButton.IsEnabled = false;
             MenuButton.IsEnabled = false;
             MenuFrameButton.Visibility = Visibility.Visible;
@@ -2351,6 +2390,7 @@ window.Context.setSRCCombination(src);
                 BackButton.IsEnabled = false;
                 ForwardButton.IsEnabled = false;
                 RefreshButton.IsEnabled = false;
+                TemporarySecure.IsEnabled = false;
                 ExtensionsButton.IsEnabled = false;
                 MenuButton.IsEnabled = false;
                 MenuFrameButton.Visibility = Visibility.Visible;
@@ -2392,6 +2432,47 @@ window.Context.setSRCCombination(src);
                 appWindowContentFrame.Content = null;
                 appWindow = null;
             };
+        }
+
+        private void TemporarySecure_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(webView.Source.ToString());
+                request.AllowAutoRedirect = false;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                response.Close();
+                if (webView.Source.AbsoluteUri.StartsWith("https"))
+                {
+                    SecureTextTemporary.Text = "Your connection to this site is secure";
+                }
+                else
+                {
+                    SecureTextTemporary.Text = "Your connection to this site is not secure";
+                }
+                SecureCertificateTemporary.Text = "The certificate is valid";
+            }
+            catch
+            {
+                if (webView.Source.AbsoluteUri.StartsWith("https"))
+                {
+                    SecureTextTemporary.Text = "Your connection to this site is secure";
+                }
+                else
+                {
+                    SecureTextTemporary.Text = "Your connection to this site is not secure";
+                }
+                SecureCertificateTemporary.Text = "The certificate is invalid";
+            }
+            //retrieve the ssl cert and assign it to an X509Certificate object
+           /* X509Certificate cert = request.ServicePoint.Certificate;
+
+            //convert the X509Certificate to an X509Certificate2 object by passing it into the constructor
+            X509Certificate2 cert2 = new X509Certificate2(cert);
+            string cn = cert.GetIssuerName();
+            string cedate = cert.GetExpirationDateString();
+            string cpub = cert.GetPublicKeyString();
+            SecureCertificateTemporary.Text = cert.ToString();*/
         }
     }
         ////////////////////////////////////////////////////////////////

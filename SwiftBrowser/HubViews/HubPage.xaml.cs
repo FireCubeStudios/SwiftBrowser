@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SwiftBrowser.HubViews;
+using SwiftBrowser.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -38,7 +39,7 @@ namespace SwiftBrowser.HubViews
                 {
                 case "F":
                     HubNav.SelectedItem = Fav;
-                    contentFrame.Navigate(typeof(Favourites));
+                    contentFrame.Navigate(typeof(ExtensionsStore));
                     break;
                 case "H":
                     HubNav.SelectedItem = Hav;
