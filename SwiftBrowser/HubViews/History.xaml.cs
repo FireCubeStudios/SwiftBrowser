@@ -20,7 +20,7 @@ using static SwiftBrowser.Assets.DataAccess;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace SwiftBrowser.HubViews
+namespace SwiftBrowser.HubViews 
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
@@ -40,21 +40,45 @@ namespace SwiftBrowser.HubViews
         public History()
         {
             this.InitializeComponent();
-            Output.ItemsSource = DataAccess.GetData();
         }
-        private void RemoveDataButton_Click(object sender, RoutedEventArgs e)
+        private async void RemoveDataButton_Click(object sender, RoutedEventArgs e)
         {
             var ide = (FrameworkElement)sender;
             var dataCxtx = ide.DataContext;
             HistoryClass dataSauce = (HistoryClass)dataCxtx;
             DataAccess.RemoveData(dataSauce);
-            Output.ItemsSource = DataAccess.GetData();
+            Output.ItemsSource = await GetData();
         }
 
         private void Output_ItemClick(object sender, ItemClickEventArgs e)
         {
             HistoryClass Historyitemclicked = e.ClickedItem as HistoryClass;
             WebViewPage.WebviewControl.Navigate(new Uri(Historyitemclicked.UrlSQL));
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Output.Items.Clear();
+            }
+            catch
+            {
+
+            }
+            gRID.Children.Clear();
+            VisualTreeHelper.DisconnectChildrenRecursive(this);
+        }
+
+        private async void CommandBar_Loaded(object sender, RoutedEventArgs e)
+        {
+            FindName("Output");
+            Output.ItemsSource = await GetData();
         }
     }
 }

@@ -110,6 +110,7 @@ namespace SwiftBrowser.HubViews
             StorageFile sampleFile = await localFolder.GetFileAsync("OfflinePages.json");
             var JSONData = await FileIO.ReadTextAsync(sampleFile);
             OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
+            OfflineList.Clear();
             foreach (var item in OfflineListJSON.OfflineWebsites)
             {
                 OfflineList.Add(new OfflineJSON()
@@ -146,7 +147,7 @@ namespace SwiftBrowser.HubViews
             LoadOffline();
         }
 
-        private async void AddOffline(object sender, RoutedEventArgs e)
+        private  void AddOffline(object sender, RoutedEventArgs e)
         {
             //  if (BoolWeb == true)
           

@@ -1,0 +1,26 @@
+﻿<Page
+    x:Class="SwiftBrowser.SettingsViews.HomePageSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.SettingsViews"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center">
+            <muxc:RadioButtons Header="Set your homepage" Margin="5">
+                <RadioButton x:Name="Option1RadioButton" Content="Default homepage" Checked="Option1RadioButton_Checked"/>
+                <RadioButton x:Name="Option2RadioButton" Content="Website" Checked="Option2RadioButton_Checked"/>
+            </muxc:RadioButtons>
+            <AutoSuggestBox Visibility="Collapsed" Header="Enter valid url: " PlaceholderText="Url..." Margin="5" x:Name="TextUrl" QuerySubmitted="TextUrl_QuerySubmitted" QueryIcon="Globe"></AutoSuggestBox>
+            <ToggleSwitch x:Name="tICO" Toggled="TICO_Toggled" Header="Toggle Icon" OffContent="Disabled" OnContent="Enabled"/>
+            <ToggleSwitch x:Name="TfAV" Toggled="TfAV_Toggled" Header="Toggle Favourites" OffContent="Disabled" OnContent="Enabled"/>
+            <ToggleSwitch x:Name="TqUI" Toggled="TqUI_Toggled" Header="Toggle Quick web" OffContent="Disabled" OnContent="Enabled"/>
+            <ToggleSwitch x:Name="TmOR" Toggled="TmOR_Toggled" Header="Toggle More content" OffContent="Disabled" OnContent="Enabled"/>
+            <ToggleSwitch x:Name="TSea" Toggled="TSea_Toggled" Header="Toggle Search Content" OffContent="Disabled" OnContent="Enabled"/>
+        </StackPanel>
+    </Grid>
+</Page>

@@ -36,9 +36,9 @@ namespace SwiftBrowser.Views
         public inkingPage()
         {
             this.InitializeComponent();
-            CaptureWebView();
+           CaptureWebView();
         }
-        private async Task CaptureWebView()
+        private async void CaptureWebView()
         {
            
             var originalWidth = WebView.ActualWidth;

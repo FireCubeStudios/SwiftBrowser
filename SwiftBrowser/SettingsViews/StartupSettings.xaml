@@ -1,0 +1,19 @@
+﻿<Page
+    x:Class="SwiftBrowser.SettingsViews.StartupSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.SettingsViews"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <muxc:RadioButtons Header="Start-up options">
+            <RadioButton x:Name="Option1RadioButton" Content="Dont show restore dialog" Click="Option1RadioButton_Click"/>
+            <RadioButton x:Name="Option2RadioButton" Content="Show restore dialog" Click="Option2RadioButton_Click"/>
+            <RadioButton x:Name="Option3RadioButton" Content="Automatically restore all tabs" Click="Option3RadioButton_Click"/>
+        </muxc:RadioButtons>
+    </Grid>
+</Page>

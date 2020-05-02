@@ -113,7 +113,7 @@ namespace SwiftBrowser.HubViews
 
             var isMins = estimateTime >= 60;
 
-            var timeLeftUnit = "seconds";
+          var timeLeftUnit = "seconds";
 
             if (isMins)
 

@@ -32,12 +32,19 @@ namespace SwiftBrowser.Views
         int width;
         int height;
         public static WebView webView {get; set; }
-        public static string Name { get; set; }
+        public static string NameX { get; set; }
         public OfflineCreatePage()
         {
             this.InitializeComponent();
-            OfflinePainter.Source = webView.Source;
-            Startup();
+            try
+            {
+                OfflinePainter.Source = webView.Source;
+                Startup();
+            }
+            catch
+            {
+                return;
+            }
         }
         public async void Startup()
         {

@@ -36,7 +36,7 @@ namespace SwiftBrowser.Views
             RightTimer.Enabled = true;
             StartUp();
         }
-        private async void WebView_Log(object source, ElapsedEventArgs e)
+        private void WebView_Log(object source, ElapsedEventArgs e)
         {
             if (String.IsNullOrEmpty(ConsoleLog.LogString) == false)
             {
@@ -50,7 +50,7 @@ namespace SwiftBrowser.Views
             HTMLeditor.Text = html;
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
             // await WebVie.InvokeScriptAsync("eval", new string[] { "document.documentElement.outerHTML = " + HTMLeditor.Text + ";" });
             WebVie.NavigateToString(HTMLeditor.Text);

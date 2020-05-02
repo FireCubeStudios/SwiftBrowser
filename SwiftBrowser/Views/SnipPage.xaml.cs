@@ -33,14 +33,12 @@ namespace SwiftBrowser.Views
     public sealed partial class SnipPage : Page
     {
         public static IRandomAccessStream WebView { get; set; }
-        int width;
-        int height;
         public SnipPage()
         {
             this.InitializeComponent();
-            CaptureWebView();
+             CaptureWebView();
         }
-        private async Task CaptureWebView()
+        private async void CaptureWebView()
         {
 
             /* var originalWidth = WebView.ActualWidth;

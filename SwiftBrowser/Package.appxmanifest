@@ -12,14 +12,14 @@ xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/re
   IgnorableNamespaces="uap mp rescap genTemplate">
 
   <Identity
-    Name="F37341C5-148D-41A3-9DF9-E3D65F4EF782"
-    Publisher="CN=ayush"
-    Version="0.36.2.0" />
+    Name="2505FireCubeStudios.Swiftbrowser"
+    Publisher="CN=3C7C8FC9-7104-4B33-8730-EE1E929D5D3B"
+    Version="0.1.8.0" />
 
-  <mp:PhoneIdentity PhoneProductId="F37341C5-148D-41A3-9DF9-E3D65F4EF782" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="5be2133d-e6c9-4a1b-816d-ae1c8cf0dc25" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>SwiftBrowser</DisplayName>
+    <DisplayName>Swift browser</DisplayName>
     <PublisherDisplayName>FireCubeStudios</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -116,7 +116,6 @@ xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/re
   <Capabilities>
     <Capability Name="internetClient" />
     <rescap:Capability Name="confirmAppClose" />
-<rescap:Capability Name="broadFileSystemAccess" />
   </Capabilities>
 
   <genTemplate:Metadata>

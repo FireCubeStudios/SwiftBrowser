@@ -39,7 +39,7 @@ namespace SwiftBrowser.HubViews
                 {
                 case "F":
                     HubNav.SelectedItem = Fav;
-                    contentFrame.Navigate(typeof(ExtensionsStore));
+                    contentFrame.Navigate(typeof(Favourites));
                     break;
                 case "H":
                     HubNav.SelectedItem = Hav;
@@ -77,6 +77,10 @@ namespace SwiftBrowser.HubViews
             else if (args.InvokedItemContainer.Content.ToString() == "Passwords")
             {
                 contentFrame.Navigate(typeof(PasswordMasterDetails));
+            }
+            else if (args.InvokedItemContainer.Content.ToString() == "Sync")
+            {
+                contentFrame.Navigate(typeof(SyncView));
             }
             else
             {

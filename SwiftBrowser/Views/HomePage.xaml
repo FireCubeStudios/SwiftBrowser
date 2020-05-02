@@ -6,11 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    Loaded="Page_Loaded"
     NavigationCacheMode="Required"
     mc:Ignorable="d"
     >
-    <Grid  Height="1000"    Background="{ThemeResource SystemControlAcrylicElementBrush}">
-        <ScrollViewer>
+    <Grid  Height="1000"  SizeChanged="SearchBox_SizeChanged"  Background="{ThemeResource SystemControlAcrylicElementBrush}">
+        <WebView x:Name="WebViewHome" x:Load="False"></WebView>
+        <ScrollViewer x:Name="Home" x:Load="False" Loaded="Home_Loaded">
             <StackPanel Margin="0,0,0,0">
                 <controls:AdaptiveGridView HorizontalAlignment="Left" VerticalAlignment="Top" SelectionMode="None" OneRowModeEnabled="True"  ItemHeight="40" IsItemClickEnabled="True" x:Name="FavouritesGridView" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Visible">
                     <controls:AdaptiveGridView.ItemTemplate>
@@ -27,6 +30,11 @@
                     <AppBarButton.Flyout>
                         <Flyout>
                             <StackPanel>
+                                <muxc:RadioButtons Header="Set your homepage" Margin="5">
+                                    <RadioButton x:Name="Option1RadioButton" Content="Default homepage" Checked="Option1RadioButton_Checked"/>
+                                    <RadioButton x:Name="Option2RadioButton" Content="Website" Checked="Option2RadioButton_Checked"/>
+                                </muxc:RadioButtons>
+                                <AutoSuggestBox Visibility="Collapsed" Header="Enter valid url: " PlaceholderText="Url..." Margin="5" x:Name="TextUrl" QuerySubmitted="TextUrl_QuerySubmitted" QueryIcon="Globe"></AutoSuggestBox>
                                 <ToggleSwitch x:Name="tICO" Toggled="TICO_Toggled" Header="Toggle Icon" OffContent="Disabled" OnContent="Enabled"/>
                                 <ToggleSwitch x:Name="TfAV" Toggled="TfAV_Toggled" Header="Toggle Favourites" OffContent="Disabled" OnContent="Enabled"/>
                                 <ToggleSwitch x:Name="TqUI" Toggled="TqUI_Toggled" Header="Toggle Quick web" OffContent="Disabled" OnContent="Enabled"/>
@@ -37,7 +45,7 @@
                     </AppBarButton.Flyout>
                 </AppBarButton>
                 <Image Source="/Assets/BrowserIcons/131.png" x:Name="icon" Margin="10" Width="300" Height="300"></Image>
-                <AutoSuggestBox MinWidth="300" Width="600" Height="70" QueryIcon="Find" Header="Quick search:" Margin="10" HorizontalAlignment="Center" x:Name="SearchBox" QuerySubmitted="AutoSuggestBox_QuerySubmitted">
+                <AutoSuggestBox MinWidth="400" Width="400"  QueryIcon="Find" Header="Quick search:" Margin="10" HorizontalAlignment="Center"  x:Name="SearchBox" QuerySubmitted="AutoSuggestBox_QuerySubmitted">
 
                 </AutoSuggestBox>
                 <Grid x:Name="QuickPinnedGrid">
@@ -58,12 +66,12 @@
                         </Flyout>
                     </Button.Flyout>
                 </Button>
-                <controls:AdaptiveGridView HorizontalAlignment="Left" Margin="0, 80, 0, 0" VerticalAlignment="Bottom" SelectionMode="None" OneRowModeEnabled="True"  ItemHeight="150" IsItemClickEnabled="True" x:Name="QuickPinnedGridView" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                <controls:AdaptiveGridView HorizontalAlignment="Left" Margin="0, 80, 0, 0" ItemClick="QuickPinnedGridView_ItemClick" VerticalAlignment="Bottom" SelectionMode="None" OneRowModeEnabled="True"  ItemHeight="150" IsItemClickEnabled="True" x:Name="QuickPinnedGridView" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Visible">
                     <controls:AdaptiveGridView.ItemTemplate>
                         <DataTemplate>
                             <Grid CornerRadius="20" Width="200" Height="150" Margin="10, 0, 10, 0" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}">
                                 <AppBarButton Click="DeleteFavButton_Click" HorizontalAlignment="Right" Icon="Delete" Label="Delete"  VerticalAlignment="Top" Canvas.ZIndex="30"/>
-                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Tapped="QGrid_Tapped">
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <Image Height="30" Width="30" Source="{Binding FavIconJSON}" Margin="5" Stretch="Fill" />
                                     <TextBlock Text="{Binding HeaderJSON}" FontSize="20" Margin="0,5,0,5"/>
                                 </StackPanel>

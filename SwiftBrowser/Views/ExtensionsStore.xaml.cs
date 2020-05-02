@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -25,9 +27,12 @@ namespace SwiftBrowser.Views
     public sealed partial class ExtensionsStore : Page
     {
         Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+        ExtensionsClass ExtensionsListJSONJSON;
+        public static ExtensionsStore methods {get; set;}
         public ExtensionsStore()
         {
             this.InitializeComponent();
+            methods = this;
             LoadItems();
         }
  
@@ -51,16 +56,16 @@ namespace SwiftBrowser.Views
             public bool IsEnabledJSON { get; set; }
             public bool IsIncognitoEnabled{ get; set; }
         public bool IsToolbar{ get; set; }
+            public string Page { get; set; }
 }
         public async void LoadItems()
         {
             List<ExtensionsJSON> ExtensionsListJSON = new List<ExtensionsJSON>();
-            string filepath = @"Assets\Extensions.json";
-            StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            StorageFile file = await folder.GetFileAsync(filepath); // error here
+            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile file = await folder.GetFileAsync("Extensions.json"); // error here
             var JSONData = "e";
             JSONData = await Windows.Storage.FileIO.ReadTextAsync(file);
-            ExtensionsClass ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
+            ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
             foreach (var item in ExtensionsListJSONJSON.Extensions)
             {
                 ExtensionsListJSON.Add(new ExtensionsJSON()
@@ -68,10 +73,64 @@ namespace SwiftBrowser.Views
                     NameJSON = item.NameJSON,
                     DescriptionJSON = item.DescriptionJSON,
                     IconJSON = item.IconJSON,
-             
+                    IsEnabledJSON = item.IsEnabledJSON,
+                    Page = item.Page,
+                    IsToolbar = item.IsToolbar
                 });
             }
             ExtensionsList.ItemsSource = ExtensionsListJSON;
+        }
+        public async void closing()
+        {
+            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile file = await folder.GetFileAsync("Extensions.json"); 
+            var SerializedObject = JsonConvert.SerializeObject(ExtensionsListJSONJSON, Formatting.Indented);
+
+                await Windows.Storage.FileIO.WriteTextAsync(file, SerializedObject);
+                LoadingControl.IsLoading = false;
+
+        }
+        private void Toggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            List<ExtensionsJSON> ExtensionsListJSON = new List<ExtensionsJSON>();
+          // LoadingControl.IsLoading = true;
+            ToggleSwitch t = sender as ToggleSwitch;
+            var SenderFramework = (FrameworkElement)sender;
+            var DataContext = SenderFramework.DataContext;
+            ExtensionsJSON SenderPost = DataContext as ExtensionsJSON;
+            SenderPost.IsEnabledJSON = t.IsOn;
+       //     ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
+            ExtensionsJSON FoundItem = ExtensionsListJSONJSON.Extensions.Find(x => SenderPost.Id == SenderPost.Id);
+
+            FoundItem.IsEnabledJSON = t.IsOn;
+            StackPanel i = VisualTreeHelper.GetParent(t) as StackPanel;
+            ToggleSwitch tt = i.Children[2] as ToggleSwitch;
+            tt.IsOn = FoundItem.IsToolbar;
+            FoundItem.IsToolbar = tt.IsOn;
+            ExtensionsListJSONJSON.Extensions.Remove(FoundItem);
+            ExtensionsListJSONJSON.Extensions.Add(FoundItem);
+        }
+
+        private void ToggleToolbar_Toggled(object sender, RoutedEventArgs e)
+        {
+            List<ExtensionsJSON> ExtensionsListJSON = new List<ExtensionsJSON>();
+         //   LoadingControl.IsLoading = true;
+            ToggleSwitch t = sender as ToggleSwitch;
+            var SenderFramework = (FrameworkElement)sender;
+            var DataContext = SenderFramework.DataContext;
+            ExtensionsJSON SenderPost = DataContext as ExtensionsJSON;
+            SenderPost.IsEnabledJSON = t.IsOn;
+            ExtensionsJSON FoundItem = ExtensionsListJSONJSON.Extensions.Find(x => SenderPost.Id == SenderPost.Id);
+
+            FoundItem.IsToolbar = t.IsOn;
+            SenderPost.IsToolbar = t.IsOn;
+           StackPanel i = VisualTreeHelper.GetParent(t) as StackPanel;
+            ToggleSwitch tt = i.Children[1] as ToggleSwitch;
+            tt.IsOn = FoundItem.IsEnabledJSON;
+            FoundItem.IsEnabledJSON = tt.IsOn;
+            ExtensionsListJSONJSON.Extensions.Remove(FoundItem);
+            ExtensionsListJSONJSON.Extensions.Add(FoundItem);
+
         }
     }
 }

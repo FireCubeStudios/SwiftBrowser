@@ -5,28 +5,42 @@
     xmlns:local="using:SwiftBrowser.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
         <StackPanel>
-            <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="30">Extensions store manager for browser extensions for the browser that you are browsing</TextBlock>
+          
+            <Button IsEnabled="False">submit extension</Button>
             <ListView x:Name="ExtensionsList" Margin="5">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
                             <StackPanel>
-                                <Image Height="50" Width="50" Source="{Binding }" Margin="2"></Image>
+                                <Image Height="50" Width="50" Source="{Binding IconJSON}" Margin="2"></Image>
                             </StackPanel>
-                            <StackPanel>
-                                <TextBlock Text="{Binding }" Margin="2" FontSize="25"></TextBlock>
-                                <TextBlock Text="{Binding }" Margin="2"></TextBlock>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding NameJSON}" Margin="2" FontSize="25"></TextBlock>
+                                    <TextBlock Text="{Binding DescriptionJSON}" Margin="2"></TextBlock>
+                                </StackPanel>
                             </StackPanel>
-                            <ToggleSwitch x:Name="Toggle" IsOn="{Binding }" Margin="5" Header="Enable:" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
+                            <ToggleSwitch x:Name="Toggle" IsOn="{Binding IsEnabledJSON}" Margin="5" Header="Enable:" Toggled="Toggle_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
+                            <ToggleSwitch x:Name="ToggleToolbar" IsOn="{Binding IsToolbar}" Margin="5" Header="Show in toolbar:" Toggled="ToggleToolbar_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            <controls:Loading x:Name="LoadingControl" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <controls:Loading.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.7" />
+                </controls:Loading.Background>
+                <StackPanel>
+                    <ProgressRing Margin="5" IsActive="True"></ProgressRing>
+                    <TextBlock Margin="5">Saving changes</TextBlock>
+                </StackPanel>
+            </controls:Loading>
         </StackPanel>
     </Grid>
 </Page>

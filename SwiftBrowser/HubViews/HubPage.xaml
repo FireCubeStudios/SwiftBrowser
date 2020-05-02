@@ -7,9 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
-    <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+    <Grid Background="Transparent">
         <muxc:NavigationView x:Name="HubNav" ItemInvoked="HubNav_ItemInvoked" PaneDisplayMode="LeftCompact" IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
             <muxc:NavigationView.MenuItems>
                 <muxc:NavigationViewItem  x:Name="Fav" Icon="SolidStar" Content="Favorites" />
@@ -21,6 +21,7 @@
                         <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF439;"/>
                     </muxc:NavigationViewItem.Icon>
                 </muxc:NavigationViewItem>
+                <muxc:NavigationViewItem x:Name="Sav" Icon="sync" Content="Sync"/>
             </muxc:NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>
         </muxc:NavigationView>

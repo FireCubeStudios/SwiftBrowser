@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 using SwiftBrowser.Helpers;
 using SwiftBrowser.Services;
 
 using Windows.ApplicationModel;
+using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace SwiftBrowser.Views
@@ -18,7 +22,9 @@ namespace SwiftBrowser.Views
     public sealed partial class SettingsPage : Page, INotifyPropertyChanged
     {
         private ElementTheme _elementTheme = ThemeSelectorService.Theme;
-
+        Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+        ExtensionsClass ExtensionsListJSONJSON;
+        public static ExtensionsStore methods { get; set; }
         public ElementTheme ElementTheme
         {
             get { return _elementTheme; }
@@ -26,35 +32,183 @@ namespace SwiftBrowser.Views
             set { Set(ref _elementTheme, value); }
         }
 
-        private string _versionDescription;
-
-        public string VersionDescription
-        {
-            get { return _versionDescription; }
-
-            set { Set(ref _versionDescription, value); }
-        }
-
+   
         public SettingsPage()
         {
             InitializeComponent();
-        }
-
-        protected override async void OnNavigatedTo(NavigationEventArgs e)
-        {
-            await InitializeAsync();
-        }
-
-        private async Task InitializeAsync()
-        {
-            VersionDescription = GetVersionDescription();
-            await Task.CompletedTask;
-
-            if (Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.IsSupported())
+            try
             {
-                FeedbackLink.Visibility = Visibility.Visible;
+                tICO.IsOn = (bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
+                TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
+                TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
+                TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
+                TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
+            }
+            catch
+            {
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = true;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = true;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = true;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = true;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = true;
+                tICO.IsOn = (bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
+                TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
+                TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
+                TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
+                TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
+            }
+            if ((bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] == true)
+            {
+
+                Option2RadioButton.IsChecked = true;
+
+            }
+            else
+            {
+                Option1RadioButton.IsChecked = true;
+
+            }
+
+            LoadItems();
+        }
+
+        public class ExtensionsClass
+        {
+            public List<ExtensionsJSON> Extensions { get; set; }
+        }
+
+        /*  public class Extensions
+          {
+              public string Header { get; set; }
+              public string Url { get; set; }
+              public string FavIcon { get; set; }
+          }*/
+        public class ExtensionsJSON
+        {
+            public string NameJSON { get; set; }
+            public string DescriptionJSON { get; set; }
+            public string IconJSON { get; set; }
+            public int Id { get; set; }
+            public bool IsEnabledJSON { get; set; }
+            public bool IsIncognitoEnabled { get; set; }
+            public bool IsToolbar { get; set; }
+            public string Page { get; set; }
+        }
+        public async void LoadItems()
+        {
+            List<ExtensionsJSON> ExtensionsListJSON = new List<ExtensionsJSON>();
+            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile file = await folder.GetFileAsync("Extensions.json"); // error here
+            var JSONData = "e";
+            JSONData = await Windows.Storage.FileIO.ReadTextAsync(file);
+            ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
+            foreach (var item in ExtensionsListJSONJSON.Extensions)
+            {
+                if (item.IsEnabledJSON == true)
+                {
+                    ExtensionsListJSON.Add(new ExtensionsJSON()
+                    {
+                        NameJSON = item.NameJSON,
+                        DescriptionJSON = item.DescriptionJSON,
+                        IconJSON = item.IconJSON,
+                        IsEnabledJSON = item.IsEnabledJSON,
+                        Page = item.Page,
+                        IsToolbar = item.IsToolbar
+                    });
+                }
+            }
+            ExtensionsList.ItemsSource = ExtensionsListJSON;
+        }
+        public async void closing(object sender, RoutedEventArgs e)
+        {
+            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile file = await folder.GetFileAsync("Extensions.json");
+            var SerializedObject = JsonConvert.SerializeObject(ExtensionsListJSONJSON, Formatting.Indented);
+
+            await Windows.Storage.FileIO.WriteTextAsync(file, SerializedObject);
+
+        }
+
+        private void ToggleToolbar_Toggled(object sender, RoutedEventArgs e)
+        {
+            List<ExtensionsJSON> ExtensionsListJSON = new List<ExtensionsJSON>();
+            //   LoadingControl.IsLoading = true;
+            ToggleSwitch t = sender as ToggleSwitch;
+            var SenderFramework = (FrameworkElement)sender;
+            var DataContext = SenderFramework.DataContext;
+            ExtensionsJSON SenderPost = DataContext as ExtensionsJSON;
+            ExtensionsJSON FoundItem = ExtensionsListJSONJSON.Extensions.Find(x => SenderPost.Id == SenderPost.Id);
+            FoundItem.IsToolbar = t.IsOn;
+            SenderPost.IsToolbar = t.IsOn;
+            FoundItem.IsEnabledJSON = true;
+            ExtensionsListJSONJSON.Extensions.Remove(FoundItem);
+            ExtensionsListJSONJSON.Extensions.Add(FoundItem);
+
+        }
+        private void TICO_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = toggle.IsOn;
+
+        }
+
+        private void TfAV_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = toggle.IsOn;
+
+        }
+
+        private void TqUI_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = toggle.IsOn;
+
+        }
+
+        private void TmOR_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = toggle.IsOn;
+
+
+        }
+
+        private void TSea_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = toggle.IsOn;
+
+        }
+
+        private void Option2RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            TextUrl.Visibility = Visibility.Visible;
+        }
+
+        private void Option1RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            TextUrl.Visibility = Visibility.Collapsed;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = Option2RadioButton.IsChecked;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"] = "";
+        }
+
+        private async void TextUrl_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (sender.Text.StartsWith("Https://") == true)
+            {
+
+
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = Option2RadioButton.IsChecked;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"] = args.QueryText;
+            }
+            else
+            {
+                var m = new MessageDialog("Not valid url");
+                await m.ShowAsync();
             }
         }
+
 
         private string GetVersionDescription()
         {
@@ -91,11 +245,5 @@ namespace SwiftBrowser.Views
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private async void FeedbackLink_Click(object sender, RoutedEventArgs e)
-        {
-            // This launcher is part of the Store Services SDK https://docs.microsoft.com/windows/uwp/monetize/microsoft-store-services-sdk
-            var launcher = Microsoft.Services.Store.Engagement.StoreServicesFeedbackLauncher.GetDefault();
-            await launcher.LaunchAsync();
-        }
     }
 }

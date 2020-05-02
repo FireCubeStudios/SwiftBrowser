@@ -10,7 +10,7 @@
     Style="{StaticResource PageStyle}"
     mc:Ignorable="d">
     <Grid>
-        <Grid x:Name="TitleGrid" Background="{ThemeResource SystemControlAcrylicWindowBrush}"></Grid>
+        <Grid x:Name="TitleGrid" Loaded="TitleGrid_Loaded" Background="{ThemeResource SystemControlAcrylicWindowBrush}"></Grid>
         <winui:TeachingTip x:Name="RestoreTip"                   
 	Title="Restore previous tabs"
                            ActionButtonClick="RestoreTip_ActionButtonClick"
@@ -20,8 +20,9 @@
                 <winui:SymbolIconSource Symbol="Save" />
             </winui:TeachingTip.IconSource>
         </winui:TeachingTip>
+
         <winui:TabView
-            CornerRadius="2"
+            CornerRadius="1"
             x:Load="False"
             Background="{ThemeResource SystemControlAcrylicWindowBrush}"
         x:Name="TabsControl"
@@ -33,12 +34,6 @@
             CanDragTabs="True"
         AddTabButtonClick="OnAddTabButtonClick"
             TabCloseRequested="OnTabCloseRequested">
-            <winui:TabView.TabStripHeader>
-                <Grid x:Name="ShellTitlebarInset" Background="Transparent" />
-            </winui:TabView.TabStripHeader>
-            <winui:TabView.TabStripFooter>
-                <Grid x:Name="CustomDragRegion" Background="Transparent" />
-            </winui:TabView.TabStripFooter>
             <winui:TabView.KeyboardAccelerators>
                 <KeyboardAccelerator Key="T" Modifiers="Control" Invoked="NewTabKeyboardAccelerator_Invoked" />
                 <KeyboardAccelerator Key="Number1" Modifiers="Control" Invoked="NavigateToNumberedTabKeyboardAccelerator_Invoked" />

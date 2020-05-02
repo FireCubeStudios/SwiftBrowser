@@ -34,77 +34,37 @@ namespace SwiftBrowser.Views
         public static AdaptiveGridView HomeGrid { get; set; }
         public static WebView WebViewControl { get; set; }
         WebView webViewControl;
+        public bool isfirst = true;
         public HomePage()
         {
             this.InitializeComponent();
-            LoadFavorites();
-            LoadQuickPinned();
-            HomeGrid = FavouritesGridView;
-            webViewControl = WebViewControl;
-            try { 
-            tICO.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
-                if((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] == true)
-                {
-                    icon.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    icon.Visibility = Visibility.Collapsed;
-                }
-            TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
-                if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] == true)
-                {
-                    FavouritesGridView.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    FavouritesGridView.Visibility = Visibility.Collapsed;
-                }
-                TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
-                if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] == true)
-                {
-                    QuickPinnedGrid.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    QuickPinnedGrid.Visibility = Visibility.Collapsed;
-                }
-                TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
-                if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] == true)
-                {
-              loadcontentmore.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                   loadcontentmore.Visibility = Visibility.Collapsed;
-                }
-                TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
-                if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] == true)
-                {
-                    SearchBox.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    SearchBox.Visibility = Visibility.Collapsed;
-                }
-            }
-            catch
+        }
+        private void Option2RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            TextUrl.Visibility = Visibility.Visible;
+        }
+
+        private void Option1RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            TextUrl.Visibility = Visibility.Collapsed;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = Option2RadioButton.IsChecked;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"] = "";
+        }
+
+        private async void TextUrl_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            if (sender.Text.StartsWith("https://") == true)
             {
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = true;
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = true;
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = true;
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = true;
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = true;
-                tICO.IsOn = (bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
-                QuickPinnedGrid.Visibility = Visibility.Visible;
-                loadcontentmore.Visibility = Visibility.Visible;
-                FavouritesGridView.Visibility = Visibility.Visible;
-                icon.Visibility = Visibility.Visible;
-                TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
-                TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
-                TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
-                TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
-                SearchBox.Visibility = Visibility.Visible;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = Option2RadioButton.IsChecked;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"] = args.QueryText;
+                FindName("WebViewHome");
+                WebViewHome.Navigate(new Uri(args.QueryText));
+                Home.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                var m = new MessageDialog("Not valid url");
+                await m.ShowAsync();
             }
         }
         List<FavouritesJSON> FavouritesList;
@@ -259,7 +219,7 @@ namespace SwiftBrowser.Views
 
         private void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-           webViewControl.Navigate(new Uri("https://www.ecosia.org/search?q=" + sender.Text));
+           webViewControl.Navigate(new Uri((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["SearchEngine"] + sender.Text));
         }
 
         private void QGrid_Tapped(object sender, TappedRoutedEventArgs e)
@@ -386,6 +346,124 @@ namespace SwiftBrowser.Views
             {
                 SearchBox.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void QuickPinnedGridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            FavouritesJSON SenderPost = e.ClickedItem as FavouritesJSON;
+            webViewControl.Navigate(new Uri(SenderPost.UrlJSON));
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            FindName("Home");
+        }
+
+        private void Home_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (isfirst == true)
+            {
+                isfirst = false;
+                HomeGrid = FavouritesGridView;
+                webViewControl = WebViewControl;
+                try
+                {
+                    tICO.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
+                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] == true)
+                    {
+                        icon.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        icon.Visibility = Visibility.Collapsed;
+                    }
+                    TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
+                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] == true)
+                    {
+                        FavouritesGridView.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        FavouritesGridView.Visibility = Visibility.Collapsed;
+                    }
+                    TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
+                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] == true)
+                    {
+                        QuickPinnedGrid.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        QuickPinnedGrid.Visibility = Visibility.Collapsed;
+                    }
+                    TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
+                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] == true)
+                    {
+                        loadcontentmore.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        loadcontentmore.Visibility = Visibility.Collapsed;
+                    }
+                    TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
+                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] == true)
+                    {
+                        SearchBox.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        SearchBox.Visibility = Visibility.Collapsed;
+                    }
+                }
+                catch
+                {
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = true;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = true;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = true;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = true;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = true;
+                    tICO.IsOn = (bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
+                    QuickPinnedGrid.Visibility = Visibility.Visible;
+                    loadcontentmore.Visibility = Visibility.Visible;
+                    FavouritesGridView.Visibility = Visibility.Visible;
+                    icon.Visibility = Visibility.Visible;
+                    TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
+                    TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
+                    TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
+                    TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
+                    SearchBox.Visibility = Visibility.Visible;
+                }
+                try
+                {
+                    if ((bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] == true)
+                    {
+                        FindName("WebViewHome");
+                        WebViewHome.Navigate(new Uri((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"]));
+                        Option2RadioButton.IsChecked = true;
+                        UnloadObject(Home);
+                    }
+                    else
+                    {
+                        Option1RadioButton.IsChecked = true;
+                        UnloadObject(WebViewHome);
+                        LoadFavorites();
+                        LoadQuickPinned();
+                    }
+                }
+                catch
+                {
+                    Option1RadioButton.IsChecked = true;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = false;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"] = "";
+                    LoadFavorites();
+                    LoadQuickPinned();
+                    UnloadObject(WebViewHome);
+                }
+            }
+        }
+
+        private void SearchBox_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SearchBox.Width = Window.Current.Bounds.Height - 500;
         }
     }
 }

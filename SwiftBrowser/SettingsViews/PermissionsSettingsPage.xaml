@@ -1,0 +1,76 @@
+﻿<Page
+    x:Class="SwiftBrowser.SettingsViews.PermissionsSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.SettingsViews"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid HorizontalAlignment="Center">
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock Margin="5" FontSize="30">Permissions:</TextBlock>
+                <TextBlock Margin="5">(note permissions arent supported yet and will always be denied by default without user consent)</TextBlock>
+                <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                    <TextBlock Margin="5" FontSize="20">Geolocation:</TextBlock>
+                    <muxc:RadioButtons Header="Options:">
+                        <RadioButton  Content="Ask for permission"/>
+                        <RadioButton  Content="Always allow" />
+                        <RadioButton Content="Always deny" IsChecked="True"/>
+                    </muxc:RadioButtons>
+                </StackPanel>
+                <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                    <TextBlock Margin="5" FontSize="20">ImmersiveView (webVR):</TextBlock>
+                    <muxc:RadioButtons Header="Options:">
+                        <RadioButton  Content="Ask for permission"/>
+                        <RadioButton  Content="Always allow" />
+                        <RadioButton Content="Always deny" IsChecked="True"/>
+                    </muxc:RadioButtons>
+                </StackPanel>
+                <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                    <TextBlock Margin="5" FontSize="20">Media:</TextBlock>
+                    <muxc:RadioButtons Header="Options:">
+                        <RadioButton  Content="Ask for permission"/>
+                        <RadioButton  Content="Always allow" />
+                        <RadioButton Content="Always deny" IsChecked="True"/>
+                    </muxc:RadioButtons>
+                </StackPanel>
+                <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                    <TextBlock Margin="5" FontSize="20">PointerLock:</TextBlock>
+                    <muxc:RadioButtons Header="Options:">
+                        <RadioButton  Content="Ask for permission"/>
+                        <RadioButton  Content="Always allow" />
+                        <RadioButton Content="Always deny" IsChecked="True"/>
+                    </muxc:RadioButtons>
+                </StackPanel>
+                <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                    <TextBlock Margin="5" FontSize="20">Unlimited IndexedDB Quota:</TextBlock>
+                    <muxc:RadioButtons Header="Options:">
+                        <RadioButton  Content="Ask for permission"/>
+                        <RadioButton  Content="Always allow" />
+                        <RadioButton Content="Always deny" IsChecked="True"/>
+                    </muxc:RadioButtons>
+                </StackPanel>
+                <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                    <TextBlock Margin="5" FontSize="20">WebNotifications:</TextBlock>
+                    <muxc:RadioButtons Header="Options:">
+                        <RadioButton  Content="Ask for permission"/>
+                        <RadioButton  Content="Always allow" />
+                        <RadioButton Content="Always deny" IsChecked="True"/>
+                    </muxc:RadioButtons>
+                </StackPanel>
+                <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                    <TextBlock Margin="5" FontSize="20">Screen:</TextBlock>
+                    <muxc:RadioButtons Header="Options:">
+                        <RadioButton  Content="Ask for permission"/>
+                        <RadioButton  Content="Always allow" />
+                        <RadioButton Content="Always deny" IsChecked="True"/>
+                    </muxc:RadioButtons>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

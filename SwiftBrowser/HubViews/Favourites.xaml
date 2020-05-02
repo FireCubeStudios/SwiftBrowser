@@ -6,11 +6,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
-    <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-        <StackPanel Width="400">
-            <CommandBar  Background="{ThemeResource SystemControlAcrylicWindowBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="True" OverflowButtonVisibility="Visible">
+    <Grid Background="Transparent">
+        <StackPanel>
+            <CommandBar  Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="True" OverflowButtonVisibility="Visible">
                 <AppBarButton Icon="Add" Label="Add to favorites" Click="AddFav"></AppBarButton>
                 <AppBarButton Icon="Add" Label="Add a site">
                     <AppBarButton.Flyout>
@@ -29,22 +29,23 @@
                         </Flyout>
                     </AppBarButton.Flyout>
                 </AppBarButton>
-                <AppBarButton Icon="Import" Label="Import Favorites"></AppBarButton>
-                <AppBarButton Icon="Share" Label="Export favorites"></AppBarButton>
+                <AppBarButton Icon="Import" Label="Import Favorites" IsEnabled="False"></AppBarButton>
+                <AppBarButton Icon="Share" Label="Export favorites" IsEnabled="False"></AppBarButton>
             </CommandBar>
             <ListView
-                   Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+                   Background="Transparent"
   SelectionMode="None"
+                IsItemClickEnabled="True"
+                ItemClick="Favorites_ItemClick"
     x:Name="Favorites"
     HorizontalAlignment="Left">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="5"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                        <StackPanel Orientation="Horizontal" Margin="5"  Background="Transparent">
                             <Image Height="15" Width="15" Source="{Binding FavIconJSON}" Margin="5"/>
                             <TextBlock Text="{Binding HeaderJSON}" Margin="0,5,0,5"/>
-                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-                                <AppBarButton Icon="OpenFile" Label="Open" Click="OpenFav" Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
-                                <AppBarButton Icon="Delete" Click="DeleteFav" Label="Delete"  Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
+                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="Transparent">
+                                <AppBarButton Icon="Delete" Click="DeleteFav" Label="Delete"  Background="Transparent"></AppBarButton>
                             </CommandBar>
                         </StackPanel>
                     </DataTemplate>
