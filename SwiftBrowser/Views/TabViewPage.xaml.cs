@@ -14,6 +14,7 @@ using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Core.Preview;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,24 +35,46 @@ namespace SwiftBrowser.Views
         {
 
         };
-      //  ToolTip T = new ToolTip();
+        //  ToolTip T = new ToolTip();
         public static TabView TabviewPageControl { get; set; }
         Flyout PreviewFlyout = new Flyout();
         public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
         Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
         public bool IncognitoMode;
         TabViewItem RightClickedItem;
+        public static Grid titlebar { get; set; }
+        public static Microsoft.Toolkit.Uwp.UI.Controls.InAppNotification InAppNotificationMain { get; set; }
         public static TabViewPage SingletonReference { get; set; }
-
         public TabViewPage()
         {
             InitializeComponent();
+            InAppNotificationMain = UniversalNormalNotificationInApp;
             SingletonReference = this;
+            titlebar = AppTitleBar;
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
+            //    coreTitleBar.LayoutMetricsChanged += CustomDragRegion_SizeChanged;
 
-         // Window.Current.SetTitleBar(TabsControl);
+            Window.Current.SetTitleBar(AppTitleBar);
         }
+
+        private void CoreTitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
+        {
+            if (FlowDirection == FlowDirection.LeftToRight)
+            {
+                CustomDragRegion.MinWidth = sender.SystemOverlayRightInset;
+                ShellTitlebarInset.MinWidth = sender.SystemOverlayLeftInset;
+            }
+            else
+            {
+                CustomDragRegion.MinWidth = sender.SystemOverlayLeftInset;
+                ShellTitlebarInset.MinWidth = sender.SystemOverlayRightInset;
+            }
+
+            CustomDragRegion.Height = ShellTitlebarInset.Height = sender.Height;
+        }
+
+
         public class SyncClass
         {
             public List<SyncJSON> Sync { get; set; }
@@ -72,8 +95,8 @@ namespace SwiftBrowser.Views
         public async void StartUp()
         {
 
-           try
-           {
+            try
+            {
                 if ((bool)Windows.Storage.ApplicationData.Current.RoamingSettings.Values["Syncing"] == true)
                 {
                     // try
@@ -104,32 +127,32 @@ namespace SwiftBrowser.Views
                 Windows.Storage.ApplicationData.Current.RoamingSettings.Values["SyncId"] = Windows.Storage.ApplicationData.Current.LocalSettings.Values["SyncId"];
                 Windows.Storage.ApplicationData.Current.RoamingSettings.Values["Syncing"] = false;
             }
-               
-               // }
-               /*  catch
-                 {
-                     Windows.Storage.ApplicationData.Current.RoamingSettings.Values["Syncing"] = false;
-                 }*/
-            
-            
+
+            // }
+            /*  catch
+              {
+                  Windows.Storage.ApplicationData.Current.RoamingSettings.Values["Syncing"] = false;
+              }*/
+
+
         }
         public async void ShowRestoreDialog()
         {
             StorageFolder folderx = Windows.Storage.ApplicationData.Current.LocalFolder;
             try
             {
-            StorageFile filex = await folderx.GetFileAsync("RestoreTabItems.json");
-            var textx = await FileIO.ReadTextAsync(filex);
-            TabsClass Listx = JsonConvert.DeserializeObject<TabsClass>(textx);
-            if(Listx.Tabs.Count != 0)
-            {
+                StorageFile filex = await folderx.GetFileAsync("RestoreTabItems.json");
+                var textx = await FileIO.ReadTextAsync(filex);
+                TabsClass Listx = JsonConvert.DeserializeObject<TabsClass>(textx);
+                if (Listx.Tabs.Count != 0)
+                {
                     if ((int)Windows.Storage.ApplicationData.Current.LocalSettings.Values["RestoreSettings"] == 2)
                     {
                         RestoreTip.IsOpen = true;
                         await Task.Delay(5000);
                         RestoreTip.IsOpen = false;
                     }
-                    else if((int)Windows.Storage.ApplicationData.Current.LocalSettings.Values["RestoreSettings"] == 1)
+                    else if ((int)Windows.Storage.ApplicationData.Current.LocalSettings.Values["RestoreSettings"] == 1)
                     {
                         // try {
                         StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
@@ -195,7 +218,7 @@ namespace SwiftBrowser.Views
 
                             newTab.PointerEntered += NewTab_PointerEntered;
                             newTab.RightTapped += NewTab_RightTapped;
-                            
+
                             Frame frame = new Frame();
                             WebViewPage.IncognitoModeStatic = false;
                             newTab.Content = frame;
@@ -209,6 +232,14 @@ namespace SwiftBrowser.Views
                             WebViewPage.MainTab = this.TabsControl;
                             TabsControl.SelectedItem = newTab;
                             WebViewPage.MainTab = this.TabsControl;
+                            try
+                            {
+                                AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+                            }
+                            catch
+                            {
+                                AppTitleBar.Width = 240;
+                            }
                         }
                         /* }
                           catch
@@ -225,90 +256,98 @@ namespace SwiftBrowser.Views
         }
         public async void LoadTabViewRestore()
         {
-          // try {
-                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-                StorageFile file = await folder.GetFileAsync("RestoreTabItems.json");
-                var text = await FileIO.ReadTextAsync(file);
+            // try {
+            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile file = await folder.GetFileAsync("RestoreTabItems.json");
+            var text = await FileIO.ReadTextAsync(file);
             TabsClass List = JsonConvert.DeserializeObject<TabsClass>(text);
 
-                foreach (var item in List.Tabs)
-                {
-                    localSettings.Values["SourceToGo"] = item.TabViewItemJSON;
-                    var newTab = new TabViewItem();
-                    newTab.IconSource = new WinUI.SymbolIconSource() { Symbol = Symbol.Home };
-                    newTab.Header = "Home Tab";
-                    MenuFlyout Flyout = new MenuFlyout();
-                    MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
-                    OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
-                    OpenInnewwindow.Text = "Move to new window";
-                    OpenInnewwindow.Click += OpenInnewwindow_Click1;
-                    Flyout.Items.Add(OpenInnewwindow);
-                    Flyout.Items.Add(new MenuFlyoutSeparator());
-                    MenuFlyoutItem Refresh = new MenuFlyoutItem();
-                    Refresh.Icon = new SymbolIcon(Symbol.Refresh);
-                    Refresh.Text = "Refresh Tab";
-                    Refresh.Click += Refresh_Click;
-                    Flyout.Items.Add(Refresh);
-                    Flyout.Items.Add(new MenuFlyoutSeparator());
-                    MenuFlyoutItem newtabF = new MenuFlyoutItem();
-                    newtabF.Icon = new SymbolIcon(Symbol.Add);
-                    newtabF.Text = "New Tab";
-                    newtabF.Click += AddAll;
-                    Flyout.Items.Add(newtabF);
-                    MenuFlyoutItem newWindow = new MenuFlyoutItem();
-                    newWindow.Icon = new SymbolIcon(Symbol.Add);
-                    newWindow.Text = "New secondary window";
-                    newWindow.Click += NewWindow_Click;
-                    Flyout.Items.Add(newWindow);
-
-                    MenuFlyoutItem newIncognito = new MenuFlyoutItem();
-                    newIncognito.Icon = new SymbolIcon(Symbol.Add);
-                    newIncognito.Text = "New incognito window";
-                    newIncognito.Click += Incognito_Click;
-                    Flyout.Items.Add(newIncognito);
-
-                    Flyout.Items.Add(new MenuFlyoutSeparator());
-                    MenuFlyoutItem CloseTab = new MenuFlyoutItem();
-                    CloseTab.Icon = new SymbolIcon(Symbol.Delete);
-                    CloseTab.Text = "Close Tab";
-                    CloseTab.Click += CloseTab_Click;
-                    Flyout.Items.Add(CloseTab);
-                    MenuFlyoutItem CloseO = new MenuFlyoutItem();
-                    CloseO.Icon = new SymbolIcon(Symbol.Delete);
-                    CloseO.Text = "Close other tabs";
-                    CloseO.Click += CloseO_Click;
-                    Flyout.Items.Add(CloseO);
-                    MenuFlyoutItem CloseAll = new MenuFlyoutItem();
-                    CloseAll.Icon = new SymbolIcon(Symbol.Delete);
-                    CloseAll.Text = "Close all tabs";
-                    CloseAll.Click += ClearAll;
-                    Flyout.Items.Add(CloseAll);
-
-                    newTab.ContextFlyout = Flyout;
-                    ToolTip T = new ToolTip();
-
-                    newTab.PointerEntered += NewTab_PointerEntered;
-                    newTab.RightTapped += NewTab_RightTapped;
-                    
-                    Frame frame = new Frame();
-                    WebViewPage.IncognitoModeStatic = false;
-                    newTab.Content = frame;
-                    WebViewPage.IncognitoModeStatic = false;
-                    WebViewPage.CurrentMainTab = newTab;
-                    WebViewPage.MainTab = this.TabsControl;
-                    frame.Navigate(typeof(WebViewPage));
-                    WebViewPage.IncognitoModeStatic = false;
-                    WebViewPage.MainTab = this.TabsControl;
-                    TabsControl.TabItems.Add(newTab);
-                    WebViewPage.MainTab = this.TabsControl;
-                    TabsControl.SelectedItem = newTab;
-                    WebViewPage.MainTab = this.TabsControl;
-            }
-          /* }
-            catch
+            foreach (var item in List.Tabs)
             {
-                return;
-            }*/
+                localSettings.Values["SourceToGo"] = item.TabViewItemJSON;
+                var newTab = new TabViewItem();
+                newTab.IconSource = new WinUI.SymbolIconSource() { Symbol = Symbol.Home };
+                newTab.Header = "Home Tab";
+                MenuFlyout Flyout = new MenuFlyout();
+                MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
+                OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
+                OpenInnewwindow.Text = "Move to new window";
+                OpenInnewwindow.Click += OpenInnewwindow_Click1;
+                Flyout.Items.Add(OpenInnewwindow);
+                Flyout.Items.Add(new MenuFlyoutSeparator());
+                MenuFlyoutItem Refresh = new MenuFlyoutItem();
+                Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+                Refresh.Text = "Refresh Tab";
+                Refresh.Click += Refresh_Click;
+                Flyout.Items.Add(Refresh);
+                Flyout.Items.Add(new MenuFlyoutSeparator());
+                MenuFlyoutItem newtabF = new MenuFlyoutItem();
+                newtabF.Icon = new SymbolIcon(Symbol.Add);
+                newtabF.Text = "New Tab";
+                newtabF.Click += AddAll;
+                Flyout.Items.Add(newtabF);
+                MenuFlyoutItem newWindow = new MenuFlyoutItem();
+                newWindow.Icon = new SymbolIcon(Symbol.Add);
+                newWindow.Text = "New secondary window";
+                newWindow.Click += NewWindow_Click;
+                Flyout.Items.Add(newWindow);
+
+                MenuFlyoutItem newIncognito = new MenuFlyoutItem();
+                newIncognito.Icon = new SymbolIcon(Symbol.Add);
+                newIncognito.Text = "New incognito window";
+                newIncognito.Click += Incognito_Click;
+                Flyout.Items.Add(newIncognito);
+
+                Flyout.Items.Add(new MenuFlyoutSeparator());
+                MenuFlyoutItem CloseTab = new MenuFlyoutItem();
+                CloseTab.Icon = new SymbolIcon(Symbol.Delete);
+                CloseTab.Text = "Close Tab";
+                CloseTab.Click += CloseTab_Click;
+                Flyout.Items.Add(CloseTab);
+                MenuFlyoutItem CloseO = new MenuFlyoutItem();
+                CloseO.Icon = new SymbolIcon(Symbol.Delete);
+                CloseO.Text = "Close other tabs";
+                CloseO.Click += CloseO_Click;
+                Flyout.Items.Add(CloseO);
+                MenuFlyoutItem CloseAll = new MenuFlyoutItem();
+                CloseAll.Icon = new SymbolIcon(Symbol.Delete);
+                CloseAll.Text = "Close all tabs";
+                CloseAll.Click += ClearAll;
+                Flyout.Items.Add(CloseAll);
+
+                newTab.ContextFlyout = Flyout;
+                ToolTip T = new ToolTip();
+
+                newTab.PointerEntered += NewTab_PointerEntered;
+                newTab.RightTapped += NewTab_RightTapped;
+
+                Frame frame = new Frame();
+                WebViewPage.IncognitoModeStatic = false;
+                newTab.Content = frame;
+                WebViewPage.IncognitoModeStatic = false;
+                WebViewPage.CurrentMainTab = newTab;
+                try
+                {
+                    AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+                }
+                catch
+                {
+                    AppTitleBar.Width = 240;
+                }
+                WebViewPage.MainTab = this.TabsControl;
+                frame.Navigate(typeof(WebViewPage));
+                WebViewPage.IncognitoModeStatic = false;
+                WebViewPage.MainTab = this.TabsControl;
+                TabsControl.TabItems.Add(newTab);
+                WebViewPage.MainTab = this.TabsControl;
+                TabsControl.SelectedItem = newTab;
+                WebViewPage.MainTab = this.TabsControl;
+            }
+            /* }
+              catch
+              {
+                  return;
+              }*/
         }
         public class TabsClass
         {
@@ -335,7 +374,7 @@ namespace SwiftBrowser.Views
             string filepath = @"Assets\RestoreTabItems.json";
             StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
             StorageFile file = await folder.GetFileAsync(filepath);
-        String Text = await FileIO.ReadTextAsync(file);
+            String Text = await FileIO.ReadTextAsync(file);
             TabsClass Tabslist = JsonConvert.DeserializeObject<TabsClass>(Text);
             //  List<TabsClass> Tabslist = new List<TabsClass>();
             foreach (TabViewItem TabviewItems in TabsControl.TabItems)
@@ -365,89 +404,84 @@ namespace SwiftBrowser.Views
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            WebView FavW = RightClickedItem.Tag as WebView;
-            FavW.Refresh();
+            try
+            {
+                WebView FavW = RightClickedItem.Tag as WebView;
+                FavW.Refresh();
+            }
+            catch
+            {
+                return;
+            }
         }
 
         private async void OpenInnewwindow_Click1(object sender, RoutedEventArgs e)
         {
             CoreApplicationView newView = CoreApplication.CreateNewView();
             int newViewId = 0;
+            TabViewItem t = (TabViewItem)TabsControl.TabItems[0];
+            int w = (int)t.Width;
+            try
+            {
+                if (TabsControl.TabItems.Count <= 7)
+                {
+                    AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * w);
+                }
+                else
+                {
+                    AppTitleBar.Width = 240;
+                }
+            }
+            catch
+            {
+                AppTitleBar.Width = 240;
+            }
             TabsControl.TabItems.Remove(RightClickedItem);
             WebView tag = RightClickedItem.Tag as WebView;
             localSettings.Values["SourceToGo"] = tag.Source.ToString();
-            // TabsControl.TabItems.Remove(args.Tab);
-            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                Frame frame = new Frame();
-                frame.Navigate(typeof(TabViewPage));
-                Window.Current.Content = frame;
-                // You have to activate the window in order to show it later.
-                Window.Current.Activate();
-
-                newViewId = ApplicationView.GetForCurrentView().Id;
-            });
-            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+            var uriNewWindow = new Uri(@"swiftlaunch:" + tag.Source.ToString());
+            await Windows.System.Launcher.LaunchUriAsync(uriNewWindow);
         }
 
         private void NewTab_PointerExited(object sender, PointerRoutedEventArgs e)
         {
-           // PreviewFlyout.Hide();
+            // PreviewFlyout.Hide();
         }
 
         private async void NewTab_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             TabViewItem Tab = sender as TabViewItem;
             ToolTip T = ToolTipService.GetToolTip(Tab) as ToolTip;
-            try { 
-            WebView eeeee = Tab.Tag as WebView;
-            var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
-            var x = pointerPosition.X - Window.Current.Bounds.X;
-            var y = pointerPosition.Y;
-            FlyoutShowOptions ee = new FlyoutShowOptions();
-            ee.Position = pointerPosition;
-            InMemoryRandomAccessStream Prints = new InMemoryRandomAccessStream();
-            await eeeee.CapturePreviewToStreamAsync(Prints);
+            try
+            {
+                WebView eeeee = Tab.Tag as WebView;
+                var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
+                var x = pointerPosition.X - Window.Current.Bounds.X;
+                var y = pointerPosition.Y;
+                FlyoutShowOptions ee = new FlyoutShowOptions();
+                ee.Position = pointerPosition;
+                InMemoryRandomAccessStream Prints = new InMemoryRandomAccessStream();
+                await eeeee.CapturePreviewToStreamAsync(Prints);
                 BitmapImage b = new BitmapImage();
-        await b.SetSourceAsync(Prints);
-            Image ThumbNail = new Image();
-            ThumbNail.Source = b;
-            ThumbNail.Width = 220;
-            ThumbNail.Stretch = Stretch.Fill;
-            Windows.UI.Xaml.Shapes.Rectangle r = new Windows.UI.Xaml.Shapes.Rectangle();
+                await b.SetSourceAsync(Prints);
+                Image ThumbNail = new Image();
+                ThumbNail.Source = b;
+                ThumbNail.Width = 220;
+                ThumbNail.Stretch = Stretch.Fill;
+                Windows.UI.Xaml.Shapes.Rectangle r = new Windows.UI.Xaml.Shapes.Rectangle();
                 r.Fill = new SolidColorBrush(Colors.Green);
-            T.Content = ThumbNail;
-           // T.IsOpen = true;
-           }
-              catch
-              {
-                  T.Content = null;
-              }
+                T.Content = ThumbNail;
+                // T.IsOpen = true;
+            }
+            catch
+            {
+                T.Content = null;
+            }
 
             // PreviewFlyout.ShowAt(Tab);
         }
-        
-
-        private async void OpenInnewwindow_Click(object sender, RoutedEventArgs e)
-        {
-            CoreApplicationView newView = CoreApplication.CreateNewView();
-            int newViewId = 0;
 
 
-
-            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                TabViewItem t = new TabViewItem();
-                t = RightClickedItem;
-                Frame frame = new Frame();
-                frame.Navigate(typeof(TabViewPage));
-                Window.Current.Content = frame;
-                Window.Current.Activate();
-
-                newViewId = ApplicationView.GetForCurrentView().Id;
-            });
-            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
-        }
 
         private void CloseO_Click(object sender, RoutedEventArgs e)
         {
@@ -469,11 +503,12 @@ namespace SwiftBrowser.Views
                     OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
                     OpenInnewwindow.Text = "Move to new window";
                     Flyout.Items.Add(OpenInnewwindow);
-                     Flyout.Items.Add(new MenuFlyoutSeparator());
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
                     MenuFlyoutItem Refresh = new MenuFlyoutItem();
                     Refresh.Icon = new SymbolIcon(Symbol.Refresh);
                     Refresh.Text = "Refresh Tab";
                     Refresh.Click += Refresh_Click;
+                    Flyout.Items.Add(Refresh);
                     Flyout.Items.Add(new MenuFlyoutSeparator());
                     MenuFlyoutItem newtabF = new MenuFlyoutItem();
                     newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -514,7 +549,7 @@ namespace SwiftBrowser.Views
                     Flyout.Items.Add(CloseAll);
                     newTab.RightTapped += NewTab_RightTapped;
                     newTab.ContextFlyout = Flyout;
-                    
+
                     Frame frame = new Frame();
                     newTab.Content = frame;
                     WebViewPage.IncognitoModeStatic = false;
@@ -524,16 +559,58 @@ namespace SwiftBrowser.Views
                     WebViewPage.IncognitoModeStatic = false;
                     WebViewPage.MainTab = TabsControl;
                     TabsControl.TabItems.Add(newTab);
+                    try
+                    {
+                        AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+                    }
+                    catch
+                    {
+                        AppTitleBar.Width = 240;
+                    }
                     WebViewPage.MainTab = this.TabsControl;
                     TabsControl.SelectedItem = newTab;
                     RightClickedItem.Content = null;
                     TabsControl.TabItems.Remove(RightClickedItem);
+                    TabViewItem t = (TabViewItem)TabsControl.TabItems[0];
+                    int w = (int)t.Width;
+                    try
+                    {
+                        if (TabsControl.TabItems.Count <= 7)
+                        {
+                            AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * w);
+                        }
+                        else
+                        {
+                            AppTitleBar.Width = 240;
+                        }
+                    }
+                    catch
+                    {
+                        AppTitleBar.Width = 240;
+                    }
                     GC.Collect();
                 }
                 else
                 {
                     RightClickedItem.Content = null;
                     TabsControl.TabItems.Remove(RightClickedItem);
+                    TabViewItem t = (TabViewItem)TabsControl.TabItems[0];
+                    int w = (int)t.Width;
+                    try
+                    {
+                        if (TabsControl.TabItems.Count <= 7)
+                        {
+                            AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * w);
+                        }
+                        else
+                        {
+                            AppTitleBar.Width = 240;
+                        }
+                    }
+                    catch
+                    {
+                        AppTitleBar.Width = 240;
+                    }
                     GC.Collect();
                 }
             });
@@ -546,18 +623,9 @@ namespace SwiftBrowser.Views
 
         private async void NewWindow_Click(object sender, RoutedEventArgs e)
         {
-            CoreApplicationView newView = CoreApplication.CreateNewView();
-            int newViewId = 0;
-            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                Frame frame = new Frame();
-                frame.Navigate(typeof(TabViewPage));
-                Window.Current.Content = frame;
-                Window.Current.Activate();
-
-                newViewId = ApplicationView.GetForCurrentView().Id;
-            });
-            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+            var uriNewWindow = new Uri(@"swiftlaunch:");
+            localSettings.Values["SourceToGo"] = null;
+            await Windows.System.Launcher.LaunchUriAsync(uriNewWindow);
         }
         public void AddAll(object sender, RoutedEventArgs e)
         {
@@ -572,11 +640,12 @@ namespace SwiftBrowser.Views
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-             Flyout.Items.Add(new MenuFlyoutSeparator());
+            Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem Refresh = new MenuFlyoutItem();
             Refresh.Icon = new SymbolIcon(Symbol.Refresh);
             Refresh.Text = "Refresh Tab";
             Refresh.Click += Refresh_Click;
+            Flyout.Items.Add(Refresh);
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -616,9 +685,17 @@ namespace SwiftBrowser.Views
             newTab.ContextFlyout = Flyout;
             newTab.Header = "Home Tab";
             newTab.RightTapped += NewTab_RightTapped;
-            
+
             WebViewPage.IncognitoModeStatic = false;
             WebViewPage.CurrentMainTab = newTab;
+            try
+            {
+                AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+            }
+            catch
+            {
+                AppTitleBar.Width = 240;
+            }
             WebViewPage.MainTab = this.TabsControl;
             Frame frame = new Frame();
             newTab.Content = frame;
@@ -628,7 +705,7 @@ namespace SwiftBrowser.Views
             this.TabsControl.SelectedItem = newTab;
             GC.Collect();
         }
-            public void ClearAll(object sender, RoutedEventArgs e)
+        public void ClearAll(object sender, RoutedEventArgs e)
         {
             TabsControl.TabItems.Clear();
             var newTab = new TabViewItem();
@@ -642,11 +719,12 @@ namespace SwiftBrowser.Views
             ToolTipService.SetToolTip(newTab, T);
 
             Flyout.Items.Add(OpenInnewwindow);
-             Flyout.Items.Add(new MenuFlyoutSeparator());
+            Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem Refresh = new MenuFlyoutItem();
             Refresh.Icon = new SymbolIcon(Symbol.Refresh);
             Refresh.Text = "Refresh Tab";
             Refresh.Click += Refresh_Click;
+            Flyout.Items.Add(Refresh);
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -686,13 +764,21 @@ namespace SwiftBrowser.Views
             newTab.ContextFlyout = Flyout;
             newTab.Header = "Home Tab";
             newTab.RightTapped += NewTab_RightTapped;
-            
+
             WebViewPage.CurrentMainTab = newTab;
             WebViewPage.MainTab = this.TabsControl;
             Frame frame = new Frame();
             newTab.Content = frame;
             WebViewPage.IncognitoModeStatic = false;
             WebViewPage.CurrentMainTab = newTab;
+            try
+            {
+                AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+            }
+            catch
+            {
+                AppTitleBar.Width = 240;
+            }
             WebViewPage.MainTab = this.TabsControl;
             frame.Navigate(typeof(WebViewPage));
             WebViewPage.IncognitoModeStatic = false;
@@ -702,21 +788,11 @@ namespace SwiftBrowser.Views
         }
         private async void Incognito_Click(object sender, RoutedEventArgs e)
         {
-            CoreApplicationView newView = CoreApplication.CreateNewView();
-            int newViewId = 0;
-            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                Frame frame = new Frame();
-                frame.Navigate(typeof(IncognitoTabView), null);
-                Window.Current.Content = frame;
-                // You have to activate the window in order to show it later.
-                Window.Current.Activate();
-
-                newViewId = ApplicationView.GetForCurrentView().Id;
-            });
-            bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
+            var uriNewWindow = new Uri(@"swiftlaunchincognito:");
+            localSettings.Values["SourceToGo"] = null;
+            await Windows.System.Launcher.LaunchUriAsync(uriNewWindow);
         }
- 
+
         private void NewTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             var senderTabView = args.Element as TabView;
@@ -732,11 +808,12 @@ namespace SwiftBrowser.Views
             OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-             Flyout.Items.Add(new MenuFlyoutSeparator());
+            Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem Refresh = new MenuFlyoutItem();
             Refresh.Icon = new SymbolIcon(Symbol.Refresh);
             Refresh.Text = "Refresh Tab";
             Refresh.Click += Refresh_Click;
+            Flyout.Items.Add(Refresh);
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -780,6 +857,14 @@ namespace SwiftBrowser.Views
             WebViewPage.CurrentMainTab = newTab;
             WebViewPage.MainTab = this.TabsControl;
             frame.Navigate(typeof(WebViewPage));
+            try
+            {
+                AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+            }
+            catch
+            {
+                AppTitleBar.Width = 240;
+            }
             WebViewPage.IncognitoModeStatic = false;
             WebViewPage.MainTab = TabsControl;
             TabsControl.TabItems.Add(newTab);
@@ -787,7 +872,7 @@ namespace SwiftBrowser.Views
             TabsControl.SelectedItem = newTab;
             args.Handled = true;
         }
-      
+
         private void NavigateToNumberedTabKeyboardAccelerator_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
         {
             var InvokedTabView = (args.Element as TabView);
@@ -848,11 +933,12 @@ namespace SwiftBrowser.Views
 
             OpenInnewwindow.Text = "Move to new window";
             Flyout.Items.Add(OpenInnewwindow);
-             Flyout.Items.Add(new MenuFlyoutSeparator());
+            Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem Refresh = new MenuFlyoutItem();
             Refresh.Icon = new SymbolIcon(Symbol.Refresh);
             Refresh.Text = "Refresh Tab";
             Refresh.Click += Refresh_Click;
+            Flyout.Items.Add(Refresh);
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -892,7 +978,7 @@ namespace SwiftBrowser.Views
             newTab.PointerEntered += NewTab_PointerEntered;
             newTab.ContextFlyout = Flyout;
             newTab.Header = "Home Tab";
-            
+
             Frame frame = new Frame();
             newTab.Content = frame;
             WebViewPage.IncognitoModeStatic = false;
@@ -906,12 +992,20 @@ namespace SwiftBrowser.Views
             WebViewPage.MainTab = this.TabsControl;
             this.TabsControl.SelectedItem = newTab;
             WebViewPage.CurrentMainTab = newTab;
+            try
+            {
+                AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+            }
+            catch
+            {
+                AppTitleBar.Width = 240;
+            }
             GC.Collect(2);
         }
 
         private async void OnTabCloseRequested(WinUI.TabView sender, WinUI.TabViewTabCloseRequestedEventArgs args)
         {
-            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async() =>
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 if (sender.TabItems.Count <= 1)
                 {
@@ -930,6 +1024,7 @@ namespace SwiftBrowser.Views
                     Refresh.Icon = new SymbolIcon(Symbol.Refresh);
                     Refresh.Text = "Refresh Tab";
                     Refresh.Click += Refresh_Click;
+                    Flyout.Items.Add(Refresh);
                     Flyout.Items.Add(new MenuFlyoutSeparator());
                     MenuFlyoutItem newtabF = new MenuFlyoutItem();
                     newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -966,11 +1061,12 @@ namespace SwiftBrowser.Views
                     Flyout.Items.Add(CloseAll);
                     newTab.RightTapped += NewTab_RightTapped;
                     newTab.ContextFlyout = Flyout;
-                    
+
                     Frame frame = new Frame();
                     newTab.Content = frame;
                     WebViewPage.IncognitoModeStatic = false;
                     WebViewPage.CurrentMainTab = newTab;
+
                     WebViewPage.MainTab = this.TabsControl;
                     frame.Navigate(typeof(WebViewPage));
                     WebViewPage.IncognitoModeStatic = false;
@@ -992,12 +1088,22 @@ namespace SwiftBrowser.Views
                     args.Tab.Content = null;
                     args.Tab.ContextFlyout = null;
                     args.Tab.Tag = null;
+
                     args.Tab.PointerEntered -= NewTab_PointerEntered;
                     args.Tab.PointerExited -= NewTab_PointerExited;
                     args.Tab.RightTapped -= NewTab_RightTapped;
                     VisualTreeHelper.DisconnectChildrenRecursive(args.Tab);
                     //  ((IDisposable)sender.TabItems).Dispose();
                     sender.TabItems.Remove(args.Tab);
+                    int w = (int)args.Tab.Width;
+                    try
+                    {
+                        AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * w);
+                    }
+                    catch
+                    {
+                        AppTitleBar.Width = 240;
+                    }
                     await Task.Delay(500);
                     GC.Collect(2);
                     GC.WaitForPendingFinalizers();
@@ -1015,6 +1121,7 @@ namespace SwiftBrowser.Views
                     {
 
                     }
+
                     args.Tab.Content = null;
                     args.Tab.ContextFlyout = null;
                     args.Tab.Tag = null;
@@ -1024,7 +1131,25 @@ namespace SwiftBrowser.Views
                     VisualTreeHelper.DisconnectChildrenRecursive(args.Tab);
                     //  ((IDisposable)sender.TabItems).Dispose();
                     sender.TabItems.Remove(args.Tab);
+               
                     await Task.Delay(500);
+                    TabViewItem t = (TabViewItem)TabsControl.TabItems[0];
+                    int w = (int)t.Width;
+                    try
+                    {
+                        if (TabsControl.TabItems.Count <= 7)
+                        {
+                            AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * w);
+                        }
+                        else
+                        {
+                            AppTitleBar.Width = 240;
+                        }
+                    }
+                    catch
+                    {
+                        AppTitleBar.Width = 240;
+                    }
                     GC.Collect(2);
                     GC.WaitForPendingFinalizers();
                 }
@@ -1046,7 +1171,7 @@ namespace SwiftBrowser.Views
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
- 
+
 
 
         private void TabsControl_TabStripDrop(object sender, DragEventArgs e)
@@ -1067,6 +1192,7 @@ namespace SwiftBrowser.Views
             Refresh.Icon = new SymbolIcon(Symbol.Refresh);
             Refresh.Text = "Refresh Tab";
             Refresh.Click += Refresh_Click;
+            Flyout.Items.Add(Refresh);
             Flyout.Items.Add(new MenuFlyoutSeparator());
             MenuFlyoutItem newtabF = new MenuFlyoutItem();
             newtabF.Icon = new SymbolIcon(Symbol.Add);
@@ -1103,7 +1229,7 @@ namespace SwiftBrowser.Views
             Flyout.Items.Add(CloseAll);
             newTab.RightTapped += NewTab_RightTapped;
             newTab.ContextFlyout = Flyout;
-            
+
             Frame frame = new Frame();
             newTab.Content = frame;
             WebViewPage.IncognitoModeStatic = false;
@@ -1115,40 +1241,121 @@ namespace SwiftBrowser.Views
             TabsControl.TabItems.Add(newTab);
             WebViewPage.MainTab = this.TabsControl;
             TabsControl.SelectedItem = newTab;
+            try
+            {
+                AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+            }
+            catch
+            {
+                AppTitleBar.Width = 240;
+            }
         }
 
         private async void TabsControl_TabDroppedOutside(TabView sender, TabViewTabDroppedOutsideEventArgs args)
         {
-            try { 
-                CoreApplicationView newView = CoreApplication.CreateNewView();
-                int newViewId = 0;
-         TabsControl.TabItems.Remove(args.Tab);
-            WebView tag = args.Tab.Tag as WebView;
-            localSettings.Values["SourceToGo"] = tag.Source.ToString();
-            // TabsControl.TabItems.Remove(args.Tab);
-            await newView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+           try
+           {
+                WebView tag = args.Tab.Tag as WebView;
+                localSettings.Values["SourceToGo"] = tag.Source.ToString();
+            TabsControl.TabItems.Remove(args.Tab);
+                localSettings.Values["SourceToGo"] = tag.Source.ToString();
+                var uriNewWindow = new Uri(@"swiftlaunch:" + tag.Source.ToString());
+                await Windows.System.Launcher.LaunchUriAsync(uriNewWindow);
+                await Task.Delay(1500);
+                if (TabsControl.TabItems.Count == 0)
                 {
+                    var newTab = new TabViewItem();
+                    newTab.IconSource = new WinUI.SymbolIconSource() { Symbol = Symbol.Home };
+                    MenuFlyout Flyout = new MenuFlyout();
+                    MenuFlyoutItem OpenInnewwindow = new MenuFlyoutItem();
+                    OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
+
+                    ToolTip T = new ToolTip();
+                    ToolTipService.SetToolTip(newTab, T);
+
+                    OpenInnewwindow.Text = "Move to new window";
+                    Flyout.Items.Add(OpenInnewwindow);
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem Refresh = new MenuFlyoutItem();
+                    Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+                    Refresh.Text = "Refresh Tab";
+                    Refresh.Click += Refresh_Click;
+                    Flyout.Items.Add(Refresh);
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem newtabF = new MenuFlyoutItem();
+                    newtabF.Icon = new SymbolIcon(Symbol.Add);
+                    newtabF.Text = "New Tab";
+                    newtabF.Click += AddAll;
+                    Flyout.Items.Add(newtabF);
+
+                    MenuFlyoutItem newWindow = new MenuFlyoutItem();
+                    newWindow.Icon = new SymbolIcon(Symbol.Add);
+                    newWindow.Text = "New secondary window";
+                    newWindow.Click += NewWindow_Click;
+                    Flyout.Items.Add(newWindow);
+
+                    MenuFlyoutItem newIncognito = new MenuFlyoutItem();
+                    newIncognito.Icon = new SymbolIcon(Symbol.Add);
+                    newIncognito.Text = "New incognito window";
+                    newIncognito.Click += Incognito_Click;
+                    Flyout.Items.Add(newIncognito);
+
+                    Flyout.Items.Add(new MenuFlyoutSeparator());
+                    MenuFlyoutItem CloseTab = new MenuFlyoutItem();
+                    CloseTab.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseTab.Text = "Close Tab";
+                    CloseTab.Click += CloseTab_Click;
+                    Flyout.Items.Add(CloseTab);
+                    MenuFlyoutItem CloseO = new MenuFlyoutItem();
+                    CloseO.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseO.Text = "Close other tabs";
+                    CloseO.Click += CloseO_Click;
+                    Flyout.Items.Add(CloseO);
+                    MenuFlyoutItem CloseAll = new MenuFlyoutItem();
+                    CloseAll.Icon = new SymbolIcon(Symbol.Delete);
+                    CloseAll.Text = "Close all tabs";
+                    CloseAll.Click += ClearAll;
+                    Flyout.Items.Add(CloseAll);
+                    newTab.RightTapped += NewTab_RightTapped;
+                    newTab.PointerEntered += NewTab_PointerEntered;
+                    newTab.ContextFlyout = Flyout;
+                    newTab.Header = "Home Tab";
+
                     Frame frame = new Frame();
-                    frame.Navigate(typeof(TabViewPage));
-                    Window.Current.Content = frame;
-
-                    Window.Current.Activate();
-
-                    newViewId = ApplicationView.GetForCurrentView().Id;
-                });
-                bool viewShown = await ApplicationViewSwitcher.TryShowAsStandaloneAsync(newViewId);
-            }
-            catch
-            {
+                    newTab.Content = frame;
+                    WebViewPage.IncognitoModeStatic = false;
+                    WebViewPage.CurrentMainTab = newTab;
+                    WebViewPage.MainTab = this.TabsControl;
+                    frame.Navigate(typeof(WebViewPage));
+                    WebViewPage.CurrentMainTab = newTab;
+                    WebViewPage.IncognitoModeStatic = false;
+                    WebViewPage.MainTab = TabsControl;
+                    sender.TabItems.Add(newTab);
+                    WebViewPage.MainTab = this.TabsControl;
+                    this.TabsControl.SelectedItem = newTab;
+                    WebViewPage.CurrentMainTab = newTab;
+                    try
+                    {
+                        AppTitleBar.Width = AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * newTab.Width);
+                    }
+                    catch
+                    {
+                        AppTitleBar.Width = 240;
+                    }
+                }
+              }
+              catch
+             {
                 return;
             }
-            }
+        }
 
         private void TabsControl_TabDragStarting(TabView sender, TabViewTabDragStartingEventArgs args)
         {
-            try { 
-            WebView tag = args.Tab.Tag as WebView;
-            localSettings.Values["SourceToGo"] = tag.Source.ToString();
+            try
+            {
+                WebView tag = args.Tab.Tag as WebView;
+                localSettings.Values["SourceToGo"] = tag.Source.ToString();
             }
             catch
             {
@@ -1162,7 +1369,7 @@ namespace SwiftBrowser.Views
             sender.IsOpen = false;
         }
 
-        private void TitleGrid_Loaded(object sender, RoutedEventArgs e)
+        private async void TitleGrid_Loaded(object sender, RoutedEventArgs e)
         {
             FindName("TabsControl");
             var newTab = new TabViewItem();
@@ -1214,7 +1421,6 @@ namespace SwiftBrowser.Views
             CloseAll.Text = "Close all tabs";
             CloseAll.Click += ClearAll;
             Flyout.Items.Add(CloseAll);
-
             newTab.ContextFlyout = Flyout;
             ToolTip T = new ToolTip();
 
@@ -1234,27 +1440,84 @@ namespace SwiftBrowser.Views
             WebViewPage.MainTab = this.TabsControl;
             TabsControl.SelectedItem = newTab;
             WebViewPage.MainTab = this.TabsControl;
+
             this.TabsControl.SelectedItem = newTab;
             SystemNavigationManagerPreview.GetForCurrentView().CloseRequested += App_CloseRequested;
             Window.Current.Activate();
-            GC.Collect();
-            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
-            Window.Current.SetTitleBar(TitleGrid);
-            StartUp();
+            {
+                GC.Collect();
+                //    CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+                //    Window.Current.SetTitleBar(TitleGrid);
+                StartUp();
+                try
+                {
+                    if ((int)Windows.Storage.ApplicationData.Current.LocalSettings.Values["RestoreSettings"] != 3)
+                    {
+                        ShowRestoreDialog();
+                    }
+                }
+                catch
+                {
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["RestoreSettings"] = 2;
+                    ShowRestoreDialog();
+                }
+            }
+
+            await Task.Delay(300);
             try
             {
-                if ((int)Windows.Storage.ApplicationData.Current.LocalSettings.Values["RestoreSettings"] != 3)
+                TabViewItem t = (TabViewItem)TabsControl.TabItems[0];
+                int w = (int)t.Width;
+                try
                 {
-                    ShowRestoreDialog();
+                    if (TabsControl.TabItems.Count <= 7)
+                    {
+                        AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * w);
+                    }
+                    else
+                    {
+                        AppTitleBar.Width = 240;
+                    }
+                }
+                catch
+                {
+                    AppTitleBar.Width = 240;
                 }
             }
             catch
             {
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["RestoreSettings"] = 2;
-                ShowRestoreDialog();
+                return;
+            }
+
+
+        }
+
+        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            try
+            {
+                TabViewItem t = (TabViewItem)TabsControl.TabItems[0];
+                int w = (int)t.Width;
+                try
+                {
+                    if (TabsControl.TabItems.Count <= 7)
+                    {
+                        AppTitleBar.Width = (Window.Current.Bounds.Width - 60) - (TabsControl.TabItems.Count * w);
+                    }
+                    else
+                    {
+                        AppTitleBar.Width = 240;
+                    }
+                }
+                catch
+                {
+                    AppTitleBar.Width = 240;
+                }
+            }
+            catch
+            {
+                return;
             }
         }
     }
-
-    
 }

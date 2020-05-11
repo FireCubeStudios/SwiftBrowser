@@ -40,7 +40,7 @@ namespace SwiftBrowser.Views
         {
             public List<ExtensionsJSON>Extensions { get; set; }
         }
-
+        List<ExtensionsJSON> ExtensionsListJSON;
         /*  public class Extensions
           {
               public string Header { get; set; }
@@ -60,7 +60,7 @@ namespace SwiftBrowser.Views
 }
         public async void LoadItems()
         {
-            List<ExtensionsJSON> ExtensionsListJSON = new List<ExtensionsJSON>();
+            ExtensionsListJSON = new List<ExtensionsJSON>();
             StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
             StorageFile file = await folder.GetFileAsync("Extensions.json"); // error here
             var JSONData = "e";
@@ -97,15 +97,23 @@ namespace SwiftBrowser.Views
             ToggleSwitch t = sender as ToggleSwitch;
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
-            ExtensionsJSON SenderPost = DataContext as ExtensionsJSON;
-            SenderPost.IsEnabledJSON = t.IsOn;
-       //     ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
+           ExtensionsJSON SenderPost = DataContext as ExtensionsJSON;
+           SenderPost.IsEnabledJSON = t.IsOn;
+          // ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
             ExtensionsJSON FoundItem = ExtensionsListJSONJSON.Extensions.Find(x => SenderPost.Id == SenderPost.Id);
-
+          // SenderPost.IsToolbar = FoundItem.IsToolbar;
+            //  SenderPost.IsEnabledJSON = FoundItem.IsEnabledJSON;
+            //   FoundItem.IsEnabledJSON = t.IsOn;
             FoundItem.IsEnabledJSON = t.IsOn;
             StackPanel i = VisualTreeHelper.GetParent(t) as StackPanel;
             ToggleSwitch tt = i.Children[2] as ToggleSwitch;
-            tt.IsOn = FoundItem.IsToolbar;
+        //    tt.IsOn = FoundItem.IsToolbar;
+            //   SenderPost.IsToolbar = tt.IsOn;
+            if(FoundItem.IsEnabledJSON == false)
+            {
+                tt.IsOn = false;
+            }
+            SenderPost = FoundItem;
             FoundItem.IsToolbar = tt.IsOn;
             ExtensionsListJSONJSON.Extensions.Remove(FoundItem);
             ExtensionsListJSONJSON.Extensions.Add(FoundItem);
@@ -119,15 +127,19 @@ namespace SwiftBrowser.Views
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
             ExtensionsJSON SenderPost = DataContext as ExtensionsJSON;
-            SenderPost.IsEnabledJSON = t.IsOn;
-            ExtensionsJSON FoundItem = ExtensionsListJSONJSON.Extensions.Find(x => SenderPost.Id == SenderPost.Id);
 
+            ExtensionsJSON FoundItem = ExtensionsListJSONJSON.Extensions.Find(x => SenderPost.Id == SenderPost.Id);
             FoundItem.IsToolbar = t.IsOn;
-            SenderPost.IsToolbar = t.IsOn;
+           SenderPost.IsToolbar = t.IsOn;
            StackPanel i = VisualTreeHelper.GetParent(t) as StackPanel;
             ToggleSwitch tt = i.Children[1] as ToggleSwitch;
-            tt.IsOn = FoundItem.IsEnabledJSON;
+           SenderPost.IsEnabledJSON = tt.IsOn;
             FoundItem.IsEnabledJSON = tt.IsOn;
+            if(FoundItem.IsToolbar == true)
+            {
+                tt.IsOn = true;
+            }
+            SenderPost = FoundItem;
             ExtensionsListJSONJSON.Extensions.Remove(FoundItem);
             ExtensionsListJSONJSON.Extensions.Add(FoundItem);
 

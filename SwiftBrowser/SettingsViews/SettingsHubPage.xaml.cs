@@ -28,7 +28,7 @@ namespace SwiftBrowser.SettingsViews
         {
             InitializeComponent();
             SetHubNav.SelectedItem = Main;
-            contentFrame.Navigate(typeof(SettingsPage));
+           contentFrame.Navigate(typeof(SettingsPage));
         }
 
         private void SetHubNav_ItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)

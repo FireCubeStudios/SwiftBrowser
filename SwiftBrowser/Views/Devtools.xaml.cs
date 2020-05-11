@@ -40,7 +40,7 @@ namespace SwiftBrowser.Views
         {
             if (String.IsNullOrEmpty(ConsoleLog.LogString) == false)
             {
-                lOG.Text = lOG.Text + "\n" + ConsoleLog.LogString;
+                //lOG.Text = lOG.Text + "\n" + ConsoleLog.LogString;
                 ConsoleLog.LogString = null;
             }
         }

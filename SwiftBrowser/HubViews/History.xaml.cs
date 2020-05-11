@@ -1,11 +1,15 @@
 ﻿using Microsoft.Data.Sqlite;
+using Microsoft.Toolkit.Uwp;
 using SwiftBrowser.Assets;
+using SwiftBrowser.Helpers;
+using SwiftBrowser.Models;
 using SwiftBrowser.Views;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -47,6 +51,7 @@ namespace SwiftBrowser.HubViews
             var dataCxtx = ide.DataContext;
             HistoryClass dataSauce = (HistoryClass)dataCxtx;
             DataAccess.RemoveData(dataSauce);
+            await Task.Delay(500);
             Output.ItemsSource = await GetData();
         }
 
@@ -72,13 +77,20 @@ namespace SwiftBrowser.HubViews
 
             }
             gRID.Children.Clear();
+           GetHistory.limit = 50;
+            GetHistory.skipInt = 0;
+            GetHistory.firstrun = false;
+            GetHistory.FirstId = null;
             VisualTreeHelper.DisconnectChildrenRecursive(this);
         }
 
         private async void CommandBar_Loaded(object sender, RoutedEventArgs e)
         {
             FindName("Output");
-            Output.ItemsSource = await GetData();
+               var HistoryCollection = new IncrementalLoadingCollection<GetHistory, HistoryClass>();
+
+              Output.ItemsSource = HistoryCollection;
+          //  Output.ItemsSource = await GetData();
         }
     }
 }

@@ -93,8 +93,14 @@ namespace SwiftBrowser.Views
                 await encoder.FlushAsync();
             }
             OfflinePage.Singletonreference.OfflineAddToJSON(Name);
-            var m = new MessageDialog("saved");
-            await m.ShowAsync();
+            int duration = 3000;
+            try { 
+            TabViewPage.InAppNotificationMain.Show("Image saved", duration);
+            }
+            catch
+            {
+                IncognitoTabView.InAppNotificationMain.Show("Image saved", duration);
+            }
         }
     }
 }

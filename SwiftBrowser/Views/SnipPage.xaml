@@ -7,13 +7,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
 
     <Grid>
-        <Button HorizontalAlignment="Left" VerticalAlignment="Top" Click="Button_Click">Save as PNG</Button>
+        <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
+            <AppBarButton Click="Button_Click" Icon="Save" Label="Save as PNG"></AppBarButton>
+        </CommandBar>
         <Grid Margin="0, 40, 0, 0">
             <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
-                <Grid x:Name="Gridx">
+                <Grid x:Name="Gridx" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                     <controls:ImageCropper Background="{ThemeResource SystemControlAcrylicWindowBrush}" x:Name="SnipCropper" Canvas.ZIndex="1"/>
                     <Rectangle x:Name="Painter" Fill="White"/>
                 </Grid>

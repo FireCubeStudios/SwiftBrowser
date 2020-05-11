@@ -110,8 +110,14 @@ namespace SwiftBrowser.Views
                 await SnipCropper.SaveAsync(stream, BitmapFileFormat.Png);
 
             }
-            var m = new MessageDialog("Screen captured and Saved");
-            await m.ShowAsync();
+            int duration = 3000;
+            try { 
+            TabViewPage.InAppNotificationMain.Show("Screen capture saved", duration);
+            }
+            catch
+            {
+                IncognitoTabView.InAppNotificationMain.Show("Screen capture saved", duration);
+            }
         }
 
     }

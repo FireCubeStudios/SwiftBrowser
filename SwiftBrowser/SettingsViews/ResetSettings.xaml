@@ -6,10 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
-    <StackPanel HorizontalAlignment="Center">
+    <StackPanel HorizontalAlignment="Left" Margin="5">
         <TextBlock Margin="5">Reset settings:</TextBlock>
-        <Button Background="Red" Click="Button_Click">Reset settings</Button>
+        <Button Background="Red" Margin="5" Click="Button_Click">Reset settings</Button>
     </StackPanel>
 </Page>

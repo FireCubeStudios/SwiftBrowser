@@ -20,8 +20,8 @@
                     <StackPanel Margin="5" Width="500" Orientation="Horizontal" Background="Transparent">
                         <Image Height="30" Width="30" Margin="5" Source="{Binding FavIconSQL}"></Image>
                         <StackPanel Width="300">
-                            <TextBlock FontSize="15" Text="{Binding HeaderSQL}"/>
-                            <TextBlock  FontSize="10" Text="{Binding UrlSQL}" Foreground="White"/>
+                            <TextBlock FontSize="15" Width="300"  Text="{Binding HeaderSQL}"/>
+                            <TextBlock  FontSize="10" Text="{Binding UrlSQL}"/>
                         </StackPanel>
                         <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed" Background="Transparent">
                             <AppBarButton Click="RemoveDataButton_Click" Icon="Delete" Background="Transparent"></AppBarButton>

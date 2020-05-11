@@ -7,6 +7,7 @@
     x:Uid="WhatsNewDialog"
     d:DesignHeight="345"
     d:DesignWidth="550"
+    Background="{ThemeResource SystemControlAcrylicElementBrush}"
     mc:Ignorable="d">
     <ContentDialog.TitleTemplate>
         <DataTemplate x:DataType="x:String">
@@ -24,7 +25,19 @@
     </ContentDialog.TitleTemplate>
     <ScrollViewer>
         <StackPanel>
-            <TextBlock x:Uid="WhatsNew_Body" TextWrapping="WrapWholeWords" />
+            <TextBlock  TextWrapping="WrapWholeWords" >
+                changelog:
+                <LineBreak/>
+                - Fixed too many bugs to list here but i fixed half of all known bugs in the app thus bringing balance to the app
+                <LineBreak/>
+                - Design changes and new acrylic and tabview drag however fullscreen is broken but thats a small price to pay for salvation
+                <LineBreak/>
+                - a dialog is shown during unhandled exceptions instead of crashing the app. This new feature does put a smile on my face
+                <LineBreak/>
+                -i shredded the "secondary windows" to atoms and replaced it with a better solution
+                <LineBreak/>
+                - Added jumplist support because reality can be whatever i want
+            </TextBlock>
         </StackPanel>
     </ScrollViewer>
 </ContentDialog>

@@ -7,95 +7,109 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Style="{StaticResource PageStyle}"
     xmlns:xaml="using:Windows.UI.Xaml"
+    Background="Transparent"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d">
     <Page.Resources>
         <helper:EnumToBooleanConverter x:Key="EnumToBooleanConverter" EnumType="ElementTheme" />
     </Page.Resources>
-    <Grid Margin="{StaticResource MediumLeftRightMargin}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="48" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <ScrollViewer IsVerticalRailEnabled="True" VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto">
+        <Grid Margin="{StaticResource MediumLeftRightMargin}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <TextBlock
+            <TextBlock
             Grid.Row="0"
             x:Uid="Settings_Title"
             Style="{StaticResource PageTitleStyle}" />
 
-        <StackPanel
+            <StackPanel
             Grid.Row="1"
             x:Name="ContentArea">
-            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
-            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock x:Uid="Settings_Theme" />
+                <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+                    <TextBlock x:Uid="Settings_Theme" />
 
-                <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                    <RadioButton 
+                    <StackPanel Margin="{StaticResource XSmallTopMargin}">
+                        <RadioButton 
                         x:Uid="Settings_Theme_Light"
                         Checked="ThemeChanged_CheckedAsync" 
                         IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
                         FontSize="15"
                         GroupName="AppTheme" >
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Light</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton 
+                            <RadioButton.CommandParameter>
+                                <xaml:ElementTheme>Light</xaml:ElementTheme>
+                            </RadioButton.CommandParameter>
+                        </RadioButton>
+                        <RadioButton 
                         x:Uid="Settings_Theme_Dark"
                         Checked="ThemeChanged_CheckedAsync" 
                         IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
                         FontSize="15"
                         GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Dark</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton 
+                            <RadioButton.CommandParameter>
+                                <xaml:ElementTheme>Dark</xaml:ElementTheme>
+                            </RadioButton.CommandParameter>
+                        </RadioButton>
+                        <RadioButton 
                         x:Uid="Settings_Theme_Default"
                         Checked="ThemeChanged_CheckedAsync"
                         IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
                         FontSize="15"
                         GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Default</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
+                            <RadioButton.CommandParameter>
+                                <xaml:ElementTheme>Default</xaml:ElementTheme>
+                            </RadioButton.CommandParameter>
+                        </RadioButton>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-            <StackPanel  Margin="5, 30, 5, 5">
-                <muxc:RadioButtons Header="Set your homepage" Margin="5">
-                    <RadioButton x:Name="Option1RadioButton" Content="Default homepage" Checked="Option1RadioButton_Checked"/>
-                    <RadioButton x:Name="Option2RadioButton" Content="Website" Checked="Option2RadioButton_Checked"/>
-                </muxc:RadioButtons>
-                <AutoSuggestBox Visibility="Collapsed" Header="Enter valid url: " PlaceholderText="Url..." Margin="5" x:Name="TextUrl" QuerySubmitted="TextUrl_QuerySubmitted" QueryIcon="Globe"></AutoSuggestBox>
-                <ToggleSwitch x:Name="tICO" Toggled="TICO_Toggled" Header="Toggle Icon" OffContent="Disabled" OnContent="Enabled"/>
-                <ToggleSwitch x:Name="TfAV" Toggled="TfAV_Toggled" Header="Toggle Favourites" OffContent="Disabled" OnContent="Enabled"/>
-                <ToggleSwitch x:Name="TqUI" Toggled="TqUI_Toggled" Header="Toggle Quick web" OffContent="Disabled" OnContent="Enabled"/>
-                <ToggleSwitch x:Name="TmOR" Toggled="TmOR_Toggled" Header="Toggle More content" OffContent="Disabled" OnContent="Enabled"/>
-                <ToggleSwitch x:Name="TSea" Toggled="TSea_Toggled" Header="Toggle Search Content" OffContent="Disabled" OnContent="Enabled"/>
-            </StackPanel>
-            <StackPanel>
-                <TextBlock Margin="5">Manage toolbar: </TextBlock>
-                <Button Margin="5" Click="closing">Save changes</Button></StackPanel>
-            <ListView x:Name="ExtensionsList" Margin="5, 20, 5, 5">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel>
-                                    <Image Height="50" Width="50" Source="{Binding IconJSON}" Margin="2"></Image>
+                <StackPanel  Margin="5, 30, 5, 5">
+                    <muxc:RadioButtons x:Name="H" Header="Set your homepage" Margin="5">
+                        <RadioButton x:Name="Option1RadioButton" GroupName="H" Content="Default homepage" Checked="Option1RadioButton_Checked"/>
+                        <RadioButton x:Name="Option2RadioButton" GroupName="H" Content="Website" Checked="Option2RadioButton_Checked"/>
+                    </muxc:RadioButtons>
+                    <AutoSuggestBox AllowFocusOnInteraction="True" Visibility="Collapsed" Header="Enter valid url: " PlaceholderText="Url..." Margin="5" x:Name="TextUrl" QuerySubmitted="TextUrl_QuerySubmitted" QueryIcon="Globe"></AutoSuggestBox>
+                    <muxc:RadioButtons Margin="5" x:Name="B" Header="Background">
+                        <RadioButton x:Name="DefaultacrylicOption" GroupName="B" IsChecked="False" Content="Default acrylic" Checked="DefaultacrylicOption_Checked"/>
+                        <RadioButton x:Name="Imageoption" GroupName="B" Content="Image" IsChecked="False" Checked="Imageoption_Checked"/>
+                    </muxc:RadioButtons>
+        
+                    <ToggleSwitch x:Name="tICO" Toggled="TICO_Toggled" Header="Toggle Icon" OffContent="Disabled" OnContent="Enabled"/>
+                    <ToggleSwitch x:Name="TfAV" Toggled="TfAV_Toggled" Header="Toggle Favourites" OffContent="Disabled" OnContent="Enabled"/>
+                    <ToggleSwitch x:Name="TqUI" Toggled="TqUI_Toggled" Header="Toggle Quick web" OffContent="Disabled" OnContent="Enabled"/>
+                    <ToggleSwitch x:Name="TmOR" Toggled="TmOR_Toggled" Header="Toggle More content" OffContent="Disabled" OnContent="Enabled"/>
+                    <ToggleSwitch x:Name="TSea" Toggled="TSea_Toggled" Header="Toggle Search Content" OffContent="Disabled" OnContent="Enabled"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Margin="5">Manage toolbar:</TextBlock>
+                    <Button Margin="5" Click="closing">Save changes</Button>
+                </StackPanel>
+                <ListView x:Name="ExtensionsList" Margin="5, 20, 5, 5">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel>
+                                        <Image Height="50" Width="50" Source="{Binding IconJSON}" Margin="2"></Image>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding NameJSON}" Margin="2" FontSize="25"></TextBlock>
+                                        <TextBlock Text="{Binding DescriptionJSON}" Margin="2"></TextBlock>
+                                    </StackPanel>
                                 </StackPanel>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding NameJSON}" Margin="2" FontSize="25"></TextBlock>
-                                    <TextBlock Text="{Binding DescriptionJSON}" Margin="2"></TextBlock>
-                                </StackPanel>
+                                <ToggleSwitch x:Name="ToggleToolbar" IsOn="{Binding IsToolbar}" Margin="5" Header="Show in toolbar:" Toggled="ToggleToolbar_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
                             </StackPanel>
-                            <ToggleSwitch x:Name="ToggleToolbar" IsOn="{Binding IsToolbar}" Margin="5" Header="Show in toolbar:" Toggled="ToggleToolbar_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackPanel>
-    </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+            <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="50,80,150,0" >
+
+                <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100"/>
+
+            </Canvas>
+        </Grid>
+    </ScrollViewer>
 </Page>

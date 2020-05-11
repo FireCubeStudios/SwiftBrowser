@@ -186,14 +186,10 @@ namespace SwiftBrowser.HubViews
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
             OfflineJSON SenderPost = DataContext as OfflineJSON;
-            var m = new MessageDialog(SenderPost.ImageUrlJSON);
-            await m.ShowAsync();
             WebViewPage.SingletonReference.Churros();
             ImageFrame.Visibility = Visibility.Visible;
             ImageFrame.Navigate(typeof(OfflineModePage));
             StorageFile sampleFile = await localFolder.GetFileAsync(SenderPost.ImageUrlJSON);
-            var ms = new MessageDialog(sampleFile.Path.ToString());
-                await ms.ShowAsync();
             OfflineModePage.OiMage.Source = new BitmapImage(new Uri(sampleFile.Path.ToString()));
             //  WebWeb.Navigate(new Uri(SenderPost.ImageUrlJSON));
         }

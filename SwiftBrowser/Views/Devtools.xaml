@@ -7,11 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:monaco="using:Monaco"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
 
     <StackPanel>
-        <Button Margin="5" Click="Button_Click">Update page html</Button>
-        <monaco:CodeEditor Background="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}" Margin="30" BorderBrush="Red" BorderThickness="3" x:Name="HTMLeditor" Language="HTML" Height="800"></monaco:CodeEditor>
-        <TextBox Header="Console log" x:Name="lOG" Margin="10"></TextBox>
+        <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
+            <AppBarButton Click="Button_Click" Margin="5" Icon="Upload" Label="Update HTML"></AppBarButton>
+        </CommandBar>
+        <monaco:CodeEditor Background="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}" Margin="30"  x:Name="HTMLeditor" Language="HTML" Height="800"></monaco:CodeEditor>
+       <!-- <TextBox Header="Console log" x:Name="lOG" Margin="10"></TextBox>-->
     </StackPanel>
 </Page>

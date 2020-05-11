@@ -8,12 +8,18 @@
     mc:Ignorable="d"
     Background="Transparent">
 
-    <Grid>
+    <Grid Margin="5" HorizontalAlignment="Left">
         <StackPanel>
-            <TextBlock Margin="5" FontSize="15" TextWrapping="WrapWholeWords" Width="400">Sync data (browser history) between windows 10 devices</TextBlock>
-            <ToggleSwitch HorizontalAlignment="Center" Margin="5" x:Name="SyncToggle" OnContent="Sync enabled" OffContent="Sync disabled" Toggled="SyncToggle_Toggled"></ToggleSwitch>
-           <!-- <TextBlock Margin="5, 300, 5, 5" FontSize="15" TextWrapping="WrapWholeWords" Width="400">Sync data (browser history) between windows 10 devices with your onedrive</TextBlock>
-            <Button Margin="5" x:Name="LoginButton" Click="LoginButton_Click" IsEnabled="False" HorizontalAlignment="Center">Login</Button>-->
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/DownloadsIcon.png" x:Name="icon" Margin="10" Width="50" Height="50"></Image>
+                    <TextBlock Margin="5" FontSize="20" TextWrapping="WrapWholeWords" Width="400">Sync browser history between windows 10 devices</TextBlock>
+                </StackPanel>
+                <ToggleSwitch Margin="5" x:Name="SyncToggle" OnContent="Sync enabled" OffContent="Sync disabled" Toggled="SyncToggle_Toggled"></ToggleSwitch>
+            </StackPanel>
+
+            <TextBlock Margin="5, 150, 5, 5" FontSize="15" FontWeight="Bold" TextWrapping="WrapWholeWords" Width="400">Sync data between windows 10  and android with your onedrive (soon)</TextBlock>
+            <Button Margin="5" IsEnabled="False" x:Name="LoginButton" Click="LoginButton_Click">Login</Button>
         </StackPanel>
     </Grid>
 </Page>

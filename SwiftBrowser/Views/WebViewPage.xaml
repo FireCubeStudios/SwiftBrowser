@@ -7,8 +7,10 @@
     xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     xmlns:controls1="using:Microsoft.Toolkit.Uwp.UI.Controls"
     Loaded="Page_Loaded"
+    SizeChanged="WebView_SizeChanged"
     Style="{StaticResource PageStyle}"
     NavigationCacheMode="Required"
+    Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}"
     mc:Ignorable="d">
     <Page.Resources>
         <Style x:Key="BrowserButtonStyle" TargetType="Button">
@@ -76,101 +78,42 @@
             </Setter>
         </Style>
     </Page.Resources>
-
-    <Grid x:Name="ContentGrid" x:Load="False" Loaded="ContentGrid_Loaded">
-        <controls1:InAppNotification x:Name="DownloadNotification" Canvas.ZIndex="9999" VerticalAlignment="Bottom">
-            <StackPanel>
-                <TextBlock Margin="5">Downloading isnt supported yet. Launch default app for download?</TextBlock>
-                <Button Margin="5" Click="LaunchButton_Click">Launch default app</Button>
-            </StackPanel>
-        </controls1:InAppNotification>
-        <AppBarButton Canvas.ZIndex="600" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="70" CornerRadius="10" Foreground="Blue" Visibility="Collapsed" x:Name="CompactButton" Click="CompactButton_Click">
-            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B9;" Foreground="Blue"/>
-            <AppBarButton.Resources>
-                <ResourceDictionary>
-                    <ResourceDictionary.ThemeDictionaries>
-                        <ResourceDictionary x:Key="Dark">
-                            <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="Blue"/>
-                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="Black"/>
-                        </ResourceDictionary>
-                        <ResourceDictionary x:Key="Light">
-                            <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="Blue"/>
-                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="Black"/>
-                        </ResourceDictionary>
-                    </ResourceDictionary.ThemeDictionaries>
-                </ResourceDictionary>
-            </AppBarButton.Resources>
-        </AppBarButton>
-        <Grid x:Name="HomeFrame" x:Load="True" Canvas.ZIndex="1" Margin="0, 60, 0, 0">
-            <!--<AutoSuggestBox Canvas.ZIndex="2" VerticalAlignment="Top" Margin="50" Foreground="{ThemeResource SystemControlAcrylicElementBrush}" QueryIcon="Find" HorizontalAlignment="Center" MinWidth="300" Width="600" Height="50" PlaceholderText="Quick search" x:Name="SearchBox" QuerySubmitted="QuickSearchBox_QuerySubmitted"></AutoSuggestBox>-->
-            <Frame x:Name="HomeFrameFrameFrame" >
-                <!---_the werid name because the searchboxes weree in homepage and this frame was called homeframe but now grid is called hmeframe to smooth the change so i cALLED IT homeframeframeframe from homeframe because homeframeframe exists-->
-            </Frame>
-        </Grid>
-        <Grid x:Name="InfoFrameGrid" x:Load="False" Margin="0, 60, 0, 0" Canvas.ZIndex="1">
-            <Frame x:Name="InfoFrame">
-            </Frame>
-        </Grid>
-        <Grid x:Name="InkingFrameGrid" Visibility="Collapsed" Margin="0, 60, 0, 0" Canvas.ZIndex="1">
-            <Frame x:Name="InkingFrame">
-            </Frame>
-        </Grid>
-        <Grid x:Name="EmergencyFrame" x:Load="False" Canvas.ZIndex="100">
-            <Frame x:Name="Processlostframe">
-            </Frame>
-        </Grid>
-        <Grid x:Name="NavigationTipGrid" VerticalAlignment="Bottom" Background="{ThemeResource SystemControlAccentDark1AcrylicElementAccentDark1Brush}" CornerRadius="10" Padding="5" HorizontalAlignment="Left" Canvas.ZIndex="6000" Visibility="Collapsed" Margin="30">
-            <TextBlock x:Name="NavigationTip"></TextBlock>
-        </Grid>
-        <StackPanel x:Name="IsloadingPanel"
-                    Visibility="Visible"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <ProgressRing x:Name="Loading" IsActive="False"/>
-            <TextBlock x:Uid="WebView_Loading" />
-        </StackPanel>
-        <!-- <StackPanel Visibility="{x:Bind FailedMesageVisibility, Mode=OneWay}"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <TextBlock HorizontalAlignment="Center" x:Uid="WebView_FailedMessage" Foreground="Black" TextWrapping="WrapWholeWords" />
-            <HyperlinkButton Click="OnRetry" x:Uid="WebView_Retry" HorizontalAlignment="Center" />
-        </StackPanel>-->
-        <controls:TeachingTip x:Name="InfoTip" HorizontalAlignment="Center" VerticalAlignment="Center" Height="600" CloseButtonClick="InfoTip_CloseButtonClick" CloseButtonContent="Go back">
-            <controls:TeachingTip.IconSource>
-                <controls:SymbolIconSource Symbol="Globe" />
-            </controls:TeachingTip.IconSource>
-        </controls:TeachingTip>
+    <Grid>
         <SplitView x:Name="HubsplitView" PaneBackground="{ThemeResource SystemControlAcrylicElementBrush}"
-           IsPaneOpen="False" PanePlacement="Right" Margin="0, 53, 0, 0" HorizontalAlignment="Right" Canvas.ZIndex="999" OpenPaneLength="500" CompactPaneLength="48" DisplayMode="Overlay">
+           IsPaneOpen="False" PanePlacement="Right" Margin="0, 57, 0, 0" HorizontalAlignment="Right" Canvas.ZIndex="999" OpenPaneLength="500" CompactPaneLength="48" DisplayMode="Overlay">
             <SplitView.Pane>
                 <Frame x:Name="HubFrame"></Frame>
             </SplitView.Pane>
         </SplitView>
-        <Grid VerticalAlignment="Top">
-            <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button IsEnabled="{x:Bind IsBackEnabled, Mode=OneWay}" Style="{StaticResource BrowserButtonStyle}" Click="OnGoBack" x:Name="BackButton" x:Uid="WebView_BrowserBackButton">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;" />
-                </Button>
-                <Button IsEnabled="{x:Bind IsForwardEnabled, Mode=OneWay}" Style="{StaticResource BrowserButtonStyle}" Click="OnGoForward" x:Name="ForwardButton" x:Uid="WebView_BrowserForwardButton">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72A;" />
-                </Button>
-                <Button Style="{StaticResource BrowserButtonStyle}" Click="OnRefresh" x:Uid="WebView_RefreshBrowserButton" x:Name="RefreshButton">
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" x:Name="RefreshButtonIcon"/>
-                </Button>
-                <Button Style="{StaticResource BrowserButtonStyle}" Click="HomeButton_Click" x:Uid="WebView_RefreshBrowserButton">
-                    <SymbolIcon Symbol="Home"/>
-                </Button>
-                <AutoSuggestBox PlaceholderText="Search web"
+        <controls1:HeaderedContentControl x:Name="ContentControl" x:Load="False" Loaded="ContentGrid_Loaded">
+            <!-- Header content or HeaderTemplate content -->
+            <controls1:HeaderedContentControl.Header>
+                <Grid VerticalAlignment="Top" Height="60" x:Name="Bar" Background="Transparent">
+                    <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Button IsEnabled="{x:Bind IsBackEnabled, Mode=OneWay}" Style="{StaticResource BrowserButtonStyle}" Click="OnGoBack" x:Name="BackButton" x:Uid="WebView_BrowserBackButton">
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72B;" />
+                        </Button>
+                        <Button IsEnabled="{x:Bind IsForwardEnabled, Mode=OneWay}" Style="{StaticResource BrowserButtonStyle}" Click="OnGoForward" x:Name="ForwardButton" x:Uid="WebView_BrowserForwardButton">
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72A;" />
+                        </Button>
+                        <Button Style="{StaticResource BrowserButtonStyle}" Click="OnRefresh" x:Uid="WebView_RefreshBrowserButton" x:Name="RefreshButton">
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" x:Name="RefreshButtonIcon"/>
+                        </Button>
+                        <Button Style="{StaticResource BrowserButtonStyle}" Click="HomeButton_Click" x:Uid="WebView_RefreshBrowserButton">
+                            <SymbolIcon Symbol="Home"/>
+                        </Button>
+                        <AutoSuggestBox PlaceholderText="Search web"
                                 TextChanged="SearchWebBox_TextChanged"
                                 Margin="5, 0, 5, 0"
-                                MaxWidth="3000"
+                                CornerRadius="5"
+                                VerticalAlignment="Center"
                                 x:Name="SearchWebBox"
                                 Foreground="{ThemeResource SystemControlAcrylicElementBrush}"
                                 SuggestionChosen="SearchWebBox_SuggestionChosen"
         QueryIcon="Find"
         QuerySubmitted="SearchBox_QuerySubmitted">
-                    <AutoSuggestBox.Resources>
-                        <ResourceDictionary
+                            <AutoSuggestBox.Resources>
+                                <ResourceDictionary
 
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -183,113 +126,113 @@
 
     xmlns:primitives="using:Microsoft.UI.Xaml.Controls.Primitives">
 
-                            <ResourceDictionary.ThemeDictionaries>
+                                    <ResourceDictionary.ThemeDictionaries>
 
-                                <ResourceDictionary x:Key="Default">
+                                        <ResourceDictionary x:Key="Default">
 
-                                    <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBackground" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
+                                            <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBackground" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
 
-                                    <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderBrush" ResourceKey="SystemControlForegroundChromeHighBrush" />
+                                            <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderBrush" ResourceKey="SystemControlForegroundChromeHighBrush" />
 
-                                    <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListDarkBackground" ResourceKey="SystemControlTransientBackgroundBrush" />
+                                            <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListDarkBackground" ResourceKey="SystemControlTransientBackgroundBrush" />
 
-                                    <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderDarkBrush" ResourceKey="SystemControlTransientBorderBrush" />
+                                            <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderDarkBrush" ResourceKey="SystemControlTransientBorderBrush" />
 
-                                    <StaticResource x:Key="AutoSuggestBoxLightDismissOverlayBackground" ResourceKey="SystemControlPageBackgroundMediumAltMediumBrush" />
+                                            <StaticResource x:Key="AutoSuggestBoxLightDismissOverlayBackground" ResourceKey="SystemControlPageBackgroundMediumAltMediumBrush" />
 
-                                    <x:Double x:Key="AutoSuggestBoxIconFontSize">12</x:Double>
+                                            <x:Double x:Key="AutoSuggestBoxIconFontSize">12</x:Double>
 
-                                </ResourceDictionary>
+                                        </ResourceDictionary>
 
-                                <ResourceDictionary x:Key="HighContrast">
+                                        <ResourceDictionary x:Key="HighContrast">
 
-                                    <StaticResource x:Key="AutoSuggestBoxSuggestionsListBackground" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
+                                            <StaticResource x:Key="AutoSuggestBoxSuggestionsListBackground" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
 
-                                    <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderBrush" ResourceKey="SystemControlForegroundChromeHighBrush" />
+                                            <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderBrush" ResourceKey="SystemControlForegroundChromeHighBrush" />
 
-                                    <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderHighContrastBrush" ResourceKey="SystemControlTransientBorderBrush" />
+                                            <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderHighContrastBrush" ResourceKey="SystemControlTransientBorderBrush" />
 
-                                    <StaticResource x:Key="AutoSuggestBoxLightDismissOverlayBackground" ResourceKey="SystemControlPageBackgroundMediumAltMediumBrush" />
+                                            <StaticResource x:Key="AutoSuggestBoxLightDismissOverlayBackground" ResourceKey="SystemControlPageBackgroundMediumAltMediumBrush" />
 
-                                    <x:Double x:Key="AutoSuggestBoxIconFontSize">12</x:Double>
+                                            <x:Double x:Key="AutoSuggestBoxIconFontSize">12</x:Double>
 
-                                </ResourceDictionary>
+                                        </ResourceDictionary>
 
-                                <ResourceDictionary x:Key="Light">
+                                        <ResourceDictionary x:Key="Light">
 
-                                    <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBackground" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
+                                            <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBackground" ResourceKey="SystemControlBackgroundChromeMediumLowBrush" />
 
-                                    <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderBrush" ResourceKey="SystemControlForegroundChromeHighBrush" />
+                                            <contract7NotPresent:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderBrush" ResourceKey="SystemControlForegroundChromeHighBrush" />
 
-                                    <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListLightBackground" ResourceKey="SystemControlTransientBackgroundBrush" />
+                                            <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListLightBackground" ResourceKey="SystemControlTransientBackgroundBrush" />
 
-                                    <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderLightBrush" ResourceKey="SystemControlTransientBorderBrush" />
+                                            <contract7Present:StaticResource x:Key="AutoSuggestBoxSuggestionsListBorderLightBrush" ResourceKey="SystemControlTransientBorderBrush" />
 
-                                    <StaticResource x:Key="AutoSuggestBoxLightDismissOverlayBackground" ResourceKey="SystemControlPageBackgroundMediumAltMediumBrush" />
+                                            <StaticResource x:Key="AutoSuggestBoxLightDismissOverlayBackground" ResourceKey="SystemControlPageBackgroundMediumAltMediumBrush" />
 
-                                    <x:Double x:Key="AutoSuggestBoxIconFontSize">12</x:Double>
+                                            <x:Double x:Key="AutoSuggestBoxIconFontSize">12</x:Double>
 
-                                </ResourceDictionary>
+                                        </ResourceDictionary>
 
-                            </ResourceDictionary.ThemeDictionaries>
-
-
-
-                            <Thickness x:Key="AutoSuggestBoxTopHeaderMargin">0,0,0,4</Thickness>
+                                    </ResourceDictionary.ThemeDictionaries>
 
 
 
-                            <Style TargetType="TextBox" x:Key="AutoSuggestBoxTextBoxStyle">
+                                    <Thickness x:Key="AutoSuggestBoxTopHeaderMargin">0,0,0,4</Thickness>
 
-                                <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
 
-                                <Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}" />
 
-                                <Setter Property="Foreground" Value="{ThemeResource TextControlForeground}" />
+                                    <Style TargetType="TextBox" x:Key="AutoSuggestBoxTextBoxStyle">
 
-                                <Setter Property="Background" Value="{ThemeResource TextControlBackground}" />
+                                        <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
 
-                                <Setter Property="BorderBrush" Value="{ThemeResource TextControlBorderBrush}" />
+                                        <Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}" />
 
-                                <Setter Property="SelectionHighlightColor" Value="{ThemeResource TextControlSelectionHighlightColor}" />
+                                        <Setter Property="Foreground" Value="{ThemeResource TextControlForeground}" />
 
-                                <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}" />
+                                        <Setter Property="Background" Value="{ThemeResource TextControlBackground}" />
 
-                                <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                                        <Setter Property="BorderBrush" Value="{ThemeResource TextControlBorderBrush}" />
 
-                                <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+                                        <Setter Property="SelectionHighlightColor" Value="{ThemeResource TextControlSelectionHighlightColor}" />
 
-                                <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto" />
+                                        <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}" />
 
-                                <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
+                                        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
 
-                                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+                                        <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
 
-                                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+                                        <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto" />
 
-                                <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
+                                        <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
 
-                                <Setter Property="Padding" Value="{ThemeResource TextControlThemePadding}" />
+                                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
 
-                                <Setter Property="Template">
+                                        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
 
-                                    <Setter.Value>
+                                        <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False" />
 
-                                        <ControlTemplate TargetType="TextBox">
+                                        <Setter Property="Padding" Value="{ThemeResource TextControlThemePadding}" />
 
-                                            <Grid>
+                                        <Setter Property="Template">
 
-                                                <Grid.Resources>
+                                            <Setter.Value>
 
-                                                    <Style x:Name="DeleteButtonStyle" TargetType="Button">
+                                                <ControlTemplate TargetType="TextBox">
 
-                                                        <Setter Property="Template">
+                                                    <Grid>
 
-                                                            <Setter.Value>
+                                                        <Grid.Resources>
 
-                                                                <ControlTemplate TargetType="Button">
+                                                            <Style x:Name="DeleteButtonStyle" TargetType="Button">
 
-                                                                    <Grid x:Name="ButtonLayoutGrid"
+                                                                <Setter Property="Template">
+
+                                                                    <Setter.Value>
+
+                                                                        <ControlTemplate TargetType="Button">
+
+                                                                            <Grid x:Name="ButtonLayoutGrid"
 
                                                 BorderBrush="{ThemeResource TextControlButtonBorderBrush}"
 
@@ -301,75 +244,75 @@
 
                                                 contract7NotPresent:CornerRadius="{Binding Source={ThemeResource ControlCornerRadius}, Converter={StaticResource RightCornerRadiusFilterConverter}}">
 
-                                                                        <VisualStateManager.VisualStateGroups>
+                                                                                <VisualStateManager.VisualStateGroups>
 
-                                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                                    <VisualStateGroup x:Name="CommonStates">
 
-                                                                                <VisualState x:Name="Normal" />
-
-
-
-                                                                                <VisualState x:Name="PointerOver">
-
-                                                                                    <Storyboard>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="GlyphElement" Storyboard.TargetProperty="Foreground">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForegroundPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                    </Storyboard>
-
-                                                                                </VisualState>
+                                                                                        <VisualState x:Name="Normal" />
 
 
 
-                                                                                <VisualState x:Name="Pressed">
+                                                                                        <VisualState x:Name="PointerOver">
 
-                                                                                    <Storyboard>
+                                                                                            <Storyboard>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="GlyphElement" Storyboard.TargetProperty="Foreground">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="GlyphElement" Storyboard.TargetProperty="Foreground">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForegroundPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForegroundPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
-                                                                                    </Storyboard>
+                                                                                            </Storyboard>
 
-                                                                                </VisualState>
+                                                                                        </VisualState>
 
 
 
-                                                                                <VisualState x:Name="Disabled">
+                                                                                        <VisualState x:Name="Pressed">
 
-                                                                                    <Storyboard>
+                                                                                            <Storyboard>
 
-                                                                                        <DoubleAnimation Storyboard.TargetName="ButtonLayoutGrid"
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="GlyphElement" Storyboard.TargetProperty="Foreground">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForegroundPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+                                                                                            </Storyboard>
+
+                                                                                        </VisualState>
+
+
+
+                                                                                        <VisualState x:Name="Disabled">
+
+                                                                                            <Storyboard>
+
+                                                                                                <DoubleAnimation Storyboard.TargetName="ButtonLayoutGrid"
 
                                                                     Storyboard.TargetProperty="Opacity"
 
@@ -377,15 +320,15 @@
 
                                                                     Duration="0" />
 
-                                                                                    </Storyboard>
+                                                                                            </Storyboard>
 
-                                                                                </VisualState>
+                                                                                        </VisualState>
 
-                                                                            </VisualStateGroup>
+                                                                                    </VisualStateGroup>
 
-                                                                        </VisualStateManager.VisualStateGroups>
+                                                                                </VisualStateManager.VisualStateGroups>
 
-                                                                        <TextBlock x:Name="GlyphElement"
+                                                                                <TextBlock x:Name="GlyphElement"
 
                                                     Foreground="{ThemeResource TextControlButtonForeground}"
 
@@ -401,24 +344,24 @@
 
                                                     AutomationProperties.AccessibilityView="Raw" />
 
-                                                                    </Grid>
+                                                                            </Grid>
 
-                                                                </ControlTemplate>
+                                                                        </ControlTemplate>
 
-                                                            </Setter.Value>
+                                                                    </Setter.Value>
 
-                                                        </Setter>
+                                                                </Setter>
 
-                                                    </Style>
-                                                    <Style x:Name="HubButtonStyle" TargetType="Button">
+                                                            </Style>
+                                                            <Style x:Name="HubButtonStyle" TargetType="Button">
 
-                                                        <Setter Property="Template">
+                                                                <Setter Property="Template">
 
-                                                            <Setter.Value>
+                                                                    <Setter.Value>
 
-                                                                <ControlTemplate TargetType="Button">
+                                                                        <ControlTemplate TargetType="Button">
 
-                                                                    <Grid x:Name="ButtonLayoutGrid"
+                                                                            <Grid x:Name="ButtonLayoutGrid"
 
                                                 BorderBrush="{ThemeResource TextControlButtonBorderBrush}"
 
@@ -430,65 +373,65 @@
 
                                                 contract7NotPresent:CornerRadius="{Binding Source={ThemeResource ControlCornerRadius}, Converter={StaticResource RightCornerRadiusFilterConverter}}">
 
-                                                                        <VisualStateManager.VisualStateGroups>
+                                                                                <VisualStateManager.VisualStateGroups>
 
-                                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                                    <VisualStateGroup x:Name="CommonStates">
 
-                                                                                <VisualState x:Name="Normal" />
-
-
-
-                                                                                <VisualState x:Name="PointerOver">
-
-                                                                                    <Storyboard>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                    </Storyboard>
-
-                                                                                </VisualState>
+                                                                                        <VisualState x:Name="Normal" />
 
 
 
-                                                                              <VisualState x:Name="Pressed">
+                                                                                        <VisualState x:Name="PointerOver">
 
-                                                                                    <Storyboard>
+                                                                                            <Storyboard>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
+                                                                                            </Storyboard>
 
-                                                                                    </Storyboard>
-
-                                                                                </VisualState>
-
+                                                                                        </VisualState>
 
 
 
-                                                                            </VisualStateGroup>
+                                                                                        <VisualState x:Name="Pressed">
 
-                                                                        </VisualStateManager.VisualStateGroups>
+                                                                                            <Storyboard>
 
-                                                                        <TextBlock x:Name="GlyphElement"
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+
+                                                                                            </Storyboard>
+
+                                                                                        </VisualState>
+
+
+
+
+                                                                                    </VisualStateGroup>
+
+                                                                                </VisualStateManager.VisualStateGroups>
+
+                                                                                <TextBlock x:Name="GlyphElement"
 
                                                     Foreground="{ThemeResource SystemAccentColor}"
                                                     VerticalAlignment="Center"
@@ -501,24 +444,24 @@
 
                                                     FontFamily="{ThemeResource SymbolThemeFontFamily}" />
 
-                                                                    </Grid>
+                                                                            </Grid>
 
-                                                                </ControlTemplate>
+                                                                        </ControlTemplate>
 
-                                                            </Setter.Value>
+                                                                    </Setter.Value>
 
-                                                        </Setter>
+                                                                </Setter>
 
-                                                    </Style>
-                                                    <Style x:Name="SecureButtonStyle" TargetType="Button">
+                                                            </Style>
+                                                            <Style x:Name="SecureButtonStyle" TargetType="Button">
 
-                                                        <Setter Property="Template">
+                                                                <Setter Property="Template">
 
-                                                            <Setter.Value>
+                                                                    <Setter.Value>
 
-                                                                <ControlTemplate TargetType="Button">
+                                                                        <ControlTemplate TargetType="Button">
 
-                                                                    <Grid x:Name="ButtonLayoutGrid"
+                                                                            <Grid x:Name="ButtonLayoutGrid"
 
                                                 BorderBrush="{ThemeResource TextControlButtonBorderBrush}"
 
@@ -530,65 +473,65 @@
 
                                                 contract7NotPresent:CornerRadius="{Binding Source={ThemeResource ControlCornerRadius}, Converter={StaticResource RightCornerRadiusFilterConverter}}">
 
-                                                                        <VisualStateManager.VisualStateGroups>
+                                                                                <VisualStateManager.VisualStateGroups>
 
-                                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                                    <VisualStateGroup x:Name="CommonStates">
 
-                                                                                <VisualState x:Name="Normal" />
-
-
-
-                                                                                <VisualState x:Name="PointerOver">
-
-                                                                                    <Storyboard>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                    </Storyboard>
-
-                                                                                </VisualState>
+                                                                                        <VisualState x:Name="Normal" />
 
 
 
-                                                                              <VisualState x:Name="Pressed">
+                                                                                        <VisualState x:Name="PointerOver">
 
-                                                                                    <Storyboard>
+                                                                                            <Storyboard>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
+                                                                                            </Storyboard>
 
-                                                                                    </Storyboard>
-
-                                                                                </VisualState>
-
+                                                                                        </VisualState>
 
 
 
-                                                                            </VisualStateGroup>
+                                                                                        <VisualState x:Name="Pressed">
 
-                                                                        </VisualStateManager.VisualStateGroups>
+                                                                                            <Storyboard>
 
-                                                                        <TextBlock x:Name="GlyphElement"
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="Background">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonLayoutGrid" Storyboard.TargetProperty="BorderBrush">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+
+                                                                                            </Storyboard>
+
+                                                                                        </VisualState>
+
+
+
+
+                                                                                    </VisualStateGroup>
+
+                                                                                </VisualStateManager.VisualStateGroups>
+
+                                                                                <TextBlock x:Name="GlyphElement"
 
                                                     Foreground="{ThemeResource SystemAccentColor}"
                                                     VerticalAlignment="Center"
@@ -601,25 +544,25 @@
 
                                                     FontFamily="{ThemeResource SymbolThemeFontFamily}" />
 
-                                                                    </Grid>
+                                                                            </Grid>
 
-                                                                </ControlTemplate>
+                                                                        </ControlTemplate>
 
-                                                            </Setter.Value>
+                                                                    </Setter.Value>
 
-                                                        </Setter>
+                                                                </Setter>
 
-                                                    </Style>
+                                                            </Style>
 
-                                                    <Style x:Name="QueryButtonStyle" TargetType="Button">
+                                                            <Style x:Name="QueryButtonStyle" TargetType="Button">
 
-                                                        <Setter Property="Template">
+                                                                <Setter Property="Template">
 
-                                                            <Setter.Value>
+                                                                    <Setter.Value>
 
-                                                                <ControlTemplate TargetType="Button">
+                                                                        <ControlTemplate TargetType="Button">
 
-                                                                    <ContentPresenter x:Name="ContentPresenter"
+                                                                            <ContentPresenter x:Name="ContentPresenter"
 
                                                 Background="{ThemeResource TextControlButtonBackground}"
 
@@ -647,76 +590,76 @@
 
 
 
-                                                                        <VisualStateManager.VisualStateGroups>
+                                                                                <VisualStateManager.VisualStateGroups>
 
-                                                                            <VisualStateGroup x:Name="CommonStates">
+                                                                                    <VisualStateGroup x:Name="CommonStates">
 
-                                                                                <VisualState x:Name="Normal" />
-
-
-
-                                                                                <VisualState x:Name="PointerOver">
-
-                                                                                    <Storyboard>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
-
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForegroundPointerOver}" />
-
-                                                                                        </ObjectAnimationUsingKeyFrames>
-
-                                                                                    </Storyboard>
-
-                                                                                </VisualState>
+                                                                                        <VisualState x:Name="Normal" />
 
 
 
-                                                                                <VisualState x:Name="Pressed">
+                                                                                        <VisualState x:Name="PointerOver">
 
-                                                                                    <Storyboard>
+                                                                                            <Storyboard>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
-                                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
 
-                                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForegroundPressed}" />
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForegroundPointerOver}" />
 
-                                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                                                </ObjectAnimationUsingKeyFrames>
 
-                                                                                    </Storyboard>
+                                                                                            </Storyboard>
 
-                                                                                </VisualState>
-
-
+                                                                                        </VisualState>
 
 
-                                                                                <VisualState x:Name="Disabled">
 
-                                                                                    <Storyboard>
+                                                                                        <VisualState x:Name="Pressed">
 
-                                                                                        <DoubleAnimation Storyboard.TargetName="ContentPresenter"
+                                                                                            <Storyboard>
+
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Background">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBackgroundPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="BorderBrush">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonBorderBrushPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+                                                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter" Storyboard.TargetProperty="Foreground">
+
+                                                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForegroundPressed}" />
+
+                                                                                                </ObjectAnimationUsingKeyFrames>
+
+                                                                                            </Storyboard>
+
+                                                                                        </VisualState>
+
+
+
+
+                                                                                        <VisualState x:Name="Disabled">
+
+                                                                                            <Storyboard>
+
+                                                                                                <DoubleAnimation Storyboard.TargetName="ContentPresenter"
 
                                                                     Storyboard.TargetProperty="Opacity"
 
@@ -724,228 +667,228 @@
 
                                                                     Duration="0" />
 
-                                                                                    </Storyboard>
+                                                                                            </Storyboard>
 
-                                                                                </VisualState>
+                                                                                        </VisualState>
 
-                                                                            </VisualStateGroup>
+                                                                                    </VisualStateGroup>
 
-                                                                        </VisualStateManager.VisualStateGroups>
+                                                                                </VisualStateManager.VisualStateGroups>
 
-                                                                    </ContentPresenter>
+                                                                            </ContentPresenter>
 
-                                                                </ControlTemplate>
+                                                                        </ControlTemplate>
 
-                                                            </Setter.Value>
+                                                                    </Setter.Value>
 
-                                                        </Setter>
+                                                                </Setter>
 
-                                                    </Style>
+                                                            </Style>
 
-                                                </Grid.Resources>
+                                                        </Grid.Resources>
 
 
 
-                                                <VisualStateManager.VisualStateGroups>
+                                                        <VisualStateManager.VisualStateGroups>
 
-                                                    <VisualStateGroup x:Name="CommonStates">
+                                                            <VisualStateGroup x:Name="CommonStates">
 
 
 
-                                                        <VisualState x:Name="Disabled">
+                                                                <VisualState x:Name="Disabled">
 
 
 
-                                                            <Storyboard>
+                                                                    <Storyboard>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HeaderContentPresenter" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlHeaderForegroundDisabled}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlHeaderForegroundDisabled}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="Background">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="Background">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBackgroundDisabled}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBackgroundDisabled}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="BorderBrush">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="BorderBrush">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBorderBrushDisabled}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBorderBrushDisabled}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentElement" Storyboard.TargetProperty="Foreground">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentElement" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlForegroundDisabled}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlForegroundDisabled}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderTextContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderTextContentPresenter" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlPlaceholderForegroundDisabled}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlPlaceholderForegroundDisabled}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                            </Storyboard>
+                                                                    </Storyboard>
 
-                                                        </VisualState>
+                                                                </VisualState>
 
-                                                        <VisualState x:Name="Normal" />
+                                                                <VisualState x:Name="Normal" />
 
 
 
-                                                        <VisualState x:Name="PointerOver">
+                                                                <VisualState x:Name="PointerOver">
 
 
 
-                                                            <Storyboard>
+                                                                    <Storyboard>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="BorderBrush">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="BorderBrush">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBorderBrushPointerOver}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBorderBrushPointerOver}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="Background">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="Background">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBackgroundPointerOver}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBackgroundPointerOver}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderTextContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderTextContentPresenter" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlPlaceholderForegroundPointerOver}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlPlaceholderForegroundPointerOver}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentElement" Storyboard.TargetProperty="Foreground">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentElement" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlForegroundPointerOver}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlForegroundPointerOver}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                            </Storyboard>
+                                                                    </Storyboard>
 
-                                                        </VisualState>
+                                                                </VisualState>
 
-                                                        <VisualState x:Name="Focused">
+                                                                <VisualState x:Name="Focused">
 
 
 
-                                                            <Storyboard>
+                                                                    <Storyboard>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderTextContentPresenter" Storyboard.TargetProperty="Foreground">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlaceholderTextContentPresenter" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlPlaceholderForegroundFocused}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlPlaceholderForegroundFocused}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="Background">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="Background">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBackgroundFocused}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBackgroundFocused}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="BorderBrush">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="BorderBrush">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBorderBrushFocused}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBorderBrushFocused}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="BorderThickness">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BorderElement" Storyboard.TargetProperty="BorderThickness">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBorderThemeThicknessFocused}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBorderThemeThicknessFocused}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentElement" Storyboard.TargetProperty="Foreground">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentElement" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlForegroundFocused}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlForegroundFocused}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HubButton" Storyboard.TargetProperty="Foreground">
+                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="HubButton" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForeground}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForeground}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="QueryButton" Storyboard.TargetProperty="Foreground">
+                                                                        </ObjectAnimationUsingKeyFrames>
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="QueryButton" Storyboard.TargetProperty="Foreground">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForeground}" />
+                                                                            <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlButtonForeground}" />
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                            </Storyboard>
+                                                                    </Storyboard>
 
-                                                        </VisualState>
+                                                                </VisualState>
 
 
 
-                                                    </VisualStateGroup>
+                                                            </VisualStateGroup>
 
-                                                    <VisualStateGroup x:Name="ButtonStates">
+                                                            <VisualStateGroup x:Name="ButtonStates">
 
-                                                        <VisualState x:Name="ButtonVisible">
+                                                                <VisualState x:Name="ButtonVisible">
 
 
 
-                                                            <Storyboard>
+                                                                    <Storyboard>
 
-                                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DeleteButton" Storyboard.TargetProperty="Visibility">
+                                                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="DeleteButton" Storyboard.TargetProperty="Visibility">
 
-                                                                    <DiscreteObjectKeyFrame KeyTime="0">
+                                                                            <DiscreteObjectKeyFrame KeyTime="0">
 
-                                                                        <DiscreteObjectKeyFrame.Value>
+                                                                                <DiscreteObjectKeyFrame.Value>
 
-                                                                            <Visibility>Visible</Visibility>
+                                                                                    <Visibility>Visible</Visibility>
 
-                                                                        </DiscreteObjectKeyFrame.Value>
+                                                                                </DiscreteObjectKeyFrame.Value>
 
-                                                                    </DiscreteObjectKeyFrame>
+                                                                            </DiscreteObjectKeyFrame>
 
-                                                                </ObjectAnimationUsingKeyFrames>
+                                                                        </ObjectAnimationUsingKeyFrames>
 
-                                                            </Storyboard>
+                                                                    </Storyboard>
 
-                                                        </VisualState>
+                                                                </VisualState>
 
-                                                        <VisualState x:Name="ButtonCollapsed" />
+                                                                <VisualState x:Name="ButtonCollapsed" />
 
 
 
-                                                    </VisualStateGroup>
+                                                            </VisualStateGroup>
 
 
 
-                                                </VisualStateManager.VisualStateGroups>
+                                                        </VisualStateManager.VisualStateGroups>
 
 
 
-                                                <Grid.ColumnDefinitions>
+                                                        <Grid.ColumnDefinitions>
 
-                                                    <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="*" />
 
-                                                    <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="Auto" />
 
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
 
 
 
-                                                <Grid.RowDefinitions>
+                                                        <Grid.RowDefinitions>
 
-                                                    <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
 
-                                                    <RowDefinition Height="*" />
+                                                            <RowDefinition Height="*" />
 
-                                                    <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
 
-                                                </Grid.RowDefinitions>
+                                                        </Grid.RowDefinitions>
 
-                                                <Border x:Name="BorderElement"
+                                                        <Border x:Name="BorderElement"
 
                             Grid.Row="1"
 
@@ -963,7 +906,7 @@
 
                             contract7NotPresent:CornerRadius="{ThemeResource ControlCornerRadius}" />
 
-                                                <ContentPresenter x:Name="HeaderContentPresenter"
+                                                        <ContentPresenter x:Name="HeaderContentPresenter"
 
                             x:DeferLoadStrategy="Lazy"
 
@@ -985,7 +928,7 @@
 
                             TextWrapping="Wrap" />
 
-                                                <ScrollViewer x:Name="ContentElement"
+                                                        <ScrollViewer x:Name="ContentElement"
 
                             Grid.Row="1"
 
@@ -1013,7 +956,7 @@
 
                             ZoomMode="Disabled" />
 
-                                                <ContentControl x:Name="PlaceholderTextContentPresenter"
+                                                        <ContentControl x:Name="PlaceholderTextContentPresenter"
 
                             Grid.Row="1"
 
@@ -1030,7 +973,7 @@
                             Content="{TemplateBinding PlaceholderText}"
 
                             IsHitTestVisible="False" />
-                                                <Button x:Name="SecureButton"
+                                                        <Button x:Name="SecureButton"
                             Grid.Row="1"
 
                             Style="{StaticResource SecureButtonStyle}"
@@ -1046,19 +989,19 @@
                             VerticalAlignment="Stretch"
                                                                 AutomationProperties.AccessibilityView="Raw"
 >
-                                                    <Button.Flyout>
-                                                        <Flyout>
+                                                            <Button.Flyout>
+                                                                <Flyout>
 
-                                                                <StackPanel>
-                                                                    <TextBlock x:Name="SecureTextTemporary" Margin="5" Loaded="SecureTextTemporary_Loaded"></TextBlock>
-                                                                    <TextBlock Margin="5"  FontSize="30">Certificate:</TextBlock>
-                                                                    <TextBlock x:Name="SecureCertificateTemporary" Margin="5" Loaded="SecureCertificateTemporary_Loaded"></TextBlock>
-                                                                </StackPanel>
+                                                                    <StackPanel Width="400">
+                                                                        <TextBlock x:Name="SecureTextTemporary" Margin="5" Loaded="SecureTextTemporary_Loaded"></TextBlock>
+                                                                        <TextBlock Margin="5"  FontSize="30">Certificate:</TextBlock>
+                                                                        <TextBlock x:Name="SecureCertificateTemporary" Margin="5" TextWrapping="Wrap" Loaded="SecureCertificateTemporary_Loaded"></TextBlock>
+                                                                    </StackPanel>
 
-                                                        </Flyout>
-                                                    </Button.Flyout>
-                                                </Button>
-                                                <Button x:Name="HubButton"
+                                                                </Flyout>
+                                                            </Button.Flyout>
+                                                        </Button>
+                                                        <Button x:Name="HubButton"
                             Grid.Row="1"
 
                             Style="{StaticResource HubButtonStyle}"
@@ -1074,17 +1017,15 @@
                             VerticalAlignment="Stretch"
                                                                 AutomationProperties.AccessibilityView="Raw"
 >
-                                                    <Button.Flyout>
-                                                        <Flyout>
-                                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                                <Button x:Name="FavToolbar" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" Click="FavToolbar_Click">Add to favorites</Button>
-                                                                <Button x:Name="OfflineToolbar" Margin="5" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OfflineToolbar_Click">Save offline</Button>
-                                                            </StackPanel>
-                                                    </Flyout>
-                                                    </Button.Flyout>
-                                                </Button>
+                                                            <Button.Flyout>
+                                                                <CommandBarFlyout x:Name="CommandBarFlyout1" Placement="Bottom">
+                                                                    <AppBarButton x:Name="FavToolbar" Background="{ThemeResource SystemControlAccentAcrylicElementAccentMediumHighBrush}" Margin="5" HorizontalAlignment="Center" Label="Add to favourites" Icon="SolidStar" VerticalAlignment="Center" Click="FavToolbar_Click"></AppBarButton>
+                                                                    <AppBarButton x:Name="OfflineToolbar" Margin="5" HorizontalAlignment="Center" LabelPosition="Default" VerticalAlignment="Center" Click="OfflineToolbar_Click" Label="Save offline" Icon="Save"></AppBarButton>
+                                                                </CommandBarFlyout>
+                                                            </Button.Flyout>
+                                                        </Button>
 
-                                                <Button x:Name="DeleteButton"
+                                                        <Button x:Name="DeleteButton"
 
                             Grid.Row="1"
 
@@ -1107,7 +1048,7 @@
 
                             VerticalAlignment="Stretch" />
 
-                                                <Button x:Name="QueryButton"
+                                                        <Button x:Name="QueryButton"
 
                             Grid.Row="1"
 
@@ -1129,7 +1070,7 @@
 
                             AutomationProperties.AccessibilityView="Raw"/>
 
-                                                <contract7Present:ContentPresenter x:Name="DescriptionPresenter"
+                                                        <contract7Present:ContentPresenter x:Name="DescriptionPresenter"
 
                             Grid.Row="2"
 
@@ -1145,85 +1086,85 @@
 
 
 
-                                            </Grid>
+                                                    </Grid>
 
 
 
-                                        </ControlTemplate>
+                                                </ControlTemplate>
 
-                                    </Setter.Value>
+                                            </Setter.Value>
 
-                                </Setter>
+                                        </Setter>
 
-                            </Style>
-
-
-
-                            <Style TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}" />
+                                    </Style>
 
 
 
-                            <Style x:Key="DefaultAutoSuggestBoxStyle" TargetType="AutoSuggestBox">
+                                    <Style TargetType="AutoSuggestBox" BasedOn="{StaticResource DefaultAutoSuggestBoxStyle}" />
 
-                                <Setter Property="VerticalAlignment" Value="Top" />
 
-                                <Setter Property="IsTabStop" Value="False" />
 
-                                <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+                                    <Style x:Key="DefaultAutoSuggestBoxStyle" TargetType="AutoSuggestBox">
 
-                                <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+                                        <Setter Property="VerticalAlignment" Value="Top" />
 
-                                <Setter Property="TextBoxStyle" Value="{StaticResource AutoSuggestBoxTextBoxStyle}" />
+                                        <Setter Property="IsTabStop" Value="False" />
 
-                                <!--   <contract6Present:Setter Property="UseSystemFocusVisuals" Value="{ThemeResource IsApplicationFocusVisualKindReveal}" />
+                                        <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />
+
+                                        <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}" />
+
+                                        <Setter Property="TextBoxStyle" Value="{StaticResource AutoSuggestBoxTextBoxStyle}" />
+
+                                        <!--   <contract6Present:Setter Property="UseSystemFocusVisuals" Value="{ThemeResource IsApplicationFocusVisualKindReveal}" />
 
         <contract7Present:Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />-->
 
-                                <Setter Property="primitives:AutoSuggestBoxHelper.KeepInteriorCornersSquare" Value="true"/>
+                                        <Setter Property="primitives:AutoSuggestBoxHelper.KeepInteriorCornersSquare" Value="true"/>
 
-                                <Setter Property="Template">
+                                        <Setter Property="Template">
 
-                                    <Setter.Value>
+                                            <Setter.Value>
 
-                                        <ControlTemplate TargetType="AutoSuggestBox">
+                                                <ControlTemplate TargetType="AutoSuggestBox">
 
-                                            <Grid x:Name="LayoutRoot">
-
-
-
-                                                <VisualStateManager.VisualStateGroups>
-
-                                                    <VisualStateGroup x:Name="Orientation">
-
-                                                        <VisualState x:Name="Landscape" />
-
-                                                        <VisualState x:Name="Portrait" />
-
-                                                    </VisualStateGroup>
+                                                    <Grid x:Name="LayoutRoot">
 
 
 
-                                                </VisualStateManager.VisualStateGroups>
+                                                        <VisualStateManager.VisualStateGroups>
+
+                                                            <VisualStateGroup x:Name="Orientation">
+
+                                                                <VisualState x:Name="Landscape" />
+
+                                                                <VisualState x:Name="Portrait" />
+
+                                                            </VisualStateGroup>
 
 
 
-                                                <Grid.ColumnDefinitions>
-
-                                                    <ColumnDefinition Width="*" />
-
-                                                </Grid.ColumnDefinitions>
+                                                        </VisualStateManager.VisualStateGroups>
 
 
 
-                                                <Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
 
-                                                    <RowDefinition Height="*" />
+                                                            <ColumnDefinition Width="*" />
 
-                                                </Grid.RowDefinitions>
+                                                        </Grid.ColumnDefinitions>
 
 
 
-                                                <TextBox x:Name="TextBox"
+                                                        <Grid.RowDefinitions>
+
+                                                            <RowDefinition Height="*" />
+
+                                                        </Grid.RowDefinitions>
+
+
+
+                                                        <TextBox x:Name="TextBox"
 
                             Style="{TemplateBinding TextBoxStyle}"
 
@@ -1257,9 +1198,9 @@
 
 
 
-                                                <Popup x:Name="SuggestionsPopup">
+                                                        <Popup x:Name="SuggestionsPopup">
 
-                                                    <Border x:Name="SuggestionsContainer"
+                                                            <Border x:Name="SuggestionsContainer"
 
                                     Padding="{ThemeResource AutoSuggestListMargin}"
 
@@ -1271,13 +1212,13 @@
 
                                     CornerRadius="{ThemeResource OverlayCornerRadius}">
 
-                                                        <Border.RenderTransform>
+                                                                <Border.RenderTransform>
 
-                                                            <contract7NotPresent:TranslateTransform x:Name="UpwardTransform" />
+                                                                    <contract7NotPresent:TranslateTransform x:Name="UpwardTransform" />
 
-                                                        </Border.RenderTransform>
+                                                                </Border.RenderTransform>
 
-                                                        <ListView
+                                                                <ListView
 
                                     x:Name="SuggestionsList"
 
@@ -1295,383 +1236,421 @@
 
                                     Margin="{ThemeResource AutoSuggestListPadding}">
 
-                                                            <ListView.ItemContainerTransitions>
+                                                                    <ListView.ItemContainerTransitions>
 
-                                                                <contract7NotPresent:TransitionCollection />
+                                                                        <contract7NotPresent:TransitionCollection />
 
-                                                            </ListView.ItemContainerTransitions>
+                                                                    </ListView.ItemContainerTransitions>
 
-                                                        </ListView>
+                                                                </ListView>
 
-                                                    </Border>
+                                                            </Border>
 
-                                                </Popup>
+                                                        </Popup>
 
 
 
+                                                    </Grid>
+
+
+
+                                                </ControlTemplate>
+
+                                            </Setter.Value>
+
+                                        </Setter>
+
+                                    </Style>
+
+
+
+                                </ResourceDictionary>
+                            </AutoSuggestBox.Resources>
+
+                        </AutoSuggestBox>
+                        <Button Style="{StaticResource BrowserButtonStyle}" x:Name="HubButton" Click="HubButton_Click">
+                            <FontIcon Glyph="&#xE728;"/>
+                        </Button>
+                        <controls1:AdaptiveGridView Canvas.ZIndex="45" x:Name="ExtensionsListToolbar" SelectionMode="None" ItemHeight="35" DesiredWidth="35" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.IsVerticalRailEnabled="False" ScrollViewer.VerticalScrollMode="Disabled" Height="40">
+                            <controls1:AdaptiveGridView.ItemTemplate>
+                                <DataTemplate>
+                                    <Image Tapped="Image_Tapped" Height="35" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Source="{Binding IconJSON}">
+                                        <Image.ContextFlyout>
+                                            <Flyout x:Name="ExtensionToolbarFlyout">
+                                                <Frame Loaded="Frame_Loaded" x:Name="ExtensionsToolbarFrame"></Frame>
+                                            </Flyout>
+                                        </Image.ContextFlyout>
+                                    </Image>
+                                </DataTemplate>
+                            </controls1:AdaptiveGridView.ItemTemplate>
+                        </controls1:AdaptiveGridView>
+                        <Button Style="{StaticResource BrowserButtonStyle}" Click="ExtensionsButton_Click" x:Name="ExtensionsButton">
+                            <Button.Flyout>
+                                <Flyout x:Name="ExtensionsFlyout">
+                                    <StackPanel Margin="5" Orientation="Vertical" Width="400">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="15">My Extensions</TextBlock>
+                                            <Button Margin="5" x:Name="ExtensionsManger" Click="ExtensionsManger_Click">Extensions manager</Button>
+                                        </StackPanel>
+                                        <controls1:AdaptiveGridView x:Name="ExtensionsList" Margin="5">
+                                            <controls1:AdaptiveGridView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Image Height="50" Width="50" Tapped="Image_Tapped" Source="{Binding IconJSON}" Margin="2">
+                                                        <Image.ContextFlyout>
+                                                            <Flyout x:Name="ExtensionToolbarFlyout">
+                                                                <Frame Loaded="Frame_Loaded" x:Name="ExtensionsToolbarFrame"></Frame>
+                                                            </Flyout>
+                                                        </Image.ContextFlyout>
+                                                    </Image>
+                                                </DataTemplate>
+                                            </controls1:AdaptiveGridView.ItemTemplate>
+                                        </controls1:AdaptiveGridView>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74C;" />
+                        </Button>
+                        <Button Style="{StaticResource BrowserButtonStyle}" x:Name="MenuFrameButton" >
+                            <Button.Flyout>
+                                <Flyout x:Name="SecondFlyout">
+                                <Flyout.FlyoutPresenterStyle>
+                                    <Style TargetType="FlyoutPresenter">
+                                        <Setter Property="ScrollViewer.ZoomMode" Value="Enabled"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="CornerRadius" Value="10"/>
+                                            <Setter Property="Height" Value="400"/>
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="IsDefaultShadowEnabled" Value="False" />
+                                    </Style>
+                                </Flyout.FlyoutPresenterStyle>
+                                <Grid Background="Transparent" Width="400" Height="400">
+                                    <StackPanel>
+                                        <Grid Background="{ThemeResource SystemControlAltLowAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 5, 0, 5">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                    <!--  <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" CornerRadius="10" Icon="globe" Margin="5" Label="Open in browser" Width="100"></AppBarButton>-->
+                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="add" Margin="5" Label="New tab" Width="100" Click="NewTabItem_Click"></AppBarButton>
+                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="NewWindow" Margin="5" Label="New window" Click="NewWindow_Click" Width="100"></AppBarButton>
+                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Label="New incognito" Click="Incognito_Click" Width="100">
+                                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE727;"/>
+                                                    </AppBarButton>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 0, 0, 5">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Favorite" Click="HubButton_Click" Margin="5" Label="Favorites"></AppBarButton>
+                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Clock" Click="HisButton_Click" Margin="5" Label="History"></AppBarButton>
+                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Download" Click="DownlButton_Click" Margin="5" Label="Downloads"></AppBarButton>
+                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="AllApps" Margin="5" Label="Apps" Click="NewAppItem_Click"></AppBarButton>
+                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="SwitchApps" Margin="5" Label="Extensions" Click="ExtensionsManger_Click"></AppBarButton>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Height="100" Margin="0, 0, 0, 5">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                <controls:DropDownButton Margin="5" CornerRadius="10" VerticalAlignment="Center" Content="Help and feedback" Background="{ThemeResource FlyoutBackgroundThemeBrush}" Height="55">
+                                                    <controls:DropDownButton.Flyout>
+                                                        <MenuFlyout>
+                                                            <MenuFlyoutItem Click="Help" Text="Help"/>
+                                                            <MenuFlyoutSeparator/>
+                                                            <MenuFlyoutItem Text="Send feedback" Click="FeedbackLink_Click"/>
+                                                            <MenuFlyoutItem Text="Rate" Click="Rate"/>
+                                                            <MenuFlyoutSeparator/>
+                                                            <MenuFlyoutItem Text="What's new" Click="WhatNew"/>
+                                                            <MenuFlyoutItem Text="About" Click="About"/>
+                                                        </MenuFlyout>
+                                                    </controls:DropDownButton.Flyout>
+                                                </controls:DropDownButton>
+                                                <AppBarButton Style="{ThemeResource AppBarButtonRevealStyle}" Background="{ThemeResource FlyoutBackgroundThemeBrush}" Click="SettingsButton_Click" VerticalAlignment="Center" CornerRadius="10" Icon="Setting" Margin="5" Label="Settings"  Width="100">
+                                                </AppBarButton>
+                                                <AppBarButton Style="{ThemeResource AppBarButtonRevealStyle}" Click="Exit" Background="{ThemeResource FlyoutBackgroundThemeBrush}" VerticalAlignment="Center" CornerRadius="10" Margin="5" Label="Exit" Width="100">
+                                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8BB;"/>
+                                                </AppBarButton>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Grid>
+                            </Flyout>
+                            </Button.Flyout>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" />
+                        </Button>
+                        <Button Style="{StaticResource BrowserButtonStyle}" x:Name="MenuButton" Visibility="Collapsed">
+                            <Button.Flyout>
+                                <Flyout x:Name="MainFlyout">
+                                    <Flyout.FlyoutPresenterStyle>
+                                        <Style TargetType="FlyoutPresenter">
+                                            <Setter Property="ScrollViewer.ZoomMode" Value="Enabled"/>
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="CornerRadius" Value="10"/>
+                                            <Setter Property="Height" Value="900"/>
+                                            <Setter Property="MaxHeight" Value="Infinity" />
+                                            <Setter Property="BorderThickness" Value="0"/>
+                                            <Setter Property="IsDefaultShadowEnabled" Value="False" />
+                                        </Style>
+                                    </Flyout.FlyoutPresenterStyle>
+                                    <Grid Background="Transparent" Width="400" Height="900">
+                                        <StackPanel>
+                                            <Grid Background="{ThemeResource SystemControlAltLowAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 5, 0, 5">
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                        <!--  <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" CornerRadius="10" Icon="globe" Margin="5" Label="Open in browser" Width="100"></AppBarButton>-->
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="add" Margin="5" Label="New tab" Width="100" Click="NewTabItem_Click"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="NewWindow" Margin="5" Label="New window" Click="NewWindow_Click" Width="100"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Label="New incognito" Click="Incognito_Click" Width="100">
+                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE727;"/>
+                                                        </AppBarButton>
+                                                    </StackPanel>
+                                                </StackPanel>
                                             </Grid>
-
-
-
-                                        </ControlTemplate>
-
-                                    </Setter.Value>
-
-                                </Setter>
-
-                            </Style>
-
-
-
-                        </ResourceDictionary>
-                    </AutoSuggestBox.Resources>
-                </AutoSuggestBox>
-                <Button Style="{StaticResource BrowserButtonStyle}" x:Name="HubButton" Click="HubButton_Click">
-                    <FontIcon Glyph="&#xE728;"/>
-                </Button>
-                <controls1:AdaptiveGridView Canvas.ZIndex="45" x:Name="ExtensionsListToolbar" ItemHeight="35" DesiredWidth="35" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.IsVerticalRailEnabled="False" ScrollViewer.VerticalScrollMode="Disabled" Height="40">
-                    <controls1:AdaptiveGridView.ItemTemplate>
-                        <DataTemplate>
-                            <Image Tapped="Image_Tapped" Height="35" HorizontalAlignment="Center" VerticalAlignment="Center" Width="35" Source="{Binding IconJSON}">
-                                <Image.ContextFlyout>
-                                    <Flyout x:Name="ExtensionToolbarFlyout">
-                                        <Frame Loaded="Frame_Loaded" x:Name="ExtensionsToolbarFrame"></Frame>
-                                    </Flyout>
-                                </Image.ContextFlyout>
-                            </Image>
-                        </DataTemplate>
-                    </controls1:AdaptiveGridView.ItemTemplate>
-                </controls1:AdaptiveGridView>
-                <Button Style="{StaticResource BrowserButtonStyle}" Click="ExtensionsButton_Click" x:Name="ExtensionsButton">
-                    <Button.Flyout>
-                        <Flyout x:Name="ExtensionsFlyout">
-                            <StackPanel Margin="5" Orientation="Vertical" Width="400">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="15">My Extensions</TextBlock>
-                                    <Button Margin="5" x:Name="ExtensionsManger" Click="ExtensionsManger_Click">Extensions manager</Button>
-                                </StackPanel>
-                                <controls1:AdaptiveGridView x:Name="ExtensionsList" Margin="5">
-                                    <controls1:AdaptiveGridView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Image Height="50" Width="50" Tapped="Image_Tapped" Source="{Binding IconJSON}" Margin="2">
-                                                <Image.ContextFlyout>
-                                                    <Flyout x:Name="ExtensionToolbarFlyout">
-                                                        <Frame Loaded="Frame_Loaded" x:Name="ExtensionsToolbarFrame"></Frame>
-                                                    </Flyout>
-                                                </Image.ContextFlyout>
-                                            </Image>
-                                        </DataTemplate>
-                                    </controls1:AdaptiveGridView.ItemTemplate>
-                                </controls1:AdaptiveGridView>
-                                <!--  <TextBlock>
-                                    <Bold>Extensions manager:</Bold>
-                                </TextBlock>
-                                <TextBlock Text="Adblocker"  Margin="5"/>
-                                <TextBlock Text="Web options extensions"  Margin="5"/>
-                                <Button Style="{StaticResource ButtonRevealStyle}" Margin="5" Content="Attempt dark mode" x:Name="DarkModebutton" Click="DarkModebutton_Click"/>
-                                <TextBlock Text="Mobile extension:"  Margin="5"/>
-                                <Button Style="{StaticResource ButtonRevealStyle}" Margin="5" Content="Request mobile site" x:Name="UserAgentbutton" Click="UserAgentbutton_Click"/>
-                                <TextBlock Text="Setting extension:"/>
-                                <Button Style="{StaticResource ButtonRevealStyle}" Margin="5" Content="Clear cache and web data" x:Name="ClearCachebutton" Click="ClearCachebutton_Click"/>
-                                <Button Style="{StaticResource ButtonRevealStyle}" Margin="5" Content="Clear cookies" x:Name="ClearCookies" Click="ClearCookies_Click"/>-->
-                            </StackPanel>
-                        </Flyout>
-                    </Button.Flyout>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74C;" />
-                </Button>
-                <Button Style="{StaticResource BrowserButtonStyle}" x:Name="MenuFrameButton" >
-                    <Button.Flyout>
-                        <MenuFlyout>
-                            <MenuFlyoutItem Text="New Tab" Click="NewTabItem_Click"/>
-                            <MenuFlyoutItem Text="New secondary window" Click="NewWindow_Click"/>
-                            <MenuFlyoutItem Text="New secondary incognito" Click="Incognito_Click"/>
-                            <MenuFlyoutSeparator/>
-                            <MenuFlyoutItem Text="Favourites" Click="HubButton_Click"/>
-                            <MenuFlyoutItem Text="History" Click="HisButton_Click"/>
-                            <MenuFlyoutItem Text="Downloads" Click="DownlButton_Click"/>
-                            <MenuFlyoutItem Text="Offline" Click="OfflineButton_Click"/>
-                            <MenuFlyoutItem Text="Passwords" Click="PassButton_Click"/>
-                            <MenuFlyoutSeparator/>
-                            <MenuFlyoutItem Text="Settings" Click="SettingsButton_Click"/>
-                            <MenuFlyoutSubItem Text="Help and feedback">
-                                <MenuFlyoutItem Click="Help" Text="Help"/>
-                                <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="Send feedback" Click="FeedbackLink_Click"/>
-                                <MenuFlyoutItem Text="Rate" Click="Rate"/>
-                                <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="What's new" Click="WhatNew"/>
-                                <MenuFlyoutItem Text="About" Click="About"/>
-                            </MenuFlyoutSubItem>
-                            <MenuFlyoutItem Text="Exit" Click="Exit"/>
-                        </MenuFlyout>
-                    </Button.Flyout>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" />
-                </Button>
-                <Button Style="{StaticResource BrowserButtonStyle}" x:Name="MenuButton" Visibility="Collapsed">
-                    <Button.Flyout>
-                        <Flyout x:Name="MainFlyout">
-                            <Flyout.FlyoutPresenterStyle>
-                                <Style TargetType="FlyoutPresenter">
-                                    <Setter Property="ScrollViewer.ZoomMode" Value="Enabled"/>
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="CornerRadius" Value="10"/>
-                                    <Setter Property="Height" Value="900"/>
-                                    <Setter Property="MaxHeight" Value="Infinity" />
-                                    <Setter Property="BorderThickness" Value="0"/>
-                                    <Setter Property="IsDefaultShadowEnabled" Value="False" />
-                                </Style>
-                            </Flyout.FlyoutPresenterStyle>
-                            <Grid Background="Transparent" Width="400" Height="900">
-                                <StackPanel>
-                                    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 5, 0, 5">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                <!--  <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" CornerRadius="10" Icon="globe" Margin="5" Label="Open in browser" Width="100"></AppBarButton>-->
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="add" Margin="5" Label="New tab" Width="100" Click="NewTabItem_Click"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="NewWindow" Margin="5" Label="New window" Click="NewWindow_Click" Width="100"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Label="New incognito" Click="Incognito_Click" Width="100">
-                                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE727;"/>
-                                                </AppBarButton>
-                                            </StackPanel>
+                                            <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 0, 0, 5">
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Favorite" Click="HubButton_Click" Margin="5" Label="Favorites"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Clock" Click="HisButton_Click" Margin="5" Label="History"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Download" Click="DownlButton_Click" Margin="5" Label="Downloads"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="AllApps" Margin="5" Label="Apps" Click="NewAppItem_Click"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="SwitchApps" Margin="5" Label="Extensions" Click="ExtensionsManger_Click"></AppBarButton>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                            <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 0, 0, 5">
+                                                <Slider Margin="10" HorizontalAlignment="Center" Header="Zoom:" Minimum="-75" Width="300" Maximum="90" Value="0" ValueChanged="ZoomSlider_ValueChanged" SnapsTo="Ticks" TickFrequency="1"/>
+                                            </Grid>
+                                            <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="400" Margin="0, 0, 0, 5">
+                                                <StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Print" Margin="5" Label=" Screenshot Print" Click="PrintFlyoutItem_Click" Width="100"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Edit" Margin="5" Label="Ink" Click="InkingButton_Click" Width="100"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Share" Margin="5" Label="Share" Click="ShareFlyoutItem_Click" Width="100"></AppBarButton>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Find" Click="FindFlyoutItem_Click" Margin="5" Label="Find in page"  Width="100"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Read" Margin="5" Label="Reading Mode" Click="ReadingModeButton_Click" Width="100"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Volume" Margin="5" Label="Read aloud" Click="ReadAloudButton_Click" Width="100"></AppBarButton>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Bold" Margin="5" Click="TranslateFlyoutItem_Click" Label="Translate" Width="100" >></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Pictures" Margin="5" Click="CompactFlyoutItem_Click" Label="Compact overlay" Width="100">>
+                                                        </AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Save" Click="SaveWebPageAsHTMLFlyoutItem_Click" Margin="5" Label="Save as .HTML" Width="100"></AppBarButton>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                        <controls:DropDownButton Width="100" CornerRadius="10"  Background="{ThemeResource FlyoutBackgroundThemeBrush}" Height="55" Margin="5" Content="Pin">
+                                                            <controls:DropDownButton.Flyout>
+                                                                <MenuFlyout>
+                                                                    <MenuFlyoutItem Text="Taskbar" IsEnabled="False"/>
+                                                                    <MenuFlyoutItem Text="Livetile" Click="PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click"/>
+                                                                </MenuFlyout>
+                                                            </controls:DropDownButton.Flyout>
+                                                        </controls:DropDownButton>
+                                                        <controls:DropDownButton Width="100" CornerRadius="10"  Background="{ThemeResource FlyoutBackgroundThemeBrush}" Height="55" Margin="5" Content="Mute">
+                                                            <controls:DropDownButton.Flyout>
+                                                                <MenuFlyout>
+                                                                    <MenuFlyoutItem Text="Mute page (beta)" Click="MuteFlyoutItem_Click"/>
+                                                                    <MenuFlyoutItem Text="UnMute page (beta)" Click="unMuteFlyoutItem_Click"/>
+                                                                </MenuFlyout>
+                                                            </controls:DropDownButton.Flyout>
+                                                        </controls:DropDownButton>
+                                                        <controls:DropDownButton CornerRadius="10"  Background="{ThemeResource FlyoutBackgroundThemeBrush}" Height="55" Margin="5" Content="Screenshot webpage">
+                                                            <controls:DropDownButton.Flyout>
+                                                                <MenuFlyout>
+                                                                    <MenuFlyoutItem Text="Screenshot web page" Click="PageIMGFlyoutItem_Click"/>
+                                                                    <MenuFlyoutItem Text="Webview snip" Click="SnipFlyoutItem_Click"></MenuFlyoutItem>
+                                                                </MenuFlyout>
+                                                            </controls:DropDownButton.Flyout>
+                                                        </controls:DropDownButton>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Click="TaskMngFlyoutItem_Click" Icon="Manage" Margin="5" Width="100" Label="Task manager"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Click="DevButton_Click" Width="100" Label="Devtools">
+                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE943;"/>
+                                                        </AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Click="DevFlyoutItem_Click" Label="Advanced tools" Width="100">
+                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE821;"/>
+                                                        </AppBarButton>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                            <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Height="100" Margin="0, 0, 0, 5">
+                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                                                    <controls:DropDownButton Margin="5" CornerRadius="10" VerticalAlignment="Center" Content="Help and feedback" Background="{ThemeResource FlyoutBackgroundThemeBrush}" Height="55">
+                                                        <controls:DropDownButton.Flyout>
+                                                            <MenuFlyout>
+                                                                <MenuFlyoutItem Click="Help" Text="Help"/>
+                                                                <MenuFlyoutSeparator/>
+                                                                <MenuFlyoutItem Text="Send feedback" Click="FeedbackLink_Click"/>
+                                                                <MenuFlyoutItem Text="Rate" Click="Rate"/>
+                                                                <MenuFlyoutSeparator/>
+                                                                <MenuFlyoutItem Text="What's new" Click="WhatNew"/>
+                                                                <MenuFlyoutItem Text="About" Click="About"/>
+                                                            </MenuFlyout>
+                                                        </controls:DropDownButton.Flyout>
+                                                    </controls:DropDownButton>
+                                                    <AppBarButton Style="{ThemeResource AppBarButtonRevealStyle}" Background="{ThemeResource FlyoutBackgroundThemeBrush}" Click="SettingsButton_Click" VerticalAlignment="Center" CornerRadius="10" Icon="Setting" Margin="5" Label="Settings"  Width="100">
+                                                    </AppBarButton>
+                                                    <AppBarButton Style="{ThemeResource AppBarButtonRevealStyle}" Click="Exit" Background="{ThemeResource FlyoutBackgroundThemeBrush}" VerticalAlignment="Center" CornerRadius="10" Margin="5" Label="Exit" Width="100">
+                                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8BB;"/>
+                                                    </AppBarButton>
+                                                </StackPanel>
+                                            </Grid>
                                         </StackPanel>
                                     </Grid>
-                                    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 0, 0, 5">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Favorite" Click="HubButton_Click" Margin="5" Label="Favorites"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Clock" Click="HisButton_Click" Margin="5" Label="History"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Download" Click="DownlButton_Click" Margin="5" Label="Downloads"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="AllApps" Margin="5" Label="Apps" Click="NewAppItem_Click"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="SwitchApps" Margin="5" Label="Extensions" Click="ExtensionsManger_Click"></AppBarButton>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Grid>
-                                    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="80" Margin="0, 0, 0, 5">
-                                        <Slider Margin="10" HorizontalAlignment="Center" Header="Zoom:" Minimum="-75" Width="300" Maximum="90" Value="0" ValueChanged="ZoomSlider_ValueChanged" SnapsTo="Ticks" TickFrequency="1"/>
-                                    </Grid>
-                                    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="400" Margin="0, 0, 0, 5">
-                                        <StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Print" Margin="5" Label=" Screenshot Print" Click="PrintFlyoutItem_Click" Width="100"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Edit" Margin="5" Label="Ink" Click="InkingButton_Click" Width="100"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Share" Margin="5" Label="Share" Click="ShareFlyoutItem_Click" Width="100"></AppBarButton>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Find" Click="FindFlyoutItem_Click" Margin="5" Label="Find in page"  Width="100"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Read" Margin="5" Label="Reading Mode" Click="ReadingModeButton_Click" Width="100"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Volume" Margin="5" Label="Read aloud" Click="ReadAloudButton_Click" Width="100"></AppBarButton>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Bold" Margin="5" Click="TranslateFlyoutItem_Click" Label="Translate" Width="100" >></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Pictures" Margin="5" Click="CompactFlyoutItem_Click" Label="Compact overlay" Width="100">>
-                                                </AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Save" Click="SaveWebPageAsHTMLFlyoutItem_Click" Margin="5" Label="Save as .HTML" Width="100"></AppBarButton>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                <controls:DropDownButton Width="100" CornerRadius="10"  Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55" Margin="5" Content="Pin">
-                                                    <controls:DropDownButton.Flyout>
-                                                        <MenuFlyout>
-                                                            <MenuFlyoutItem Text="Taskbar" IsEnabled="False"/>
-                                                            <MenuFlyoutItem Text="Livetile" Click="PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click"/>
-                                                        </MenuFlyout>
-                                                    </controls:DropDownButton.Flyout>
-                                                </controls:DropDownButton>
-                                                <controls:DropDownButton Width="100" CornerRadius="10"  Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55" Margin="5" Content="Mute">
-                                                    <controls:DropDownButton.Flyout>
-                                                        <MenuFlyout>
-                                                            <MenuFlyoutItem Text="Mute page (beta)" Click="MuteFlyoutItem_Click"/>
-                                                            <MenuFlyoutItem Text="UnMute page (beta)" Click="unMuteFlyoutItem_Click"/>
-                                                        </MenuFlyout>
-                                                    </controls:DropDownButton.Flyout>
-                                                </controls:DropDownButton>
-                                                <controls:DropDownButton CornerRadius="10"  Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55" Margin="5" Content="Screenshot webpage">
-                                                    <controls:DropDownButton.Flyout>
-                                                        <MenuFlyout>
-                                                            <MenuFlyoutItem Text="Screenshot web page" Click="PageIMGFlyoutItem_Click"/>
-                                                            <MenuFlyoutItem Text="Webview snip" Click="SnipFlyoutItem_Click"></MenuFlyoutItem>
-                                                        </MenuFlyout>
-                                                    </controls:DropDownButton.Flyout>
-                                                </controls:DropDownButton>
-                                            </StackPanel>
-                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Click="TaskMngFlyoutItem_Click" Icon="Manage" Margin="5" Width="100" Label="Task manager"></AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Click="DevButton_Click" Width="100" Label="Devtools">
-                                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE943;"/>
-                                                </AppBarButton>
-                                                <AppBarButton Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Click="DevFlyoutItem_Click" Label="Advanced tools" Width="100">
-                                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE821;"/>
-                                                </AppBarButton>
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </Grid>
-                                    <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Height="100" Margin="0, 0, 0, 5">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                            <controls:DropDownButton Margin="5" CornerRadius="10" VerticalAlignment="Center" Content="Help and feedback" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="55">
-                                                <controls:DropDownButton.Flyout>
-                                                    <MenuFlyout>
-                                                        <MenuFlyoutItem Click="Help" Text="Help"/>
-                                                        <MenuFlyoutSeparator/>
-                                                        <MenuFlyoutItem Text="Send feedback" Click="FeedbackLink_Click"/>
-                                                        <MenuFlyoutItem Text="Rate" Click="Rate"/>
-                                                        <MenuFlyoutSeparator/>
-                                                        <MenuFlyoutItem Text="What's new" Click="WhatNew"/>
-                                                        <MenuFlyoutItem Text="About" Click="About"/>
-                                                    </MenuFlyout>
-                                                </controls:DropDownButton.Flyout>
-                                            </controls:DropDownButton>
-                                            <AppBarButton Style="{ThemeResource AppBarButtonRevealStyle}" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Click="SettingsButton_Click" VerticalAlignment="Center" CornerRadius="10" Icon="Setting" Margin="5" Label="Settings"  Width="100">
-                                            </AppBarButton>
-                                            <AppBarButton Style="{ThemeResource AppBarButtonRevealStyle}" Click="Exit" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" VerticalAlignment="Center" CornerRadius="10" Margin="5" Label="Exit" Width="100">
-                                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8BB;"/>
-                                            </AppBarButton>
-                                        </StackPanel>
-                                    </Grid>
-                                </StackPanel>
-                            </Grid>
-                        </Flyout>
-                        <!-- <MenuFlyout>
-                            <MenuFlyoutItem Text="Open in browser" Click="OnOpenInBrowser" Width="300" Icon="Globe"/>
-                            <MenuFlyoutItem Text="New Tab" Click="NewTabItem_Click"/>
-                            <MenuFlyoutItem Text="New secondary window" Click="NewWindow_Click"/>
-                            <MenuFlyoutItem Text="New secondary incognito" Click="Incognito_Click"/>
-                                <MenuFlyoutSeparator/>
-                            <MenuFlyoutItem Text="Favourites" Click="HubButton_Click"/>
-                            <MenuFlyoutItem Text="History" Click="HisButton_Click"/>
-                            <MenuFlyoutItem Text="Downloads" Click="DownlButton_Click"/>
-                            <MenuFlyoutSubItem Text="Apps">
-                                <MenuFlyoutItem Text="Launch this site as an 'app'" Click="TempLaunchAppFlyoutItem_Click"/>
-                                <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="Install this site as an app (coming soon)" IsEnabled="False"/>
-                                <MenuFlyoutItem Text="Manage apps (coming soon)" IsEnabled="False"/>
-                                <MenuFlyoutSeparator/>
-                                
-                            </MenuFlyoutSubItem>
-                            <MenuFlyoutItem Text="Extensions" />
-                            <MenuFlyoutSubItem Text="Toolbar">
-
-                            </MenuFlyoutSubItem>
-                            <MenuFlyoutSeparator/>
-                            <MenuFlyoutItem Click="ZoomFlyoutItem_Click" Text="Zoom">
-                            </MenuFlyoutItem>
-                                <MenuFlyoutItem Text="Print (Beta)" Click="PrintFlyoutItem_Click"/>
-                            <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
-                            <MenuFlyoutItem Text="Share" Click="ShareFlyoutItem_Click"/>
-                            <MenuFlyoutItem Text="Find on page" Click="FindFlyoutItem_Click"/>
-                                <MenuFlyoutItem Text="Read aloud" />
-                                <MenuFlyoutSubItem Text="Pin" >
-                                    <MenuFlyoutItem Text="Taskbar" IsEnabled="False"/>
-                                    <MenuFlyoutItem Text="Livetile" Click="PinSecondaryLiveTileMenuFlyoutSubItemPinItem_Click"/>
-                                </MenuFlyoutSubItem>
-                                <MenuFlyoutSubItem Text="More tools">
-                                <MenuFlyoutItem Text="Compact overlay" Click="CompactFlyoutItem_Click"></MenuFlyoutItem>
-                                <MenuFlyoutSeparator></MenuFlyoutSeparator>
-                                <MenuFlyoutItem Text="Mute page (beta)" Click="MuteFlyoutItem_Click"/>
-                                <MenuFlyoutItem Text="UnMute page (beta)" Click="unMuteFlyoutItem_Click"/>
-                                <MenuFlyoutItem Text="Translate" Click="TranslateFlyoutItem_Click"/>
-                                <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="Ink" Click="InkingButton_Click"/>
-                                    <MenuFlyoutItem Text="Share page" Click="ShareFlyoutItem_Click"/>
-                                <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="Save page as .HTML" Click="SaveWebPageAsHTMLFlyoutItem_Click"/>
-                                <MenuFlyoutItem Text="Screenshot web page" Click="PageIMGFlyoutItem_Click"/>
-                                <MenuFlyoutItem Text="Webview snip" Click="SnipFlyoutItem_Click"></MenuFlyoutItem>
-                                <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="Browser task manager" Click="TaskMngFlyoutItem_Click"/>
-                                <MenuFlyoutItem Text="Dev Tools" />
-                                <MenuFlyoutItem Text="Advanced Dev Tools" Click="DevFlyoutItem_Click"/>
-                            </MenuFlyoutSubItem>
-                            <MenuFlyoutSeparator/>
-                            <MenuFlyoutItem Text="Settings" Click="SettingsButton_Click"/>
-                            <MenuFlyoutSubItem Text="Help and feedback">
-                                <MenuFlyoutItem Text="Help"/>
-                                <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="Send feedback"/>
-                                <MenuFlyoutItem Text="Rate"/>
-                                <MenuFlyoutSeparator/>
-                                <MenuFlyoutItem Text="What's new"/>
-                                <MenuFlyoutItem Text="About"/>
-                            </MenuFlyoutSubItem>
-                            <MenuFlyoutItem Text="Exit" />
-                        </MenuFlyout>-->
-                    </Button.Flyout>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" />
-                </Button>
-            </StackPanel>
-            <controls:TeachingTip x:Name="ZoomTip"
+                                </Flyout>
+                            </Button.Flyout>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE713;" />
+                        </Button>
+                    </StackPanel>
+                    <controls:TeachingTip x:Name="ZoomTip"
                                   IsLightDismissEnabled="True"
                                   Canvas.ZIndex="3000"
                    HorizontalAlignment="Right" VerticalAlignment="Top"
 	Title="Zoom">
-                <controls:TeachingTip.IconSource>
-                    <controls:SymbolIconSource Symbol="Zoom" />
-                </controls:TeachingTip.IconSource>
-                <controls:TeachingTip.Content>
-                    <Slider Minimum="-75" Maximum="90" Value="0" ValueChanged="ZoomSlider_ValueChanged" SnapsTo="Ticks" TickFrequency="1"/>
-                </controls:TeachingTip.Content>
-            </controls:TeachingTip>
-            <controls:TeachingTip x:Name="FindTip"
+                        <controls:TeachingTip.IconSource>
+                            <controls:SymbolIconSource Symbol="Zoom" />
+                        </controls:TeachingTip.IconSource>
+                        <controls:TeachingTip.Content>
+                            <Slider Minimum="-75" Maximum="90" Value="0" ValueChanged="ZoomSlider_ValueChanged" SnapsTo="Ticks" TickFrequency="1"/>
+                        </controls:TeachingTip.Content>
+                    </controls:TeachingTip>
+                    <controls:TeachingTip x:Name="FindTip"
                               CloseButtonClick="FindTip_CloseButtonClick"
                                   Canvas.ZIndex="3000"
                    HorizontalAlignment="Right" VerticalAlignment="Top"
 	Title="Find in page">
-                <controls:TeachingTip.IconSource>
-                    <controls:SymbolIconSource Symbol="Find" />
-                </controls:TeachingTip.IconSource>
-                <controls:TeachingTip.Content>
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                        <AutoSuggestBox x:Name="HighlightTerm" PlaceholderText="Enter text to search" Width="250" Margin="10" QueryIcon="Find" QuerySubmitted="HighlightTerm_QuerySubmitted"/>
-                        <Button Click="ClearHighlights" Content="Clear" Margin="10"/>
-                    </StackPanel>
-                </controls:TeachingTip.Content>
-            </controls:TeachingTip>
-            <controls:TeachingTip x:Name="ReadTip"
+                        <controls:TeachingTip.IconSource>
+                            <controls:SymbolIconSource Symbol="Find" />
+                        </controls:TeachingTip.IconSource>
+                        <controls:TeachingTip.Content>
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <AutoSuggestBox x:Name="HighlightTerm" PlaceholderText="Enter text to search" Width="250" Margin="10" QueryIcon="Find" QuerySubmitted="HighlightTerm_QuerySubmitted"/>
+                                <Button Click="ClearHighlights" Content="Clear" Margin="10"/>
+                            </StackPanel>
+                        </controls:TeachingTip.Content>
+                    </controls:TeachingTip>
+                    <controls:TeachingTip x:Name="ReadTip"
                               CloseButtonClick="ReadTip_CloseButtonClick"
                                   Canvas.ZIndex="3000"
                    HorizontalAlignment="Right" VerticalAlignment="Top"
 	Title="ReadAloud">
-                <controls:TeachingTip.IconSource>
-                    <controls:SymbolIconSource Symbol="Volume" />
-                </controls:TeachingTip.IconSource>
-                <controls:TeachingTip.Content>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <ToggleSwitch Header="Toggle read aloud" OffContent="Paused" OnContent="Playing" IsOn="True" Toggled="ReadingSwitch_Toggled"/>
-                    </StackPanel>
-                </controls:TeachingTip.Content>
-            </controls:TeachingTip>
-            <Grid x:Name="PrintPanel">
+                        <controls:TeachingTip.IconSource>
+                            <controls:SymbolIconSource Symbol="Volume" />
+                        </controls:TeachingTip.IconSource>
+                        <controls:TeachingTip.Content>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <ToggleSwitch Header="Toggle read aloud" OffContent="Paused" OnContent="Playing" IsOn="True" Toggled="ReadingSwitch_Toggled"/>
+                            </StackPanel>
+                        </controls:TeachingTip.Content>
+                    </controls:TeachingTip>
+                    <Grid x:Name="PrintPanel">
 
-            </Grid>
-        </Grid>
-        <ContentDialog
+                    </Grid>
+                </Grid>
+            </controls1:HeaderedContentControl.Header>
+          <!--  <ScrollViewer VerticalScrollBarVisibility="Visible" x:Name="Scrollline" IsScrollInertiaEnabled="True" IsVerticalRailEnabled="True" IsVerticalScrollChainingEnabled="True" VerticalScrollMode="Enabled">-->
+
+                <Grid x:Name="ContentGrid" Background="Transparent">
+                    <controls1:InAppNotification x:Name="DownloadNotification" Canvas.ZIndex="9999" VerticalAlignment="Bottom">
+                        <StackPanel>
+                            <TextBlock Margin="5">Downloading isnt supported yet. Launch default app for download?</TextBlock>
+                            <Button Margin="5" Click="LaunchButton_Click">Launch default app</Button>
+                        </StackPanel>
+                    </controls1:InAppNotification>
+                    <AppBarButton Canvas.ZIndex="600" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="25" CornerRadius="80" Foreground="{ThemeResource SystemAccentColor}" Visibility="Collapsed" x:Name="CompactButton" Click="CompactButton_Click">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B9;" Foreground="Blue"/>
+                    <AppBarButton.Resources>
+                        <ResourceDictionary>
+                            <ResourceDictionary.ThemeDictionaries>
+                                <ResourceDictionary x:Key="Dark">
+                                    <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="Blue"/>
+                                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="Black"/>
+                                </ResourceDictionary>
+                                <ResourceDictionary x:Key="Light">
+                                    <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="Blue"/>
+                                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="Black"/>
+                                </ResourceDictionary>
+                            </ResourceDictionary.ThemeDictionaries>
+                        </ResourceDictionary>
+                    </AppBarButton.Resources>
+                </AppBarButton>
+
+                <Grid x:Name="HomeFrame" x:Load="True" Canvas.ZIndex="1" Margin="0, 0, 0, 0">
+                    <!--<AutoSuggestBox Canvas.ZIndex="2" VerticalAlignment="Top" Margin="50" Foreground="{ThemeResource SystemControlAcrylicElementBrush}" QueryIcon="Find" HorizontalAlignment="Center" MinWidth="300" Width="600" Height="50" PlaceholderText="Quick search" x:Name="SearchBox" QuerySubmitted="QuickSearchBox_QuerySubmitted"></AutoSuggestBox>-->
+                    <Frame x:Name="HomeFrameFrameFrame" >
+                        <!---_the werid name because the searchboxes weree in homepage and this frame was called homeframe but now grid is called hmeframe to smooth the change so i cALLED IT homeframeframeframe from homeframe because homeframeframe exists-->
+                    </Frame>
+                </Grid>
+                <Grid x:Name="InfoFrameGrid" x:Load="False" Margin="0, 0, 0, 0" Canvas.ZIndex="1">
+                    <Frame x:Name="InfoFrame">
+                    </Frame>
+                </Grid>
+                <Grid x:Name="InkingFrameGrid" Visibility="Collapsed" Margin="0, 0, 0, 0" Canvas.ZIndex="1">
+                    <Frame x:Name="InkingFrame">
+                    </Frame>
+                </Grid>
+                <Grid x:Name="EmergencyFrame" x:Load="False" Canvas.ZIndex="100">
+                    <Frame x:Name="Processlostframe">
+                    </Frame>
+                </Grid>
+                <Grid x:Name="NavigationTipGrid" VerticalAlignment="Bottom" Background="{ThemeResource SystemControlAccentDark1AcrylicElementAccentDark1Brush}" CornerRadius="10" Padding="5" HorizontalAlignment="Left" Canvas.ZIndex="6000" Visibility="Collapsed" Margin="30">
+                    <TextBlock x:Name="NavigationTip"></TextBlock>
+                </Grid>
+                <StackPanel x:Name="IsloadingPanel"
+                    Visibility="Visible"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <ProgressRing x:Name="Loading" IsActive="False"/>
+                    <TextBlock x:Uid="WebView_Loading" />
+                </StackPanel>
+                <!-- <StackPanel Visibility="{x:Bind FailedMesageVisibility, Mode=OneWay}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <TextBlock HorizontalAlignment="Center" x:Uid="WebView_FailedMessage" Foreground="Black" TextWrapping="WrapWholeWords" />
+            <HyperlinkButton Click="OnRetry" x:Uid="WebView_Retry" HorizontalAlignment="Center" />
+        </StackPanel>-->
+                <controls:TeachingTip x:Name="InfoTip" HorizontalAlignment="Center" VerticalAlignment="Center" Height="600" CloseButtonClick="InfoTip_CloseButtonClick" CloseButtonContent="Go back">
+                    <controls:TeachingTip.IconSource>
+                        <controls:SymbolIconSource Symbol="Globe" />
+                    </controls:TeachingTip.IconSource>
+                </controls:TeachingTip>
+
+
+                <ContentDialog
            x:Name="ExtensionsStoreDialog"
         Title="Extensions manager"
             CloseButtonClick="ExtensionsStoreDialog_CloseButtonClick"
         CloseButtonText="Close"
+                Background="{ThemeResource SystemControlAcrylicElementBrush}"
         DefaultButton="Close">
-            <Frame x:Name="ExtensionsStoreFrame" Height="900" Width="900"></Frame>
-        </ContentDialog>
-        <ContentDialog
+                    <Frame x:Name="ExtensionsStoreFrame" Height="900" Width="900"></Frame>
+                </ContentDialog>
+                <ContentDialog
            x:Name="TaskMNG"
         Title="Browser Task Manager"
         CloseButtonText="Close"
+                Background="{ThemeResource SystemControlAcrylicElementBrush}"
+            CloseButtonClick="TaskMNG_CloseButtonClick"
         DefaultButton="Close">
 
-            <StackPanel Orientation="Vertical"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                <TextBlock>Cpu:</TextBlock>
-                <TextBlock Margin="30, 10, 0, 10" x:Name="CpuUsage"></TextBlock>
-                <TextBlock>Disk:</TextBlock>
-                <TextBlock Margin="30, 10, 0, 10" x:Name="DiskUsage"></TextBlock>
-                <TextBlock Margin="30, 10, 0, 10" x:Name="XDiskUsage"></TextBlock>
-                <TextBlock>Memory:</TextBlock>
-                <TextBlock Margin="30, 10, 0, 10" x:Name="MemUsage"></TextBlock>
-                <TextBlock Margin="30, 10, 0, 10" x:Name="XMemUsage"></TextBlock>
-                <TextBlock>Other:</TextBlock>
-                <TextBlock Margin="30, 10, 0, 10" x:Name="IdProcess"></TextBlock>
-                <TextBlock Margin="30, 10, 0, 10" x:Name="StartTime"></TextBlock>
-                <Button Click="RefreshTaskManagerButton_Click">Refresh</Button>
-            </StackPanel>
+                    <StackPanel Orientation="Vertical"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <TextBlock>Cpu:</TextBlock>
+                        <TextBlock Margin="30, 10, 0, 10" x:Name="CpuUsage"></TextBlock>
+                        <TextBlock>Disk:</TextBlock>
+                        <TextBlock Margin="30, 10, 0, 10" x:Name="DiskUsage"></TextBlock>
+                        <TextBlock Margin="30, 10, 0, 10" x:Name="XDiskUsage"></TextBlock>
+                        <TextBlock>Memory:</TextBlock>
+                        <TextBlock Margin="30, 10, 0, 10" x:Name="MemUsage"></TextBlock>
+                        <TextBlock Margin="30, 10, 0, 10" x:Name="XMemUsage"></TextBlock>
+                        <TextBlock>Other:</TextBlock>
+                        <TextBlock Margin="30, 10, 0, 10" x:Name="IdProcess"></TextBlock>
+                        <TextBlock Margin="30, 10, 0, 10" x:Name="StartTime"></TextBlock>
+                    </StackPanel>
 
-        </ContentDialog>
+                </ContentDialog>
+            </Grid>
+          <!--   </ScrollViewer>-->
+    </controls1:HeaderedContentControl>
     </Grid>
 </Page>
 

@@ -6,11 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
 
     <Grid>
         <InkToolbar Canvas.ZIndex="2" TargetInkCanvas="{x:Bind InkCanvas}" VerticalAlignment="Top" HorizontalAlignment="Center"></InkToolbar>
-        <Button Click="Button_Click" Canvas.ZIndex="2" VerticalAlignment="Top" HorizontalAlignment="Left">Save</Button>
+        <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" Canvas.ZIndex="2" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
+            <AppBarButton Click="Button_Click" Icon="Save" Label="Save"></AppBarButton>
+        </CommandBar>
         <!-- <ScrollViewer x:Name="ScrollPainter" Visibility="Collapsed" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto" ZoomMode="Enabled" MinZoomFactor="1">-->
         <Grid Margin="0, 40, 0, 0">
             <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">

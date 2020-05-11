@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Uid="FirstRunDialog"
     d:DesignHeight="345"
+    Background="{ThemeResource SystemControlAcrylicElementBrush}"
     d:DesignWidth="550"
     mc:Ignorable="d">
     <ContentDialog.TitleTemplate>

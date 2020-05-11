@@ -55,11 +55,7 @@ namespace SwiftBrowser.HubViews
 
                     downloader.DownloadFileCompleted += OnDownloadFileCompleted;
                     var file = @"Downloads\Annotation-2019-10-04-194747.png";
-                    var em = new MessageDialog("eff           shrek");
-                    await em.ShowAsync();
-                    await downloader.DownloadFileTaskAsync("https://i.ibb.co/YDHN1HY/Annotation-2019-10-04-194747.png", file);
-                    var m = new MessageDialog("eff");
-                    await m.ShowAsync();
+        await downloader.DownloadFileTaskAsync("https://i.ibb.co/YDHN1HY/Annotation-2019-10-04-194747.png", file);
                 });
         });
         }

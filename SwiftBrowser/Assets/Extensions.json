@@ -2,17 +2,17 @@
   "Extensions": [
     {
       "DescriptionJSON": "Block ads from 7200+ urls",
-      "IconJSON": "/Extensions/Assets/1389169 - Copy - Copy (3).png",
+      "IconJSON": "/Extensions/Assets/23547687.png",
       "Id": 69420,
       "IsEnabledJSON": false,
       "IsIncognitoEnabled": false,
-      "IsToolbar": true,
+      "IsToolbar": false,
       "Page": "AdblockerBuiltInSwiftBrowserExtension",
       "NameJSON": "Adblocker pro"
     },
     {
       "DescriptionJSON": "Dark mode so that your eyes arent blinded",
-      "IconJSON": "/Extensions/Assets/1389169 - Copy - Copy (9).png",
+      "IconJSON": "/Extensions/Assets/2338119.png",
       "Id": 42069,
       "IsEnabledJSON": false,
       "IsIncognitoEnabled": false,

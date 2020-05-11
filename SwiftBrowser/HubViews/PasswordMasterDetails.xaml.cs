@@ -21,6 +21,7 @@ using Windows.Storage;
 using Windows.UI.Popups;
 using KeePassLib.Security;
 using LastPass;
+using SwiftBrowser.Views;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -57,124 +58,160 @@ namespace SwiftBrowser.HubViews
 
         private async void LoadKeeButton_Click(object sender, RoutedEventArgs e)
         {
-
-            List<KeepassClass> PassList = new List<KeepassClass>();
-            var dbpath = "";
-            var picker = new Windows.Storage.Pickers.FileOpenPicker();
-            picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
-            picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
-            picker.FileTypeFilter.Add(".kdb");
-            picker.FileTypeFilter.Add(".kdbx");
-
-
-            Windows.Storage.StorageFile File = await picker.PickSingleFileAsync();
-            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            StorageFile file = await File.CopyAsync(folder);
-            if (file != null)
+            try
             {
-                dbpath = file.Path;
-            }
-            var masterpw = MasterPassword.Password;
-            var ioConnInfo = new IOConnectionInfo { Path = file.Path };
-            var compKey = new CompositeKey();
-            compKey.AddUserKey(new KcpPassword(MasterPassword.Password));
-            var db = new KeePassLib.PwDatabase();
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePathBool"] = true;
+                List<KeepassClass> PassList = new List<KeepassClass>();
+                var dbpath = "";
+                var picker = new Windows.Storage.Pickers.FileOpenPicker();
+                picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+                picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+                picker.FileTypeFilter.Add(".kdb");
+                picker.FileTypeFilter.Add(".kdbx");
+
+
+                Windows.Storage.StorageFile File = await picker.PickSingleFileAsync();
+                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                StorageFile file = await File.CopyAsync(folder);
+                if (file != null)
+                {
+                    dbpath = file.Path;
+                }
+                var masterpw = MasterPassword.Password;
+                var ioConnInfo = new IOConnectionInfo { Path = file.Path };
+                var compKey = new CompositeKey();
+                compKey.AddUserKey(new KcpPassword(MasterPassword.Password));
+                var db = new KeePassLib.PwDatabase();
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePathBool"] = true;
                 Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePath"] = file.Name;
-          /*  var kdbx = new KdbxFile(db);
-            using (var fs = await file.OpenReadAsync())
-            {
-                await Task.Run(() =>
-                {
-                    kdbx.Load(file.Path, KdbxFormat.Default, null);
-                });
+                /*  var kdbx = new KdbxFile(db);
+                  using (var fs = await file.OpenReadAsync())
+                  {
+                      await Task.Run(() =>
+                      {
+                          kdbx.Load(file.Path, KdbxFormat.Default, null);
+                      });
 
-               // return new KdbxDatabase(dbFile, db, dbFile.IdFromPath());
-            }*/
-           db.Open(ioConnInfo, compKey, null);
-            var kpdata = from entry in db.RootGroup.GetEntries(true)
-                         select new
-                         {
-                             Group = entry.ParentGroup.Name,
-                             Title = entry.Strings.ReadSafe("Title"),
-                             Username = entry.Strings.ReadSafe("UserName"),
-                             Password = entry.Strings.ReadSafe("Password"),
-                             URL = entry.Strings.ReadSafe("URL"),
-                             Notes = entry.Strings.ReadSafe("Notes")
+                     // return new KdbxDatabase(dbFile, db, dbFile.IdFromPath());
+                  }*/
+                db.Open(ioConnInfo, compKey, null);
+                var kpdata = from entry in db.RootGroup.GetEntries(true)
+                             select new
+                             {
+                                 Group = entry.ParentGroup.Name,
+                                 Title = entry.Strings.ReadSafe("Title"),
+                                 Username = entry.Strings.ReadSafe("UserName"),
+                                 Password = entry.Strings.ReadSafe("Password"),
+                                 URL = entry.Strings.ReadSafe("URL"),
+                                 Notes = entry.Strings.ReadSafe("Notes")
 
-                         };
-            foreach (var Item in kpdata)
-            {
-                PassList.Add(new KeepassClass()
+                             };
+                foreach (var Item in kpdata)
                 {
-                    Title = Item.Title,
-                    Website = Item.URL,
-                    Password = Item.Password,
-                    User = Item.Username
-                });
+                    PassList.Add(new KeepassClass()
+                    {
+                        Title = Item.Title,
+                        Website = Item.URL,
+                        Password = Item.Password,
+                        User = Item.Username
+                    });
+                }
+                PassListView.ItemsSource = PassList;
+                LoadKeeButton.Visibility = Visibility.Collapsed;
+                AddKeeButton.Visibility = Visibility.Visible;
+                EnterKeeButton.Visibility = Visibility.Visible;
+                db.Close();
             }
-            PassListView.ItemsSource = PassList;
-            LoadKeeButton.Visibility = Visibility.Collapsed;
-            AddKeeButton.Visibility = Visibility.Visible;
-            EnterKeeButton.Visibility = Visibility.Visible;
-            db.Close();
+            catch
+            {
+                int duration = 3000;
+                try { 
+               TabViewPage.InAppNotificationMain.Show("Wrong password!", duration);
+                }
+                catch
+                {
+                    IncognitoTabView.InAppNotificationMain.Show("Wrong password!", duration);
+                }
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePathBool"] = false;
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePath"] = null;
+            }
         }
         public async void LoadKeePass(object sender, RoutedEventArgs e)
         {
-            List<KeepassClass> PassList = new List<KeepassClass>();
-            var dbpath = "";
-            StorageFolder folder = ApplicationData.Current.LocalFolder;
-            StorageFile file = await folder.GetFileAsync((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePath"]);
-            if (file != null)
+            try
             {
-                dbpath = file.Path;
-            }
-            var masterpw = MasterPassword.Password;
-            var ioConnInfo = new IOConnectionInfo { Path = file.Path };
-            var compKey = new CompositeKey();
-            compKey.AddUserKey(new KcpPassword(MasterPassword.Password));
-            var db = new KeePassLib.PwDatabase();
-
-            /*  var kdbx = new KdbxFile(db);
-              using (var fs = await file.OpenReadAsync())
-              {
-                  await Task.Run(() =>
-                  {
-                      kdbx.Load(file.Path, KdbxFormat.Default, null);
-                  });
-
-                 // return new KdbxDatabase(dbFile, db, dbFile.IdFromPath());
-              }*/
-            db.Open(ioConnInfo, compKey, null);
-            var kpdata = from entry in db.RootGroup.GetEntries(true)
-                         select new
-                         {
-                             Group = entry.ParentGroup.Name,
-                             Title = entry.Strings.ReadSafe("Title"),
-                             Username = entry.Strings.ReadSafe("UserName"),
-                             Password = entry.Strings.ReadSafe("Password"),
-                             URL = entry.Strings.ReadSafe("URL"),
-                             Notes = entry.Strings.ReadSafe("Notes")
-
-                         };
-            foreach (var Item in kpdata)
-            {
-                PassList.Add(new KeepassClass()
+                List<KeepassClass> PassList = new List<KeepassClass>();
+                var dbpath = "";
+                StorageFolder folder = ApplicationData.Current.LocalFolder;
+                StorageFile file = await folder.GetFileAsync((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["KeepassLocalFilePath"]);
+                if (file != null)
                 {
-                    Title = Item.Title,
-                    Website = Item.URL,
-                    Password = Item.Password,
-                    User = Item.Username
-                });
+                    dbpath = file.Path;
+                }
+                var masterpw = MasterPassword.Password;
+                var ioConnInfo = new IOConnectionInfo { Path = file.Path };
+                var compKey = new CompositeKey();
+                compKey.AddUserKey(new KcpPassword(MasterPassword.Password));
+                var db = new KeePassLib.PwDatabase();
+
+                /*  var kdbx = new KdbxFile(db);
+                  using (var fs = await file.OpenReadAsync())
+                  {
+                      await Task.Run(() =>
+                      {
+                          kdbx.Load(file.Path, KdbxFormat.Default, null);
+                      });
+
+                     // return new KdbxDatabase(dbFile, db, dbFile.IdFromPath());
+                  }*/
+                db.Open(ioConnInfo, compKey, null);
+                var kpdata = from entry in db.RootGroup.GetEntries(true)
+                             select new
+                             {
+                                 Group = entry.ParentGroup.Name,
+                                 Title = entry.Strings.ReadSafe("Title"),
+                                 Username = entry.Strings.ReadSafe("UserName"),
+                                 Password = entry.Strings.ReadSafe("Password"),
+                                 URL = entry.Strings.ReadSafe("URL"),
+                                 Notes = entry.Strings.ReadSafe("Notes")
+
+                             };
+                foreach (var Item in kpdata)
+                {
+                    PassList.Add(new KeepassClass()
+                    {
+                        Title = Item.Title,
+                        Website = Item.URL,
+                        Password = Item.Password,
+                        User = Item.Username
+                    });
+                }
+                PassListView.ItemsSource = PassList;
+                db.Close();
             }
-            PassListView.ItemsSource = PassList;
-            db.Close();
+            catch
+            {
+                int duration = 3000;
+                try
+                {
+                    TabViewPage.InAppNotificationMain.Show("An error occured", duration);
+                }
+                catch
+                {
+                    IncognitoTabView.InAppNotificationMain.Show("An error occured", duration);
+                }
+            }
         }
         private async void PassListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             KeepassClass keepassword = e.ClickedItem as KeepassClass;
-            var m = new MessageDialog(keepassword.Password);
-           await m.ShowAsync();
+            int duration = 3000;
+            try { 
+            TabViewPage.InAppNotificationMain.Show(keepassword.Password, duration);
+            }
+            catch
+            {
+                IncognitoTabView.InAppNotificationMain.Show(keepassword.Password, duration);
+            }
         }
         private class TextUi : Ui
 
@@ -278,8 +315,14 @@ namespace SwiftBrowser.HubViews
             var kdbx = new KdbxFile(db);
             kdbx.Save(stream, null, KdbxFormat.Default, null);
             db.Close();
-            var m = new MessageDialog("saved refresh");
-            await m.ShowAsync();
+            int duration = 3000;
+            try { 
+            TabViewPage.InAppNotificationMain.Show("Saved, please refresh list", duration);
+            }
+            catch
+            {
+                IncognitoTabView.InAppNotificationMain.Show("Saved, please refresh list", duration);
+            }
         }
 
         private void LoadLastPassButton_Click(object sender, RoutedEventArgs e)

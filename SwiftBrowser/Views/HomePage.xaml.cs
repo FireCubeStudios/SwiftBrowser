@@ -8,16 +8,19 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -63,8 +66,14 @@ namespace SwiftBrowser.Views
             }
             else
             {
-                var m = new MessageDialog("Not valid url");
-                await m.ShowAsync();
+                int duration = 3000;
+                try { 
+                TabViewPage.InAppNotificationMain.Show("Not a valid url", duration);
+                }
+                catch
+                {
+                    IncognitoTabView.InAppNotificationMain.Show("Not a valid url", duration);
+                }
             }
         }
         List<FavouritesJSON> FavouritesList;
@@ -126,9 +135,11 @@ namespace SwiftBrowser.Views
         {
             // using the favorites class
             // TODO: change name of "favorites" class to something else
+
+            FavouritesListQuick = new List<FavouritesJSON>();
+
             try
             {
-                FavouritesListQuick = new List<FavouritesJSON>();
                 StorageFile sampleFile = await localFolder.GetFileAsync("QuickPinWeb.json");
                 var JSONData = await FileIO.ReadTextAsync(sampleFile);
                 FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
@@ -140,6 +151,7 @@ namespace SwiftBrowser.Views
                         UrlJSON = item.UrlJSON,
                         FavIconJSON = item.FavIconJSON,
                     });
+
                 }
                 QuickPinnedGridView.ItemsSource = FavouritesListQuick;
             }
@@ -163,9 +175,11 @@ namespace SwiftBrowser.Views
                         UrlJSON = item.UrlJSON,
                         FavIconJSON = item.FavIconJSON,
                     });
+
                 }
                 QuickPinnedGridView.ItemsSource = FavouritesListQuick;
             }
+
         }
         private async void DeleteFavButton_Click(object sender, RoutedEventArgs e)
         {
@@ -181,9 +195,10 @@ namespace SwiftBrowser.Views
             await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
             var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
             FavouritesClass FavouritesListsJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONDatas);
+            FavouritesListQuick.Clear();
             foreach (var item in FavouritesListsJSON.Websites)
             {
-                FavouritesList.Add(new FavouritesJSON()
+                FavouritesListQuick.Add(new FavouritesJSON()
                 {
                     HeaderJSON = item.HeaderJSON,
                     UrlJSON = item.UrlJSON,
@@ -191,7 +206,9 @@ namespace SwiftBrowser.Views
                 });
             }
             QuickPinnedGridView.ItemsSource = null;
-            QuickPinnedGridView.ItemsSource = FavouritesList;
+            UnloadObject(QuickPinnedGridView);
+            FindName("QuickPinnedGridView");
+            QuickPinnedGridView.ItemsSource = FavouritesListQuick;
         }
 
         private void NewsHomePage_NewWindowRequested(WebView sender, WebViewNewWindowRequestedEventArgs args)
@@ -202,9 +219,31 @@ namespace SwiftBrowser.Views
         }
 
       
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             FindName("ContentPivot");
+            try
+            {
+                SearchBox.Width = Window.Current.Bounds.Width - 100;
+                BackGroundimage.Width = Window.Current.Bounds.Width;
+                BackGroundimage.Height = Window.Current.Bounds.Height + 800;
+            }
+            catch
+            {
+                try
+                {
+                    FindName("SearchBox");
+                    SearchBox.Width = Window.Current.Bounds.Width - 100;
+                    BackGroundimage.Width = Window.Current.Bounds.Width;
+                    BackGroundimage.Height = Window.Current.Bounds.Height + 800;
+                }
+                catch
+                {
+                   
+                        
+                    
+                }
+            }
             LoadMore.Visibility = Visibility.Collapsed;
 
         }
@@ -259,9 +298,10 @@ namespace SwiftBrowser.Views
                 await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
                 var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
                 FavouritesClass FavouritesListsJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONDatas);
+                FavouritesListQuick.Clear();
                 foreach (var item in FavouritesListsJSON.Websites)
                 {
-                    FavouritesList.Add(new FavouritesJSON()
+                    FavouritesListQuick.Add(new FavouritesJSON()
                     {
                         HeaderJSON = item.HeaderJSON,
                         UrlJSON = item.UrlJSON,
@@ -269,7 +309,9 @@ namespace SwiftBrowser.Views
                     });
                 }
                 QuickPinnedGridView.ItemsSource = null;
-                QuickPinnedGridView.ItemsSource = FavouritesList;
+                UnloadObject(QuickPinnedGridView);
+                FindName("QuickPinnedGridView");
+                QuickPinnedGridView.ItemsSource = FavouritesListQuick;
             }
             catch
             {
@@ -432,6 +474,7 @@ namespace SwiftBrowser.Views
                     TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
                     SearchBox.Visibility = Visibility.Visible;
                 }
+
                 try
                 {
                     if ((bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] == true)
@@ -458,12 +501,181 @@ namespace SwiftBrowser.Views
                     LoadQuickPinned();
                     UnloadObject(WebViewHome);
                 }
+               try
+               {
+                    if ((bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] == true)
+                    {
+                        f = true;
+                        Imageoption.IsChecked = true;
+                        BackGroundimage.Visibility = Visibility.Visible;
+                        BitmapImage bitmapImage = new BitmapImage();                                            // dimension, so long as one dimension measurement is provided
+                        bitmapImage.UriSource = new Uri((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"]);
+                        BackGroundimage.Source = bitmapImage;
+                        f = false;
+                    }
+                    else
+                    {
+                        DefaultacrylicOption.IsChecked = true;
+                        BackGroundimage.Visibility = Visibility.Collapsed;
+                        DefaultacrylicOption.IsChecked = true;
+                    }
+                }
+                catch
+                {
+                    DefaultacrylicOption.IsChecked = true;
+                    BackGroundimage.Visibility = Visibility.Collapsed;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = false;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = "";
+                }
+            }
+        }
+        
+
+        private async void SearchBox_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            try
+            {
+                SearchBox.Width = Window.Current.Bounds.Width - 100;
+                BackGroundimage.Width = Window.Current.Bounds.Width;
+                BackGroundimage.Height = Window.Current.Bounds.Height - 100;
+            }
+            catch
+            {
+               try
+               {
+                    FindName("SearchBox");
+                    await Task.Delay(300);
+                    SearchBox.Width = Window.Current.Bounds.Width - 100;
+                    BackGroundimage.Width = Window.Current.Bounds.Width;
+                    BackGroundimage.Height = Window.Current.Bounds.Height - 100;
+                }
+               catch
+               {
+                    try
+                    {
+                        FindName("SearchBox");
+                        await Task.Delay(300);
+                        SearchBox.Width = Window.Current.Bounds.Width - 100;
+                        BackGroundimage.Width = Window.Current.Bounds.Width;
+                        BackGroundimage.Height = Window.Current.Bounds.Height - 100;
+                    }
+                    catch
+                    {
+                        try
+                        {
+                            FindName("SearchBox");
+                            await Task.Delay(300);
+                            SearchBox.Width = Window.Current.Bounds.Width - 100;
+                            BackGroundimage.Width = Window.Current.Bounds.Width;
+                            BackGroundimage.Height = Window.Current.Bounds.Height - 100;
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                FindName("SearchBox");
+                                await Task.Delay(300);
+                                SearchBox.Width = Window.Current.Bounds.Width - 100;
+                                BackGroundimage.Width = Window.Current.Bounds.Width;
+                                BackGroundimage.Height = Window.Current.Bounds.Height - 100;
+                            }
+                            catch
+                            {
+                                try
+                                {
+                                    FindName("SearchBox");
+                                    await Task.Delay(300);
+                                    SearchBox.Width = Window.Current.Bounds.Width - 100;
+                                    BackGroundimage.Width = Window.Current.Bounds.Width;
+                                    BackGroundimage.Height = Window.Current.Bounds.Height - 100;
+                                }
+                                catch
+                                {
+                                    try
+                                    {
+                                        FindName("SearchBox");
+                                        await Task.Delay(300);
+                                        SearchBox.Width = Window.Current.Bounds.Width - 100;
+                                        BackGroundimage.Width = Window.Current.Bounds.Width;
+                                        BackGroundimage.Height = Window.Current.Bounds.Height - 100;
+                                    }
+                                    catch
+                                    {
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        private void SearchBox_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void DefaultacrylicOption_Checked(object sender, RoutedEventArgs e)
         {
-            SearchBox.Width = Window.Current.Bounds.Height - 500;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = Imageoption.IsChecked;
+            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = "";
+            BackGroundimage.Visibility = Visibility.Collapsed;
         }
+
+        private async void Imageoption_Checked(object sender, RoutedEventArgs e)
+        {
+            if (f == false)
+            {
+                Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = Imageoption.IsChecked;
+                if ((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] == "")
+                {
+                    try
+                    {
+                    var picker = new Windows.Storage.Pickers.FileOpenPicker();
+                    picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
+                    picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
+                    picker.FileTypeFilter.Add(".jpg");
+                    picker.FileTypeFilter.Add(".jpeg");
+                    picker.FileTypeFilter.Add(".png");
+
+                    Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
+                    StorageFile File = await file.CopyAsync(localFolder);
+                    BackGroundimage.Visibility = Visibility.Visible;
+                    BitmapImage bitmapImage = new BitmapImage();                                            // dimension, so long as one dimension measurement is provided
+                    bitmapImage.UriSource = new Uri(File.Path);
+                    BackGroundimage.Source = bitmapImage;
+                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = File.Path;
+                        int duration = 3000;
+                        try
+                        {
+
+                            TabViewPage.InAppNotificationMain.Show("Saved", duration);
+                        }
+                        catch
+                        {
+                            IncognitoTabView.InAppNotificationMain.Show("Saved", duration);
+                        }
+                    }
+                    catch
+                      {
+                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = false;
+                        int duration = 3000;
+                        try
+                        {
+                            
+                            TabViewPage.InAppNotificationMain.Show("Canceled", duration);
+                        }
+                        catch
+                        {
+                            IncognitoTabView.InAppNotificationMain.Show("Canceled", duration);
+                        }
+                    }
+                }
+                else
+                {
+                    BackGroundimage.Visibility = Visibility.Collapsed;
+                    BitmapImage bitmapImage = new BitmapImage();                                            // dimension, so long as one dimension measurement is provided
+                    bitmapImage.UriSource = new Uri((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"]);
+                    BackGroundimage.Source = bitmapImage;
+                }
+            }
+        }
+        bool f;
     }
 }

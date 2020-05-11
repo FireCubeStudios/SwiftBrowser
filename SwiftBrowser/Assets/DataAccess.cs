@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
+using SwiftBrowser.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +25,7 @@ namespace SwiftBrowser.Assets
 
                 String tableCommand = "CREATE TABLE IF NOT " +
                     "EXISTS MyTable (Primary_Key INTEGER PRIMARY KEY, " +
-                    "Site VARCHAR(20),Header VARCHAR(20))";
+                    "Site VARCHAR(20), Header VARCHAR(20), ID VARCHAR(20))";
 
                 SqliteCommand createTable = new SqliteCommand(tableCommand, db);
 
@@ -35,17 +36,12 @@ namespace SwiftBrowser.Assets
         {
             public List<HistoryClass> Websites { get; set; }
         }
-        public class HistoryClass
-            {
-            public string HeaderSQL { get; set; }
-            public string UrlSQL { get; set; }
-            public string FavIconSQL { get; set; }
-        }
+
         public async static Task<Stack<HistoryClass>> GetData()
         {
             Stack<HistoryClass> entries = new Stack<HistoryClass>();
-
-
+            await Task.Run(() =>
+            {
                 string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
                 using (SqliteConnection db =
                   new SqliteConnection($"Filename={dbpath}"))
@@ -65,6 +61,7 @@ namespace SwiftBrowser.Assets
                         {
                             HeaderSQL = query.GetString(2),
                             UrlSQL = query.GetString(1),
+                            IdSQL = query.GetString(3),
                             FavIconSQL = "http://icons.duckduckgo.com/ip2/" + host + ".ico",
                         });
                     }
@@ -72,6 +69,8 @@ namespace SwiftBrowser.Assets
                     db.Close();
                 }
                 return entries;
+            });
+            return entries;
         }
         public async static void AddDataS(string inputText, string inputHeaderText)
         {
@@ -87,11 +86,13 @@ namespace SwiftBrowser.Assets
                     insertCommand.Connection = db;
 
                     // Use parameterized query to prevent SQL injection attacks
-                    insertCommand.CommandText = "INSERT INTO MyTable(Site, Header) VALUES (@Entry, @Header);";
+                    insertCommand.CommandText = "INSERT INTO MyTable(Site, Header, ID) VALUES (@Entry, @Header, @ID);";
                     // = "INSERT INTO MyTable(Col1, Col2) VALUES('Test Text ', 1); ";
                     //   insertCommand.CommandText = "INSERT INTO MyTable VALUES (NULL, @Entry);";
                     insertCommand.Parameters.AddWithValue("@Entry", inputText);
                     insertCommand.Parameters.AddWithValue("@Header", inputHeaderText);
+                    Random r = new Random();
+                    insertCommand.Parameters.AddWithValue("@ID", r.Next().ToString());
                     insertCommand.ExecuteReader();
 
                     db.Close();
@@ -112,11 +113,13 @@ namespace SwiftBrowser.Assets
                     insertCommand.Connection = db;
 
                     // Use parameterized query to prevent SQL injection attacks
-                    insertCommand.CommandText = "INSERT INTO MyTable(Site, Header) VALUES (@Entry, @Header);";
+                    insertCommand.CommandText = "INSERT INTO MyTable(Site, Header, ID) VALUES (@Entry, @Header, @ID);";
                     // = "INSERT INTO MyTable(Col1, Col2) VALUES('Test Text ', 1); ";
                     //   insertCommand.CommandText = "INSERT INTO MyTable VALUES (NULL, @Entry);";
                     insertCommand.Parameters.AddWithValue("@Entry", inputText);
                     insertCommand.Parameters.AddWithValue("@Header", inputHeaderText);
+                    Random r = new Random();
+                    insertCommand.Parameters.AddWithValue("@ID", r.Next().ToString());
                     insertCommand.ExecuteReader();
 
                     db.Close();
@@ -272,7 +275,7 @@ namespace SwiftBrowser.Assets
                     DeleteCommand.Connection = db;
 
                     // Use parameterized query to prevent SQL injection attacks
-                    DeleteCommand.CommandText = "DELETE FROM MyTable WHERE Header = '" + id.HeaderSQL + "'";
+                    DeleteCommand.CommandText = "DELETE FROM MyTable WHERE ID = '" + id.IdSQL + "'";
                     DeleteCommand.ExecuteNonQuery();
                     // = "INSERT INTO MyTable(Col1, Col2) VALUES('Test Text ', 1); ";
 

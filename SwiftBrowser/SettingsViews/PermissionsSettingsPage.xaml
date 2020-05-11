@@ -7,67 +7,74 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
-    <Grid HorizontalAlignment="Center">
+    <Grid Margin="5">
         <ScrollViewer>
             <StackPanel>
-                <TextBlock Margin="5" FontSize="30">Permissions:</TextBlock>
+                <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="5, 40, 0, 0" FontSize="30">Permissions:</TextBlock>
+                <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="65,65,150,90" >
+
+                    <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100"/>
+
+                </Canvas>
+                </StackPanel>
                 <TextBlock Margin="5">(note permissions arent supported yet and will always be denied by default without user consent)</TextBlock>
                 <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                     <TextBlock Margin="5" FontSize="20">Geolocation:</TextBlock>
                     <muxc:RadioButtons Header="Options:">
-                        <RadioButton  Content="Ask for permission"/>
-                        <RadioButton  Content="Always allow" />
-                        <RadioButton Content="Always deny" IsChecked="True"/>
+                        <RadioButton GroupName="Geo" Content="Ask for permission"/>
+                        <RadioButton GroupName="Geo" Content="Always allow" />
+                        <RadioButton GroupName="Geo" Content="Always deny" IsChecked="True"/>
                     </muxc:RadioButtons>
                 </StackPanel>
                 <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                     <TextBlock Margin="5" FontSize="20">ImmersiveView (webVR):</TextBlock>
                     <muxc:RadioButtons Header="Options:">
-                        <RadioButton  Content="Ask for permission"/>
-                        <RadioButton  Content="Always allow" />
-                        <RadioButton Content="Always deny" IsChecked="True"/>
+                        <RadioButton GroupName="Vr" Content="Ask for permission"/>
+                        <RadioButton GroupName="Vr" Content="Always allow" />
+                        <RadioButton GroupName="Vr" Content="Always deny" IsChecked="True"/>
                     </muxc:RadioButtons>
                 </StackPanel>
                 <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                     <TextBlock Margin="5" FontSize="20">Media:</TextBlock>
                     <muxc:RadioButtons Header="Options:">
-                        <RadioButton  Content="Ask for permission"/>
-                        <RadioButton  Content="Always allow" />
-                        <RadioButton Content="Always deny" IsChecked="True"/>
+                        <RadioButton GroupName="M" Content="Ask for permission"/>
+                        <RadioButton GroupName="M" Content="Always allow" />
+                        <RadioButton GroupName="M" Content="Always deny" IsChecked="True"/>
                     </muxc:RadioButtons>
                 </StackPanel>
                 <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                     <TextBlock Margin="5" FontSize="20">PointerLock:</TextBlock>
                     <muxc:RadioButtons Header="Options:">
-                        <RadioButton  Content="Ask for permission"/>
-                        <RadioButton  Content="Always allow" />
-                        <RadioButton Content="Always deny" IsChecked="True"/>
+                        <RadioButton GroupName="Mpl" Content="Ask for permission"/>
+                        <RadioButton  GroupName="Mpl" Content="Always allow" />
+                        <RadioButton GroupName="Mpl" Content="Always deny" IsChecked="True"/>
                     </muxc:RadioButtons>
                 </StackPanel>
                 <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                     <TextBlock Margin="5" FontSize="20">Unlimited IndexedDB Quota:</TextBlock>
                     <muxc:RadioButtons Header="Options:">
-                        <RadioButton  Content="Ask for permission"/>
-                        <RadioButton  Content="Always allow" />
-                        <RadioButton Content="Always deny" IsChecked="True"/>
+                        <RadioButton GroupName="UnlimitedIndexedDB" Content="Ask for permission"/>
+                        <RadioButton GroupName="UnlimitedIndexedDB"  Content="Always allow" />
+                        <RadioButton GroupName="UnlimitedIndexedDB"  Content="Always deny" IsChecked="True"/>
                     </muxc:RadioButtons>
                 </StackPanel>
                 <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                     <TextBlock Margin="5" FontSize="20">WebNotifications:</TextBlock>
                     <muxc:RadioButtons Header="Options:">
-                        <RadioButton  Content="Ask for permission"/>
-                        <RadioButton  Content="Always allow" />
-                        <RadioButton Content="Always deny" IsChecked="True"/>
+                        <RadioButton GroupName="Notifications"  Content="Ask for permission"/>
+                        <RadioButton  GroupName="Notifications" Content="Always allow" />
+                        <RadioButton GroupName="Notifications" Content="Always deny" IsChecked="True"/>
                     </muxc:RadioButtons>
                 </StackPanel>
                 <StackPanel Width="300" Padding="20" CornerRadius="15" HorizontalAlignment="Center" Margin="5" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
                     <TextBlock Margin="5" FontSize="20">Screen:</TextBlock>
                     <muxc:RadioButtons Header="Options:">
-                        <RadioButton  Content="Ask for permission"/>
-                        <RadioButton  Content="Always allow" />
-                        <RadioButton Content="Always deny" IsChecked="True"/>
+                        <RadioButton GroupName="s"  Content="Ask for permission"/>
+                        <RadioButton  GroupName="s"  Content="Always allow" />
+                        <RadioButton  GroupName="s" Content="Always deny" IsChecked="True"/>
                     </muxc:RadioButtons>
                 </StackPanel>
             </StackPanel>
