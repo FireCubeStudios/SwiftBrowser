@@ -6,93 +6,121 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    Loaded="Page_Loaded"
     NavigationCacheMode="Required"
     mc:Ignorable="d"
     >
-    <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
-        <ScrollViewer>
-            <StackPanel Margin="0,0,0,0">
-                <controls:AdaptiveGridView HorizontalAlignment="Left" VerticalAlignment="Top" SelectionMode="None" OneRowModeEnabled="True"  ItemHeight="40" IsItemClickEnabled="True" x:Name="FavouritesGridView" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Visible">
-                    <controls:AdaptiveGridView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Tapped="FavStackPanel_Tapped" Orientation="Horizontal" Margin="5"  Height="40" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
-                                <!-- <AppBarButton Icon="Delete" HorizontalAlignment="Right" Click="DeleteFavButton_Click"></AppBarButton>-->
-                                <Image Height="20" Width="20" Source="{Binding FavIconJSON}"/>
-                                <TextBlock Text="{Binding HeaderJSON}" HorizontalAlignment="Center" Margin="5,6,0,0"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </controls:AdaptiveGridView.ItemTemplate>
-                </controls:AdaptiveGridView>
-                <AppBarButton Icon="Setting" HorizontalAlignment="Right" VerticalAlignment="Top" Canvas.ZIndex="3">
-                    <AppBarButton.Flyout>
-                        <Flyout>
-                            <StackPanel>
-                                <ToggleSwitch x:Name="tICO" Toggled="TICO_Toggled" Header="Toggle Icon" OffContent="Disabled" OnContent="Enabled"/>
-                                <ToggleSwitch x:Name="TfAV" Toggled="TfAV_Toggled" Header="Toggle Favourites" OffContent="Disabled" OnContent="Enabled"/>
-                                <ToggleSwitch x:Name="TqUI" Toggled="TqUI_Toggled" Header="Toggle Quick web" OffContent="Disabled" OnContent="Enabled"/>
-                                <ToggleSwitch x:Name="TmOR" Toggled="TmOR_Toggled" Header="Toggle More content" OffContent="Disabled" OnContent="Enabled"/>
-                                <ToggleSwitch x:Name="TSea" Toggled="TSea_Toggled" Header="Toggle Search Content" OffContent="Disabled" OnContent="Enabled"/>
-                            </StackPanel>
-                        </Flyout>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
-                <Image Source="/Assets/BrowserIcons/131.png" x:Name="icon" Margin="10" Width="300" Height="300"></Image>
-                <AutoSuggestBox MinWidth="300" Width="600" Height="70" QueryIcon="Find" Header="Quick search:" Margin="10" HorizontalAlignment="Center" x:Name="SearchBox" QuerySubmitted="AutoSuggestBox_QuerySubmitted">
+    <Grid SizeChanged="SearchBox_SizeChanged"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+        <WebView x:Name="WebViewHome" x:Load="False"></WebView>
+        <ScrollViewer x:Name="Home" x:Load="False" Loaded="Home_Loaded">
+            <Grid>
+                <StackPanel Canvas.ZIndex="2" Margin="0,0,0,0">
 
-                </AutoSuggestBox>
-                <Grid x:Name="QuickPinnedGrid">
-                    <Button x:Name="AddItemButton" VerticalAlignment="Top" Content="Add Website" HorizontalAlignment="Center" Margin="10">
-                    <Button.Flyout>
-                        <Flyout>
-                            <StackPanel Orientation="Vertical" Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="200">
-                                <TextBox Margin="5" x:Name="NameBox" Header="Name: " PlaceholderText="Dont leave blank">
-
-                                </TextBox>
-                                <TextBox Margin="5" x:Name="UrlBox" Header="Url:" PlaceholderText="Enter valid URL">
-
-                                </TextBox>
-                                <Button Margin="5" Click="AddItemButton_Click" Content="Add" >
-
-                                </Button>
-                            </StackPanel>
-                        </Flyout>
-                    </Button.Flyout>
-                </Button>
-                <controls:AdaptiveGridView HorizontalAlignment="Left" Margin="0, 80, 0, 0" VerticalAlignment="Bottom" SelectionMode="None" OneRowModeEnabled="True"  ItemHeight="150" IsItemClickEnabled="True" x:Name="QuickPinnedGridView" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Visible">
-                    <controls:AdaptiveGridView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid CornerRadius="20" Width="200" Height="150" Margin="10, 0, 10, 0" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}">
-                                <AppBarButton Click="DeleteFavButton_Click" HorizontalAlignment="Right" Icon="Delete" Label="Delete"  VerticalAlignment="Top" Canvas.ZIndex="30"/>
-                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Tapped="QGrid_Tapped">
-                                    <Image Height="30" Width="30" Source="{Binding FavIconJSON}" Margin="5" Stretch="Fill" />
-                                    <TextBlock Text="{Binding HeaderJSON}" FontSize="20" Margin="0,5,0,5"/>
+                    <controls:AdaptiveGridView Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Height="59" SelectionMode="None" OneRowModeEnabled="True" ItemHeight="44" IsItemClickEnabled="True" x:Name="FavouritesGridView" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <controls:AdaptiveGridView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Tapped="FavStackPanel_Tapped" Orientation="Horizontal" Margin="2"  Height="36" >
+                                    <!-- <AppBarButton Icon="Delete" HorizontalAlignment="Right" Click="DeleteFavButton_Click"></AppBarButton>-->
+                                    <Image Height="20" Width="20" Source="{Binding FavIconJSON}">
+                                        <Image.Resources>
+                                            <ResourceDictionary Source="ms-appx:///Microsoft.UI.Xaml/DensityStyles/Compact.xaml" />
+                                        </Image.Resources>
+                                    </Image>
+                                    <TextBlock Text="{Binding HeaderJSON}" HorizontalAlignment="Center"  Width="130" Margin="5,8,0,0">
+                                        <TextBlock.Resources>
+                                            <ResourceDictionary Source="ms-appx:///Microsoft.UI.Xaml/DensityStyles/Compact.xaml" />
+                                        </TextBlock.Resources>
+                                    </TextBlock>
                                 </StackPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </controls:AdaptiveGridView.ItemTemplate>
-                </controls:AdaptiveGridView>
+                            </DataTemplate>
+                        </controls:AdaptiveGridView.ItemTemplate>
+                        <controls:AdaptiveGridView.Resources>
+                            <ResourceDictionary Source="ms-appx:///Microsoft.UI.Xaml/DensityStyles/Compact.xaml" />
+                        </controls:AdaptiveGridView.Resources>
+                    </controls:AdaptiveGridView>
+
+                    <AppBarButton Icon="Setting" HorizontalAlignment="Right" VerticalAlignment="Top" Canvas.ZIndex="3" Margin="0, 0, 50, 0">
+                        <AppBarButton.Flyout>
+                            <Flyout>
+                                <StackPanel>
+                                    <muxc:RadioButtons x:Name="H" Header="Set your homepage" Margin="5">
+                                        <RadioButton x:Name="Option1RadioButton" GroupName="H" Content="Default homepage" Checked="Option1RadioButton_Checked"/>
+                                        <RadioButton x:Name="Option2RadioButton" GroupName="H" Content="Website" Checked="Option2RadioButton_Checked"/>
+                                    </muxc:RadioButtons>
+                                    <AutoSuggestBox AllowFocusOnInteraction="True" Visibility="Collapsed" Header="Enter valid url: " PlaceholderText="Url..." Margin="5" x:Name="TextUrl" QuerySubmitted="TextUrl_QuerySubmitted" QueryIcon="Globe"></AutoSuggestBox>
+                                    <muxc:RadioButtons Margin="5" x:Name="B" Header="Background">
+                                        <RadioButton x:Name="DefaultacrylicOption" GroupName="B" IsChecked="False" Content="Default acrylic" Checked="DefaultacrylicOption_Checked"/>
+                                        <RadioButton x:Name="Imageoption" GroupName="B" Content="Image" IsChecked="False" Checked="Imageoption_Checked"/>
+                                    </muxc:RadioButtons>
+                                    <ToggleSwitch x:Name="tICO" Toggled="TICO_Toggled" Header="Toggle Icon" OffContent="Disabled" OnContent="Enabled"/>
+                                    <ToggleSwitch x:Name="TfAV" Toggled="TfAV_Toggled" Header="Toggle Favourites" OffContent="Disabled" OnContent="Enabled"/>
+                                    <ToggleSwitch x:Name="TqUI" Toggled="TqUI_Toggled" Header="Toggle Quick web" OffContent="Disabled" OnContent="Enabled"/>
+                                    <ToggleSwitch x:Name="TmOR" Toggled="TmOR_Toggled" Header="Toggle More content" OffContent="Disabled" OnContent="Enabled"/>
+                                    <ToggleSwitch x:Name="TSea" Toggled="TSea_Toggled" Header="Toggle Search Content" OffContent="Disabled" OnContent="Enabled"/>
+                                </StackPanel>
+                            </Flyout>
+                        </AppBarButton.Flyout>
+                    </AppBarButton>
+                    <Image Source="/Assets/BrowserIcons/131.png" x:Name="icon" Margin="10" Width="300" Height="300"></Image>
+                    <AutoSuggestBox x:Name="SearchBox" QueryIcon="Find" Header="Quick search:" Margin="10" HorizontalAlignment="Center" Height="65" QuerySubmitted="AutoSuggestBox_QuerySubmitted">
+
+                    </AutoSuggestBox>
+                    <Grid x:Name="QuickPinnedGrid">
+                        <Button x:Name="AddItemButton" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" BorderBrush="{ThemeResource SystemAccentColor}" VerticalAlignment="Top" Content="Add Website" HorizontalAlignment="Center" Margin="10">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <StackPanel Orientation="Vertical" Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="200">
+                                        <TextBox Margin="5" x:Name="NameBox" Header="Name: " PlaceholderText="Dont leave blank">
+
+                                        </TextBox>
+                                        <TextBox Margin="5" x:Name="UrlBox" Header="Url:" PlaceholderText="Enter valid URL">
+
+                                        </TextBox>
+                                        <Button Margin="5" Click="AddItemButton_Click" Content="Add" >
+
+                                        </Button>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <controls:AdaptiveGridView HorizontalAlignment="Left" Margin="0, 80, 0, 0" x:Load="True" ItemClick="QuickPinnedGridView_ItemClick" VerticalAlignment="Bottom" OneRowModeEnabled="True"  ItemHeight="150" IsItemClickEnabled="True" x:Name="QuickPinnedGridView" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollMode="Enabled" ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                            <controls:AdaptiveGridView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid CornerRadius="20" Width="200" Height="150" Margin="10, 0, 10, 0" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}">
+                                        <AppBarButton Click="DeleteFavButton_Click" HorizontalAlignment="Right" Icon="Delete" Label="Delete"  VerticalAlignment="Top" Canvas.ZIndex="30"/>
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Image Height="30" Width="30" Source="{Binding FavIconJSON}" Margin="5" Stretch="Fill" />
+                                            <TextBlock Text="{Binding HeaderJSON}" FontSize="20" Margin="0,5,0,5"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </controls:AdaptiveGridView.ItemTemplate>
+                        </controls:AdaptiveGridView>
+                    </Grid>
+                    <Grid x:Name="loadcontentmore">
+                        <Button Content="load more" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" BorderBrush="{ThemeResource SystemAccentColor}" Click="Button_Click" x:Name="LoadMore" HorizontalAlignment="Center"></Button>
+                        <Pivot Height="800" x:Load="False" x:Name="ContentPivot">
+                            <PivotItem Header="News">
+                                <WebView Source="https://lofi.news/" NewWindowRequested="NewsHomePage_NewWindowRequested" x:Name="NewsHomePage"/>
+                            </PivotItem>
+                            <PivotItem Header="Maps">
+                                <WebView Source="https://www.google.com/maps/"/>
+                            </PivotItem>
+                            <PivotItem Header="Dino Game">
+                                <WebView Source="https://offline-dino-game.firebaseapp.com/"/>
+                            </PivotItem>
+                            <PivotItem Header="Calculator">
+                                <WebView Source="https://calculator.iondrimbafilho.me/"/>
+                            </PivotItem>
+                            <PivotItem Header="Translator">
+                                <WebView Source="https://translate.google.com/"/>
+                            </PivotItem>
+                        </Pivot>
+                    </Grid>
+                </StackPanel>
+                <Image Canvas.ZIndex="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" x:Name="BackGroundimage" Stretch="Fill"></Image>
             </Grid>
-            <Grid x:Name="loadcontentmore">
-                    <Button Content="load more" Click="Button_Click" x:Name="LoadMore" HorizontalAlignment="Center"></Button>
-                    <Pivot MinHeight="300" Height="600" x:Load="False" x:Name="ContentPivot">
-                        <PivotItem Header="News">
-                            <WebView Source="https://lofi.news/" NewWindowRequested="NewsHomePage_NewWindowRequested" x:Name="NewsHomePage"/>
-                        </PivotItem>
-                        <PivotItem Header="Maps">
-                            <WebView Source="https://www.google.com/maps/"/>
-                        </PivotItem>
-                        <PivotItem Header="Dino Game">
-                            <WebView Source="https://offline-dino-game.firebaseapp.com/"/>
-                        </PivotItem>
-                        <PivotItem Header="Calculator">
-                            <WebView Source="https://calculator.iondrimbafilho.me/"/>
-                        </PivotItem>
-                        <PivotItem Header="Translator">
-                            <WebView Source="https://translate.google.com/"/>
-                        </PivotItem>
-                    </Pivot>
-                </Grid>
-            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Page>

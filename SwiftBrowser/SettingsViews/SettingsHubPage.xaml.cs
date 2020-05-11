@@ -1,4 +1,5 @@
-﻿using SwiftBrowser.Views;
+﻿using SwiftBrowser.HubViews;
+using SwiftBrowser.Views;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
+using MUXC = Microsoft.UI.Xaml;
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SwiftBrowser.SettingsViews
@@ -27,7 +28,46 @@ namespace SwiftBrowser.SettingsViews
         {
             InitializeComponent();
             SetHubNav.SelectedItem = Main;
-            contentFrame.Navigate(typeof(SettingsPage));
+           contentFrame.Navigate(typeof(SettingsPage));
+        }
+
+        private void SetHubNav_ItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
+        {
+            MUXC.Controls.NavigationViewItem NavItem = SetHubNav.SelectedItem as MUXC.Controls.NavigationViewItem;
+            switch(NavItem.Content.ToString())
+            {
+                case "About":
+                    contentFrame.Navigate(typeof(AboutPage));
+                    break;
+                case "Sync":
+                    contentFrame.Navigate(typeof(SyncView));
+                    break;
+                case "Downloads":
+                    contentFrame.Navigate(typeof(Downloads));
+                    break;
+                case "Home page":
+                    contentFrame.Navigate(typeof(HomePageSettings));
+                    break;
+                case "Permissions":
+                    contentFrame.Navigate(typeof(PermissionsSettingsPage));
+                    break;
+                case "Start-up":
+                    contentFrame.Navigate(typeof(StartupSettings));
+                    break;
+                case "Reset":
+                    contentFrame.Navigate(typeof(ResetSettings));
+                    break;
+                case "Personalization":
+                    contentFrame.Navigate(typeof(SettingsPage));
+                    break;
+                case "Web settings":
+                    contentFrame.Navigate(typeof(WebSettings));
+                    break;
+                case "Privacy and security":
+                    contentFrame.Navigate(typeof(PrivacySettings));
+                    break;
+            }
+
         }
     }
 }

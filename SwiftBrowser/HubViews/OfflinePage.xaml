@@ -6,42 +6,24 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-    <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-        <StackPanel Width="400">
-            <CommandBar  Background="{ThemeResource SystemControlAcrylicWindowBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="False" OverflowButtonVisibility="Collapsed">
-                <AppBarButton Icon="Add" Label="Add to offline pages" Click="AddOffline"></AppBarButton>
-                <AppBarButton Icon="Add" Label="Add a site">
-                    <AppBarButton.Flyout>
-                        <Flyout>
-                            <StackPanel Orientation="Vertical" Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="200">
-                                <TextBox Margin="5" x:Name="NameBox" Header="Name: " PlaceholderText="Dont leave blank">
-
-                                </TextBox>
-                                <TextBox Margin="5" x:Name="UrlBox" Header="Url:" PlaceholderText="Enter valid URL">
-
-                                </TextBox>
-                                <Button Margin="5" Click="AddSiteOffline" Content="Add" >
-
-                                </Button>
-                            </StackPanel>
-                        </Flyout>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
+    Background="Transparent">
+    <Grid Background="Transparent">
+        <StackPanel>
+            <CommandBar Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="False" OverflowButtonVisibility="Collapsed">
+                <AppBarButton x:Name="Ortb" Icon="Add" Label="Save current site offline" Click="AddOffline"></AppBarButton>
             </CommandBar>
             <ListView
-                   Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+                   Background="Transparent"
   SelectionMode="None"
     x:Name="Offlines"
     HorizontalAlignment="Left">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="5"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+                        <StackPanel Orientation="Horizontal" Margin="5"  Background="Transparent">
                             <Image Height="15" Width="15" Source="{Binding FavIconJSON}" Margin="5"/>
                             <TextBlock Text="{Binding HeaderJSON}" Margin="0,5,0,5"/>
-                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-                                <AppBarButton Icon="OpenFile" Label="Open" Click="OpenOffline" Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
-                                <AppBarButton Icon="Delete" Click="DeleteOffline" Label="Delete"  Background="{ThemeResource SystemControlAcrylicWindowBrush}"></AppBarButton>
+                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="Transparent">
+                                <AppBarButton Icon="Delete" Click="DeleteOffline" Background="Transparent"></AppBarButton>
                             </CommandBar>
                         </StackPanel>
                     </DataTemplate>

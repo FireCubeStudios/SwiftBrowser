@@ -36,9 +36,9 @@ namespace SwiftBrowser.Views
         public inkingPage()
         {
             this.InitializeComponent();
-            CaptureWebView();
+           CaptureWebView();
         }
-        private async Task CaptureWebView()
+        private async void CaptureWebView()
         {
            
             var originalWidth = WebView.ActualWidth;
@@ -92,9 +92,15 @@ namespace SwiftBrowser.Views
                                      pixels);
                 await encoder.FlushAsync();
             }
-            var m = new MessageDialog("Screen captured and Saved");
-                await m.ShowAsync();
+            int duration = 3000;
+            try { 
+            TabViewPage.InAppNotificationMain.Show("Image saved", duration);
             }
+            catch
+            {
+                IncognitoTabView.InAppNotificationMain.Show("Image saved", duration);
+            }
+        }
         }
     }
 

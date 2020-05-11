@@ -95,12 +95,12 @@ namespace SwiftBrowser.HubViews
                 });
             }
             Favorites.ItemsSource = FavouritesList;
-
         }
         public async void LoadFav()
         {
             StorageFile sampleFile = await localFolder.GetFileAsync("Favorites.json");
             var JSONData = await FileIO.ReadTextAsync(sampleFile);
+            FavouritesList.Clear();
             FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
             foreach (var item in FavouritesListJSON.Websites)
             {
@@ -111,12 +111,14 @@ namespace SwiftBrowser.HubViews
                     FavIconJSON = item.FavIconJSON,
                 });
             }
+            //    Favorites.Items.Clear();
             Favorites.ItemsSource = null;
             UnloadObject(Favorites);
             FindName("Favorites");
             Favorites.ItemsSource = FavouritesList;
-            HomePage.HomeGrid.ItemsSource = null;
-            HomePage.HomeGrid.ItemsSource = FavouritesList;
+
+         // HomePage.HomeGrid.Items.Clear();
+           HomePage.HomeGrid.ItemsSource = FavouritesList;
         }
         private async void AddSiteFav(object sender, RoutedEventArgs e)
         {
@@ -221,6 +223,12 @@ namespace SwiftBrowser.HubViews
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
             FavouritesJSON SenderPost = DataContext as FavouritesJSON;
+            WebWeb.Navigate(new Uri(SenderPost.UrlJSON));
+        }
+
+        private void Favorites_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            FavouritesJSON SenderPost = e.ClickedItem as FavouritesJSON;
             WebWeb.Navigate(new Uri(SenderPost.UrlJSON));
         }
     }

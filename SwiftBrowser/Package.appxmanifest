@@ -7,19 +7,20 @@
   xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
   xmlns:iot2="http://schemas.microsoft.com/appx/manifest/iot/windows10/2"
   xmlns:genTemplate="http://schemas.microsoft.com/appx/developer/windowsTemplateStudio"
+      xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
 xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap mp rescap genTemplate">
 
   <Identity
-    Name="F37341C5-148D-41A3-9DF9-E3D65F4EF782"
-    Publisher="CN=ayush"
-    Version="0.36.2.0" />
+    Name="2505FireCubeStudios.Swiftbrowser"
+    Publisher="CN=3C7C8FC9-7104-4B33-8730-EE1E929D5D3B"
+    Version="0.2.12.0" />
 
-  <mp:PhoneIdentity PhoneProductId="F37341C5-148D-41A3-9DF9-E3D65F4EF782" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="5be2133d-e6c9-4a1b-816d-ae1c8cf0dc25" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>SwiftBrowser</DisplayName>
-    <PublisherDisplayName>ayush</PublisherDisplayName>
+    <DisplayName>Swift browser</DisplayName>
+    <PublisherDisplayName>FireCubeStudios</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -53,6 +54,35 @@ xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/re
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
+ <!--<uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="microsoft.gameBarUIExtension"
+                             Id="YourUniqueIdHere"
+                             DisplayName="Swiftbrowser for Gamebar"
+                             Description="Gambar overlay web browser."
+                             PublicFolder="GameBar\Ext1">
+            <uap3:Properties>
+              <GameBarWidget Type="Standard">
+                <HomeMenuVisible>true</HomeMenuVisible>
+                <PinningSupported>true</PinningSupported>
+                <SettingsSupported AppExtensionId="YourSettingsExtensionId" />
+                <Window>
+                  <Size>
+                    <Height>900</Height>
+                    <Width>900</Width>
+                    <MinHeight>150</MinHeight>
+                    <MinWidth>200</MinWidth>
+                    <MaxHeight>1050</MaxHeight>
+                    <MaxWidth>1050</MaxWidth>
+                  </Size>
+                  <ResizeSupported>
+                    <Horizontal>true</Horizontal>
+                    <Vertical>true</Vertical>
+                  </ResizeSupported>
+                </Window>
+              </GameBarWidget>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>-->
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="http">
             <uap:DisplayName>SwiftBrowser</uap:DisplayName>
@@ -63,10 +93,36 @@ xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/re
             <uap:DisplayName>SwiftBrowser</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="swiftlaunch">
+            <uap:DisplayName>SwiftBrowser new window</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="swiftlaunchincognito">
+            <uap:DisplayName>SwiftBrowser new incognito window</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>
-
+ <!-- <Extensions>
+    Enlighten COM on where to find Metadata Based Marshaling (MBM) data for the Game Bar private types 
+       <Path> is a required element (by VS) and has to point to a binary in the package, but it's not used when the class id is
+       00000355-0000-0000-C000-000000000046 (MBM). Due to that we just put the Microsoft.Gaming.XboxGameBar.winmd here. 
+    <Extension Category="windows.activatableClass.proxyStub">
+      <ProxyStub ClassId="00000355-0000-0000-C000-000000000046">
+        <Path>Microsoft.Gaming.XboxGameBar.winmd</Path>
+        <Interface Name="Microsoft.Gaming.XboxGameBar.Private.IXboxGameBarWidgetAuthHost" InterfaceId="DC263529-B12F-469E-BB35-B94069F5B15A" />
+        <Interface Name="Microsoft.Gaming.XboxGameBar.Private.IXboxGameBarWidgetControlHost" InterfaceId="C309CAC7-8435-4082-8F37-784523747047" />
+        <Interface Name="Microsoft.Gaming.XboxGameBar.Private.IXboxGameBarNavigationKeyCombo" InterfaceId="5EEA3DBF-09BB-42A5-B491-CF561E33C172" />
+        <Interface Name="Microsoft.Gaming.XboxGameBar.Private.IXboxGameBarWidgetActivatedEventArgsPrivate" InterfaceId="782535A7-9407-4572-BFCB-316B4086F102" />
+        <Interface Name="Microsoft.Gaming.XboxGameBar.Private.IXboxGameBarWidgetHost" InterfaceId="5D12BC93-212B-4B9F-9091-76B73BF56525" />
+        <Interface Name="Microsoft.Gaming.XboxGameBar.Private.IXboxGameBarWidgetPrivate" InterfaceId="22ABA97F-FB0F-4439-9BDD-2C67B2D5AA8F" />
+      </ProxyStub>
+    </Extension>
+  </Extensions>-->
+  
   <Capabilities>
     <Capability Name="internetClient" />
     <rescap:Capability Name="confirmAppClose" />

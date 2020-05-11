@@ -6,10 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
 
     <Grid x:Name="ContentGrid">
-        <Rectangle x:Name="bACKGROUND" Fill="{ThemeResource SystemControlAcrylicWindowBrush}" Width="1000" Margin="80, 0, 0, 0"/>
+        <Rectangle x:Name="bACKGROUND" Fill="Transparent" Width="1000" Margin="80, 0, 0, 0"/>
         <CommandBar x:Name="BackgroundElement" Width="140" HorizontalAlignment="Left" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
             <AppBarButton Icon="Back" Click="BackBarButton_Click"></AppBarButton>
             <AppBarButton Icon="Refresh" Click="RefreshBarButton_Click"></AppBarButton>

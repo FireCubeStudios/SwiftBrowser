@@ -1,0 +1,48 @@
+﻿<Page
+    x:Class="SwiftBrowser.Views.ExtensionsStore"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d"
+    Background="Transparent">
+
+    <Grid>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/Assets/2073122.png" x:Name="icon" Margin="10" Width="50" Height="50"></Image>
+                <Button IsEnabled="False">submit extension</Button>
+            </StackPanel>
+            <ListView x:Name="ExtensionsList" Margin="5">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                            <StackPanel>
+                                <Image Height="50" Width="50" Source="{Binding IconJSON}" Margin="2"></Image>
+                            </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding NameJSON}" Margin="2" FontSize="25"></TextBlock>
+                                    <TextBlock Text="{Binding DescriptionJSON}" Margin="2"></TextBlock>
+                                </StackPanel>
+                            </StackPanel>
+                            <ToggleSwitch x:Name="Toggle" IsOn="{Binding IsEnabledJSON}" Margin="5" Header="Enable:" Toggled="Toggle_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
+                            <ToggleSwitch x:Name="ToggleToolbar" IsOn="{Binding IsToolbar}" Margin="5" Header="Show in toolbar:" Toggled="ToggleToolbar_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <controls:Loading x:Name="LoadingControl" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <controls:Loading.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.7" />
+                </controls:Loading.Background>
+                <StackPanel>
+                    <ProgressRing Margin="5" IsActive="True"></ProgressRing>
+                    <TextBlock Margin="5">Saving changes</TextBlock>
+                </StackPanel>
+            </controls:Loading>
+        </StackPanel>
+    </Grid>
+</Page>

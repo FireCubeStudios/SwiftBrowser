@@ -1,0 +1,46 @@
+﻿<Page
+    x:Class="SwiftBrowser.SettingsViews.WebSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.SettingsViews"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="Transparent">
+    <StackPanel Orientation="Horizontal">
+        <StackPanel HorizontalAlignment="Left" Margin="5">
+            <ToggleSwitch Header="Is indexDB enabled:" Margin="5" OffContent="Disabled" OnContent="Enabled" x:Name="I" Toggled="I_Toggled"></ToggleSwitch>
+            <ToggleSwitch Header="Is javascript enabled:" Margin="5" OffContent="Disabled" OnContent="Enabled" x:Name="E" Toggled="E_Toggled"></ToggleSwitch>
+            <ToggleSwitch Header="Microsoft Defender Smartscreen" Margin="5" OffContent="Disabled" OnContent="Enabled" IsEnabled="False" IsOn="True"></ToggleSwitch>
+            <ComboBox Header="Pick a search engine" Width="200" Margin="5" SelectionChanged="Se_SelectionChanged" x:Name="se">
+                <x:String>Ecosia</x:String>
+                <x:String>Wikipedia</x:String>
+                <x:String>Google</x:String>
+                <x:String>Bing</x:String>
+                <x:String>Yandex</x:String>
+                <x:String>Baidu</x:String>
+                <x:String>DuckDuckGo</x:String>
+                <x:String>Yahoo</x:String>
+            </ComboBox>
+            <ComboBox Header="User Agent" Width="200" Margin="5" SelectionChanged="UserAgent_SelectionChanged" x:Name="UserAgent">
+                <x:String>Default</x:String>
+                <x:String>FireFox</x:String>
+                <x:String>Google</x:String>
+                <x:String>Android (galaxy s9)</x:String>
+                <x:String>Iphone (iphone XS chrome)</x:String>
+                <x:String>Windows phone (lumia 950)</x:String>
+                <x:String>Tablet (samsung tab s3)</x:String>
+                <x:String>Desktop (Macos safari)</x:String>
+                <x:String>Desktop (Windows 7 chrome)</x:String>
+                <x:String>Desktop (chromeos chrome)</x:String>
+                <x:String>Desktop (linux firefox)</x:String>
+                <x:String>Console (xbox one)</x:String>
+            </ComboBox>
+        </StackPanel>
+        <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="50,80,150,0" >
+
+            <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100"/>
+
+        </Canvas>
+    </StackPanel>
+</Page>

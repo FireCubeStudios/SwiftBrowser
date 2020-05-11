@@ -33,14 +33,12 @@ namespace SwiftBrowser.Views
     public sealed partial class SnipPage : Page
     {
         public static IRandomAccessStream WebView { get; set; }
-        int width;
-        int height;
         public SnipPage()
         {
             this.InitializeComponent();
-            CaptureWebView();
+             CaptureWebView();
         }
-        private async Task CaptureWebView()
+        private async void CaptureWebView()
         {
 
             /* var originalWidth = WebView.ActualWidth;
@@ -112,8 +110,14 @@ namespace SwiftBrowser.Views
                 await SnipCropper.SaveAsync(stream, BitmapFileFormat.Png);
 
             }
-            var m = new MessageDialog("Screen captured and Saved");
-            await m.ShowAsync();
+            int duration = 3000;
+            try { 
+            TabViewPage.InAppNotificationMain.Show("Screen capture saved", duration);
+            }
+            catch
+            {
+                IncognitoTabView.InAppNotificationMain.Show("Screen capture saved", duration);
+            }
         }
 
     }

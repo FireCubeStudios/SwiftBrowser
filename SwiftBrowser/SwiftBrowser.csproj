@@ -17,15 +17,17 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WindowsXamlEnableOverview>true</WindowsXamlEnableOverview>
-    <PackageCertificateKeyFile>SwiftBrowser_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>
+    </PackageCertificateKeyFile>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <PackageCertificateThumbprint>82D08888DDD6F64A327D0CFA54198236910B4087</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>4D56D24601959EF95E6D7B6EBBF10D6F53465DFB</PackageCertificateThumbprint>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <GenerateTestArtifacts>True</GenerateTestArtifacts>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -124,8 +126,17 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Downloader">
+      <Version>1.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="ExpressionBuilder">
+      <Version>2.1.2</Version>
+    </PackageReference>
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.23</Version>
+    </PackageReference>
+    <PackageReference Include="KeePassLib">
+      <Version>2.34.0-ci0031</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Data.Sqlite">
       <Version>3.1.3</Version>
@@ -139,6 +150,9 @@
     <PackageReference Include="Microsoft.Services.Store.Engagement">
       <Version>10.1901.28001</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Services">
+      <Version>6.0.0</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp">
       <Version>6.0.0</Version>
     </PackageReference>
@@ -149,10 +163,16 @@
       <Version>6.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.3.191211002</Version>
+      <Version>2.4.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Uwp.Managed">
       <Version>2.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Monaco.Editor">
+      <Version>0.8.1-alpha</Version>
+    </PackageReference>
+    <PackageReference Include="NETStandard.Library">
+      <Version>2.0.3</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
@@ -169,6 +189,12 @@
     <PackageReference Include="SQLitePCLRaw.bundle_winsqlite3">
       <Version>2.0.0</Version>
     </PackageReference>
+    <PackageReference Include="System.Security.Cryptography.Algorithms">
+      <Version>4.3.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData">
+      <Version>4.7.0</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="Strings\en-us\Resources.resw" />
@@ -178,13 +204,48 @@
     <Compile Include="Assets\DataAccess.cs" />
     <Compile Include="Extensions\DarkModeExtension.cs" />
     <Compile Include="Extensions\UserAgents.cs" />
+    <Compile Include="Extensions\Views\AdblockerBuiltInSwiftBrowserExtension.xaml.cs">
+      <DependentUpon>AdblockerBuiltInSwiftBrowserExtension.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\Views\DarkmodeSwiftBrowserBuiltInExtension.xaml.cs">
+      <DependentUpon>DarkmodeSwiftBrowserBuiltInExtension.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
+    <Compile Include="Helpers\GetHistory.cs" />
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
     <Compile Include="Helpers\TileDataSource.cs" />
     <Compile Include="Helpers\WebViewEvents.cs" />
     <Compile Include="HubViews\OfflinePage.xaml.cs">
       <DependentUpon>OfflinePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HubViews\PasswordMasterDetails.xaml.cs">
+      <DependentUpon>PasswordMasterDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HubViews\SyncView.xaml.cs">
+      <DependentUpon>SyncView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Lastpass\src\Account.cs" />
+    <Compile Include="Lastpass\src\Asn1.cs" />
+    <Compile Include="Lastpass\src\BaseException.cs" />
+    <Compile Include="Lastpass\src\Blob.cs" />
+    <Compile Include="Lastpass\src\ClientInfo.cs" />
+    <Compile Include="Lastpass\src\Extensions.cs" />
+    <Compile Include="Lastpass\src\Fetcher.cs" />
+    <Compile Include="Lastpass\src\FetcherHelper.cs" />
+    <Compile Include="Lastpass\src\FetchException.cs" />
+    <Compile Include="Lastpass\src\IWebClient.cs" />
+    <Compile Include="Lastpass\src\LoginException.cs" />
+    <Compile Include="Lastpass\src\LogoutException.cs" />
+    <Compile Include="Lastpass\src\ParseException.cs" />
+    <Compile Include="Lastpass\src\ParserHelper.cs" />
+    <Compile Include="Lastpass\src\Pbkdf2.cs" />
+    <Compile Include="Lastpass\src\Platform.cs" />
+    <Compile Include="Lastpass\src\Session.cs" />
+    <Compile Include="Lastpass\src\SharedFolder.cs" />
+    <Compile Include="Lastpass\src\Ui.cs" />
+    <Compile Include="Lastpass\src\Vault.cs" />
+    <Compile Include="Lastpass\src\WebClient.cs" />
+    <Compile Include="Models\HistoryClass.cs" />
     <Compile Include="Models\PhotoDataItem.cs" />
     <Compile Include="Models\TabViewItemData.cs" />
     <Compile Include="Services\ActivationService.cs" />
@@ -192,7 +253,6 @@
     <Compile Include="Services\ContextMenuService.cs" />
     <Compile Include="Services\FirstRunDisplayService.cs" />
     <Compile Include="Services\LiveTileService.cs" />
-    <Compile Include="Services\LiveTileService.Samples.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />
     <Compile Include="Services\ViewLifetimeControl.cs" />
@@ -204,8 +264,38 @@
     <Compile Include="HubViews\Favourites.xaml.cs">
       <DependentUpon>Favourites.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SettingsViews\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsViews\HomePageSettings.xaml.cs">
+      <DependentUpon>HomePageSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsViews\PermissionsSettingsPage.xaml.cs">
+      <DependentUpon>PermissionsSettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsViews\PrivacySettings.xaml.cs">
+      <DependentUpon>PrivacySettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsViews\ResetSettings.xaml.cs">
+      <DependentUpon>ResetSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SettingsViews\SettingsHubPage.xaml.cs">
       <DependentUpon>SettingsHubPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsViews\StartupSettings.xaml.cs">
+      <DependentUpon>StartupSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsViews\WebSettings.xaml.cs">
+      <DependentUpon>WebSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Devtools.xaml.cs">
+      <DependentUpon>Devtools.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ErrorDialog.xaml.cs">
+      <DependentUpon>ErrorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ExtensionsStore.xaml.cs">
+      <DependentUpon>ExtensionsStore.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FirstRunDialog.xaml.cs">
       <DependentUpon>FirstRunDialog.xaml</DependentUpon>
@@ -233,6 +323,9 @@
     </Compile>
     <Compile Include="Views\NoInternetFrame.xaml.cs">
       <DependentUpon>NoInternetFrame.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OfflineCreatePage.xaml.cs">
+      <DependentUpon>OfflineCreatePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\OfflineModePage.xaml.cs">
       <DependentUpon>OfflineModePage.xaml</DependentUpon>
@@ -269,11 +362,59 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Extensions\Views\AdblockerBuiltInSwiftBrowserExtension.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Extensions\Views\DarkmodeSwiftBrowserBuiltInExtension.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="HubViews\OfflinePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="HubViews\PasswordMasterDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="HubViews\SyncView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsViews\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsViews\HomePageSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsViews\PermissionsSettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsViews\PrivacySettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsViews\ResetSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SettingsViews\SettingsHubPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsViews\StartupSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsViews\WebSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\AutoSuggestBox_themeresources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -302,6 +443,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="HubViews\Favourites.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Devtools.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ErrorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ExtensionsStore.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -338,6 +491,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\NoInternetFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OfflineCreatePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -387,9 +544,17 @@
     <Compile Include="Helpers\ResourceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\2073122.png" />
+    <Content Include="Assets\616655.png" />
+    <Content Include="Assets\AdblockerText.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\BrowserIcons\131.png" />
     <Content Include="Assets\BrowserIcons\PrivateIMG.png" />
     <Content Include="Assets\BrowserIcons\Nointernet.png" />
+    <Content Include="Assets\DownloadsIcon.png" />
+    <Content Include="Assets\DownloadsIcon.svg" />
+    <Content Include="Assets\Gear.png" />
     <Content Include="Assets\LargeTile.scale-100.png" />
     <Content Include="Assets\LargeTile.scale-125.png" />
     <Content Include="Assets\LargeTile.scale-150.png" />
@@ -457,6 +622,13 @@
     <Content Include="Assets\Wide310x150Logo.scale-125.png" />
     <Content Include="Assets\Wide310x150Logo.scale-150.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
+    <Content Include="Extensions\Assets\1389169 - Copy - Copy %283%29.png" />
+    <Content Include="Extensions\Assets\1389169 - Copy - Copy %289%29.png" />
+    <Content Include="Extensions\Assets\2338119.png" />
+    <Content Include="Extensions\Assets\23547687.png" />
+    <Content Include="HomeView\Failed.html" />
+    <Content Include="HomeView\surf.html" />
+    <None Include="Package.StoreAssociation.xml" />
     <Content Include="WebFiles\global.css" />
     <Content Include="WebFiles\highlight.js" />
     <Content Include="WebFiles\readingmode.js" />
@@ -473,6 +645,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
+    <None Include="Assets\SyncFile.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\OfflinePages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -485,9 +660,14 @@
     <None Include="Assets\Photos\Photos.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Assets\Extensions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\RestoreTabItems.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="HomeView\surf.mhtml" />
+    <None Include="Lastpass\src\LastPass.csproj" />
     <None Include="SwiftBrowser_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -515,6 +695,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Extensions\Helpers\" />
+    <Folder Include="Extensions\Models\" />
+    <Folder Include="Extensions\Services\" />
     <Folder Include="Themes\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

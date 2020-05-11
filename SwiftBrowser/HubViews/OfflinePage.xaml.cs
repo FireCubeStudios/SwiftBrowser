@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
@@ -29,9 +30,11 @@ namespace SwiftBrowser.HubViews
     /// </summary>
     public sealed partial class OfflinePage : Page
     {
+        public static OfflinePage Singletonreference { get; set; }
         public OfflinePage()
         {
             this.InitializeComponent();
+            Singletonreference = this;
             LoadOfflines();
         }
         Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
@@ -107,6 +110,7 @@ namespace SwiftBrowser.HubViews
             StorageFile sampleFile = await localFolder.GetFileAsync("OfflinePages.json");
             var JSONData = await FileIO.ReadTextAsync(sampleFile);
             OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
+            OfflineList.Clear();
             foreach (var item in OfflineListJSON.OfflineWebsites)
             {
                 OfflineList.Add(new OfflineJSON()
@@ -122,41 +126,6 @@ namespace SwiftBrowser.HubViews
             Offlines.ItemsSource = OfflineList;
             HomePage.HomeGrid.ItemsSource = null;
             HomePage.HomeGrid.ItemsSource = OfflineList;
-        }
-        private async void AddSiteOffline(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                String Url = UrlBox.Text.Replace("https://", "");
-                Uri ArgsUri = new Uri(UrlBox.Text);
-                string host = ArgsUri.Host;
-                string Header;
-                if (string.IsNullOrEmpty(NameBox.Text) == true)
-                {
-                    Header = UrlBox.Text;
-                }
-                else
-                {
-                    Header = NameBox.Text;
-                }
-                StorageFile sampleFile = await localFolder.GetFileAsync("OfflinePages.json");
-                var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
-                OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
-                OfflineListJSON.OfflineWebsites.Add(new OfflineJSON()
-                {
-                    FavIconJSON = " https://icons.duckduckgo.com/ip2/" + host + ".ico",
-                    ImageUrlJSON = UrlBox.Text,
-                    HeaderJSON = Header
-                });
-                var SerializedObject = JsonConvert.SerializeObject(OfflineListJSON, Formatting.Indented);
-                await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
-                var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
-                LoadOffline();
-            }
-            catch
-            {
-                return;
-            }
         }
 
         private async void DeleteOffline(object sender, RoutedEventArgs e)
@@ -178,37 +147,38 @@ namespace SwiftBrowser.HubViews
             LoadOffline();
         }
 
-        private async void AddOffline(object sender, RoutedEventArgs e)
+        private  void AddOffline(object sender, RoutedEventArgs e)
         {
             //  if (BoolWeb == true)
+          
+            var random = new Random();
+            int randomnumber = random.Next();
+            string rand = randomnumber.ToString();
+            WebViewPage webpage = WebWeb.Tag as WebViewPage;
+            webpage.CreateRTBOffline(rand);
             //   {
+          
+        }
+        public async void OfflineAddToJSON(string rand)
+        {
             StorageFile sampleFile = await localFolder.GetFileAsync("OfflinePages.json");
 
             var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
-                OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
-                Uri ArgsUri = new Uri(WebWeb.Source.ToString());
-                string host = ArgsUri.Host;
-                string x = "";
-                    x = WebWeb.Source.ToString();
-               
+            OfflineClass OfflineListJSON = JsonConvert.DeserializeObject<OfflineClass>(JSONData);
+            Uri ArgsUri = new Uri(WebWeb.Source.ToString());
+            string host = ArgsUri.Host;
+            string x;
+            x = await WebWeb.InvokeScriptAsync("eval", new string[] { "document.title;" });
             OfflineListJSON.OfflineWebsites.Add(new OfflineJSON()
             {
                 FavIconJSON = " https://icons.duckduckgo.com/ip2/" + host + ".ico",
-                ImageUrlJSON = "xxx" + ".jpg",
+                ImageUrlJSON = rand + ".jpg",
                 HeaderJSON = x
             }); ;
             var SerializedObject = JsonConvert.SerializeObject(OfflineListJSON, Formatting.Indented);
             await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
             var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
-            WebViewPage.SingletonReference.CreateRTBOffline();
-                LoadOffline();
-                var m = new MessageDialog(x + ".jpg");
-                await m.ShowAsync();
-           // }
-           // else
-           // {
-           //     return;
-           // }
+            LoadOffline();
         }
 
         private async void OpenOffline(object sender, RoutedEventArgs e)
@@ -216,12 +186,11 @@ namespace SwiftBrowser.HubViews
             var SenderFramework = (FrameworkElement)sender;
             var DataContext = SenderFramework.DataContext;
             OfflineJSON SenderPost = DataContext as OfflineJSON;
-            var m = new MessageDialog(SenderPost.ImageUrlJSON);
-            await m.ShowAsync();
             WebViewPage.SingletonReference.Churros();
             ImageFrame.Visibility = Visibility.Visible;
             ImageFrame.Navigate(typeof(OfflineModePage));
-            OfflineModePage.OiMage.Source = new BitmapImage(new Uri(SenderPost.ImageUrlJSON, UriKind.Absolute));
+            StorageFile sampleFile = await localFolder.GetFileAsync(SenderPost.ImageUrlJSON);
+            OfflineModePage.OiMage.Source = new BitmapImage(new Uri(sampleFile.Path.ToString()));
             //  WebWeb.Navigate(new Uri(SenderPost.ImageUrlJSON));
         }
 

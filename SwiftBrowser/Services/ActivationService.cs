@@ -119,7 +119,6 @@ namespace SwiftBrowser.Services
         private async Task StartupAsync()
         {
             await ThemeSelectorService.SetRequestedThemeAsync();
-            Singleton<LiveTileService>.Instance.SampleUpdate();
             await WhatsNewDisplayService.ShowIfAppropriateAsync();
             await FirstRunDisplayService.ShowIfAppropriateAsync();
         }

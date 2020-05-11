@@ -1,0 +1,19 @@
+﻿<Page
+    x:Class="SwiftBrowser.Views.Devtools"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:monaco="using:Monaco"
+    mc:Ignorable="d"
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+
+    <StackPanel>
+        <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
+            <AppBarButton Click="Button_Click" Margin="5" Icon="Upload" Label="Update HTML"></AppBarButton>
+        </CommandBar>
+        <monaco:CodeEditor Background="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}" Margin="30"  x:Name="HTMLeditor" Language="HTML" Height="800"></monaco:CodeEditor>
+       <!-- <TextBox Header="Console log" x:Name="lOG" Margin="10"></TextBox>-->
+    </StackPanel>
+</Page>

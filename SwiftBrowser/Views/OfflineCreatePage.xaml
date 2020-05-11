@@ -1,0 +1,32 @@
+﻿<Page
+    x:Class="SwiftBrowser.Views.OfflineCreatePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SwiftBrowser.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid>
+            <TextBlock>Viewing offline page</TextBlock>
+            <controls:InAppNotification x:Name="SaveConfirm" VerticalAlignment="Bottom" Canvas.ZIndex="100" ShowDismissButton="False">
+                <StackPanel>
+                    <TextBlock Margin="5">Confirm offline save?</TextBlock>
+                    <Button Margin="5" Click="SaveRTB">Save offline</Button>
+                </StackPanel>
+            </controls:InAppNotification>
+            <!-- <ScrollViewer x:Name="ScrollPainter" Visibility="Collapsed" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto" ZoomMode="Enabled" MinZoomFactor="1">-->
+            <Grid Margin="0, 40, 0, 0">
+                <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
+                    <Grid x:Name="Gridx">
+                        <WebView x:Name="OfflinePainter"/>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+            <!-- </ScrollViewer>-->
+        </Grid>
+    </Grid>
+</Page>

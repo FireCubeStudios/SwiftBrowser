@@ -6,9 +6,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
-    <Grid Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-        <TextBlock>Downloads go here</TextBlock>
+    <Grid Background="Transparent">
+        <TextBlock>Downloads arent supported yet</TextBlock>
     </Grid>
 </Page>

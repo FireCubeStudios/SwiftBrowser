@@ -7,19 +7,20 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
         xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="Transparent">
 
     <Grid>
-        <muxc:NavigationView x:Name="SetHubNav" PaneDisplayMode="LeftCompact" IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
+        <muxc:NavigationView x:Name="SetHubNav" PaneDisplayMode="LeftCompact" ItemInvoked="SetHubNav_ItemInvoked" IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
             <muxc:NavigationView.MenuItems>
-                <muxc:NavigationViewItem  x:Name="Main" Icon="Setting" Content="General" />
-                <muxc:NavigationViewItem Icon="Setting" Content="Privacy and security"/>
-                <muxc:NavigationViewItem Icon="Setting" Content="Web settings"/>
-                <muxc:NavigationViewItem Icon="Setting" Content="Personalization"/>
-                <muxc:NavigationViewItem Icon="Setting" Content="Home page"/>
-                <muxc:NavigationViewItem Icon="Setting" Content="Permissions"/>
-                <muxc:NavigationViewItem Icon="Setting" Content="Downloads"/>
-                <muxc:NavigationViewItem Icon="Setting" Content="Sync"/>
+                <muxc:NavigationViewItem Icon="Admin" Content="Privacy and security"/>
+                <muxc:NavigationViewItem Icon="Globe" Content="Web settings"/>
+                <muxc:NavigationViewItem Icon="Edit" x:Name="Main" Content="Personalization"/>
+                <muxc:NavigationViewItem Icon="Home" Content="Home page"/>
+                <muxc:NavigationViewItem Icon="Permissions" Content="Permissions"/>
+                <muxc:NavigationViewItem Icon="Important" Content="Start-up"/>
+                <muxc:NavigationViewItem Icon="Refresh" Content="Reset"/>
+                <muxc:NavigationViewItem Icon="Download" Content="Downloads"/>
+                <muxc:NavigationViewItem Icon="Sync" Content="Sync"/>
                 <muxc:NavigationViewItem Icon="Setting" Content="About"/>
             </muxc:NavigationView.MenuItems>
             <Frame x:Name="contentFrame"/>
