@@ -4772,7 +4772,6 @@ ads.smartclick.com
 ads.socialtheater.com
 ads.soft32.com
 ads.space.com
-ads.stackoverflow.com
 ads.sun.com
 ads.suomiautomaatti.com
 ads.supplyframe.com
