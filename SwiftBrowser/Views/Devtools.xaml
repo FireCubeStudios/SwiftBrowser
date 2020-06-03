@@ -8,7 +8,8 @@
     xmlns:monaco="using:Monaco"
     mc:Ignorable="d"
     Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-
+<!-- to be removed-->
+     <!-- possibly port it to the chromium version-->
     <StackPanel>
         <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
             <AppBarButton Click="Button_Click" Margin="5" Icon="Upload" Label="Update HTML"></AppBarButton>
