@@ -80,12 +80,7 @@ namespace SwiftBrowser.Views
             public List<SyncJSON> Sync { get; set; }
         }
 
-        /*  public class Sync
-          {
-              public string Header { get; set; }
-              public string Url { get; set; }
-              public string FavIcon { get; set; }
-          }*/
+
         public class SyncJSON
         {
             public string HeaderJSON { get; set; }
