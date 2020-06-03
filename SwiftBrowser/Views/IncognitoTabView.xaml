@@ -14,8 +14,8 @@
      Loaded="TitleGrid_Loaded"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-
+    Background="{ThemeResource SystemControlAcrylicWindowBrush}>
+                <!--port clear cookies to settings-->
     <Grid>
         <!--   <Grid x:Name="TitleGrid"  Background="{ThemeResource SystemControlAcrylicWindowBrush}"></Grid>-->
         <winui:TeachingTip x:Name="RestoreTip"                   
