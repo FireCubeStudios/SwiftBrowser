@@ -8,7 +8,8 @@
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
     Background="Transparent">
-
+<!-- extensions in swiftbrowser edgehtml is to be deprecated. focus on extensions in the chromium browser-->
+     <!--adblocker and dakmode will stay but no new features except bug reports-->
     <Grid>
         <StackPanel>
             <StackPanel Orientation="Horizontal">
