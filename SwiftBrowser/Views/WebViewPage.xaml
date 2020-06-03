@@ -1421,7 +1421,10 @@
                                             <Grid Background="{ThemeResource SystemControlAcrylicElementBrush}" CornerRadius="10" Width="400" Height="400" Margin="0, 0, 0, 5">
                                                 <StackPanel>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
-                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Print" Margin="5" Label=" Screenshot Print" Click="PrintFlyoutItem_Click" Width="100"></AppBarButton>
+                                                       <!-- <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="
+                                                        
+                                                        
+                                                        " Margin="5" Label=" Screenshot Print" Click="PrintFlyoutItem_Click" Width="100"></AppBarButton>-->
                                                         <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Edit" Margin="5" Label="Ink" Click="InkingButton_Click" Width="100"></AppBarButton>
                                                         <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Share" Margin="5" Label="Share" Click="ShareFlyoutItem_Click" Width="100"></AppBarButton>
                                                     </StackPanel>
