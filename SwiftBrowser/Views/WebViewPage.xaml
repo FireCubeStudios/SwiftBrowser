@@ -1331,9 +1331,9 @@
                                                     <!--  <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" CornerRadius="10" Icon="globe" Margin="5" Label="Open in browser" Width="100"></AppBarButton>-->
                                                     <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="add" Margin="5" Label="New tab" Width="100" Click="NewTabItem_Click"></AppBarButton>
                                                     <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="NewWindow" Margin="5" Label="New window" Click="NewWindow_Click" Width="100"></AppBarButton>
-                                                    <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Label="New incognito" Click="Incognito_Click" Width="100">
-                                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE727;"/>
-                                                    </AppBarButton>
+                                                   <!-- <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Label="New incognito" Click="Incognito_Click" Width="100">-->
+                                                      <!--  <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE727;"/>
+                                                    </AppBarButton>-->
                                                 </StackPanel>
                                             </StackPanel>
                                         </Grid>
