@@ -18,5 +18,5 @@
             <TextBlock x:Name="errormsgExeption" Margin="5" Width="300" TextWrapping="WrapWholeWords"></TextBlock>
             <TextBlock x:Name="errormsg" Margin="5" Width="300" TextWrapping="WrapWholeWords"></TextBlock>
         </StackPanel>
-    </Grid>
+    </Grid><!--sdkkmk-->
 </ContentDialog>
