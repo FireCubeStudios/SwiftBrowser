@@ -6,4 +6,4 @@ Swift browser github repository. download: https://www.microsoft.com/en-us/p/swi
 
 
 
-join the feedback server: https://discord.com/widget?id=714581497222398064&theme=dark
+join the feedback server: https://discord.gg/qXBCF9z
