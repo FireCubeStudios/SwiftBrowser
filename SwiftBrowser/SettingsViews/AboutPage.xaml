@@ -30,7 +30,7 @@
 
             <StackPanel Orientation="Horizontal">
 
-                <Button Click="Rate_Click" Margin="10">Rate Flowpad</Button>
+                <Button Click="Rate_Click" Margin="10">Rate the app</Button>
 
                 <Button x:Name="Feedbackbutton" FontFamily="Segoe MDL2 Assets" Content="&#xE939;" Margin="10" Click="FeedbackLink_Click">
 

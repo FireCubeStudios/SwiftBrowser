@@ -5,24 +5,86 @@
     xmlns:local="using:SwiftBrowser.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource SystemControlAcrylicWindowBrush}">
 
     <Grid>
-        <InkToolbar Canvas.ZIndex="2" TargetInkCanvas="{x:Bind InkCanvas}" VerticalAlignment="Top" HorizontalAlignment="Center"></InkToolbar>
+        <InkToolbar Canvas.ZIndex="2" TargetInkCanvas="{x:Bind InkCanvas}" VerticalAlignment="Top" HorizontalAlignment="Center" x:Name="toolbar" Background="Transparent" Loaded="OnInkToolbarLoaded" RelativePanel.AlignHorizontalCenterWithPanel="True">
+            <!-- <InkToolbarCustomToolButton x:Uid="Ink_LassoSelectionButton" Background="Transparent" Click="ConfigLassoSelection">
+                                        <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEF20;" />
+                                        {Binding Content.LassoSelectionButtonIsChecked, ElementName=shellFrame, Mode=TwoWay}
+                                    </InkToolbarCustomToolButton>-->
+            <InkToolbarCustomToggleButton ToolTipService.ToolTip="Enable touch inking" IsChecked="True" x:Name="TouchInkingButton" Background="Transparent" Click="InkToolbarCustomToggleButtonTouch_Click">
+                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xED5F;" />
+            </InkToolbarCustomToggleButton>
+            <InkToolbarCustomToggleButton ToolTipService.ToolTip="Enable mouse inking" IsChecked="True" x:Name="MouseInkingButton" Background="Transparent" Click="InkToolbarCustomToggleButtonMouse_Click">
+                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE962;" />
+            </InkToolbarCustomToggleButton>
+            <InkToolbarCustomToggleButton ToolTipService.ToolTip="Enable pen inking" IsChecked="True" x:Name="InkSurfacePen" Background="Transparent" Click="InkToolbarCustomToggleButtonPen_Click">
+                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEDC6;" />
+            </InkToolbarCustomToggleButton>
+            <InkToolbarCustomToggleButton x:Name="Colorpick"
+                                                        ToolTipService.ToolTip="Custom Pen colour" 
+                                                        Click="Colorpick_Click">
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE790;"/>
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout>
+                        <RelativePanel>
+                            <ColorPicker x:Name="myColorPicker"
+             IsAlphaEnabled="True" ColorChanged="MyColorPicker_ColorChanged"/>
+                        </RelativePanel>
+
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
+            </InkToolbarCustomToggleButton>
+            <InkToolbarCustomToolButton x:Uid="InkDraw_LassoSelectionButton" Background="Transparent" IsChecked="{x:Bind LassoSelectionButtonIsChecked, Mode=TwoWay}">
+                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xEF20;" />
+            </InkToolbarCustomToolButton>
+        </InkToolbar>
         <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" Canvas.ZIndex="2" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
-            <AppBarButton Click="Button_Click" Icon="Save" Label="Save"></AppBarButton>
+            <AppBarButton Click="Button_Click" Background="{ThemeResource SystemAccentColor}" Icon="Save" Label="Save"></AppBarButton>
+        </CommandBar>
+        <CommandBar  Background="Transparent" x:Name="SideBar" IsOpen="False" HorizontalAlignment="Right" DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed">
+            <AppBarButton ToolTipService.ToolTip="Undo" x:Uid="InkSmartCanvas_UndoButton" Icon="Undo" Click="Undo_Click"  BorderBrush="Transparent" BorderThickness="0,0,0,0" />
+            <AppBarButton ToolTipService.ToolTip="Redo" x:Uid="InkSmartCanvas_RedoButton" Icon="Redo" Click="Redo_Click"  BorderBrush="Transparent" BorderThickness="0,0,0,0" />
+            <AppBarSeparator/>
+            <AppBarButton x:Uid="InkDraw_CutButton" Icon="Cut" Click="Cut_Click"   BorderBrush="Transparent" BorderThickness="0,0,0,0" />
+            <AppBarButton x:Uid="InkDraw_CopyButton" Icon="Copy" Click="Copy_Click" BorderBrush="Transparent" BorderThickness="0,0,0,0" />
+            <AppBarButton x:Uid="InkDraw_PasteButton" Icon="Paste" Click="Paste_Click" BorderBrush="Transparent" BorderThickness="0,0,0,0" />
+            <AppBarButton ToolTipService.ToolTip="Clear all" x:Uid="InkSmartCanvasView_ClearAllButton" Icon="Delete" Click="ClearAll_Click" BorderBrush="Transparent" BorderThickness="0,0,0,0" />
+            <AppBarButton ToolTipService.ToolTip="Open ink settings" Icon="Setting" Click="InkSettingsButton_Click" BorderBrush="Transparent" BorderThickness="0,0,0,0" />
         </CommandBar>
         <!-- <ScrollViewer x:Name="ScrollPainter" Visibility="Collapsed" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto" ZoomMode="Enabled" MinZoomFactor="1">-->
         <Grid Margin="0, 40, 0, 0">
-            <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
+            <ScrollViewer VerticalScrollBarVisibility="Visible" x:Name="canvasScroll" VerticalScrollMode="Enabled">
                 <Grid x:Name="Gridx">
                     <WebView x:Name="Painter"/>
 
                     <InkCanvas Canvas.ZIndex='1' x:Name="InkCanvas" />
+                    <Canvas x:Name="drawingCanvas"
+                            Width="{Binding ElementName=inkCanvas, Path=Width}"
+                            Height="{Binding ElementName=inkCanvas, Path=Height}"/>
+                    <Canvas x:Name="selectionCanvas"
+                            Width="{Binding ElementName=inkCanvas, Path=Width}"
+                            Height="{Binding ElementName=inkCanvas, Path=Height}"/>
                 </Grid>
             </ScrollViewer>
         </Grid>
+        <controls:TeachingTip x:Name="AutoSaveTip"
+    Title="Ink advanced settings">
+            <controls:TeachingTip.IconSource>
+             <controls:SymbolIconSource Symbol="Setting"/>
+            </controls:TeachingTip.IconSource>
+            <StackPanel Orientation="Vertical">
+                <ToggleSwitch Header="Tilt" OffContent="Tilt disabled" OnContent="Tilt enabled" IsOn="True" Toggled="TiltSwitch_Toggled"/>
+                <ToggleSwitch Header="Pressure" OffContent="Pressure disabled" OnContent="Pressure enabled" IsOn="True" Toggled="PressureSwitch_Toggled"/>
+                <!--<ComboBox Header="Pen tip shape" Width="200" SelectedItem="Circle" SelectionChanged="ComboBox_SelectionChanged">
+                        <x:String>Circle</x:String>
+                        <x:String>Rectangle</x:String>
+                    </ComboBox>-->
+            </StackPanel>
+        </controls:TeachingTip>
         <!-- </ScrollViewer>-->
     </Grid>
 </Page>

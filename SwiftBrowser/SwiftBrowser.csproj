@@ -202,6 +202,10 @@
   <ItemGroup>
     <Compile Include="Activation\ActivationHandler.cs" />
     <Compile Include="Assets\DataAccess.cs" />
+    <Compile Include="EventHandlers\Ink\AddStrokeEventArgs.cs" />
+    <Compile Include="EventHandlers\Ink\CopyPasteStrokesEventArgs.cs" />
+    <Compile Include="EventHandlers\Ink\MoveStrokesEventArgs.cs" />
+    <Compile Include="EventHandlers\Ink\RemoveEventArgs.cs" />
     <Compile Include="Extensions\DarkModeExtension.cs" />
     <Compile Include="Extensions\UserAgents.cs" />
     <Compile Include="Extensions\Views\AdblockerBuiltInSwiftBrowserExtension.xaml.cs">
@@ -212,6 +216,7 @@
     </Compile>
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\GetHistory.cs" />
+    <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Helpers\SettingsStorageExtensions.cs" />
     <Compile Include="Helpers\TileDataSource.cs" />
     <Compile Include="Helpers\WebViewEvents.cs" />
@@ -252,6 +257,24 @@
     <Compile Include="Activation\DefaultActivationHandler.cs" />
     <Compile Include="Services\ContextMenuService.cs" />
     <Compile Include="Services\FirstRunDisplayService.cs" />
+    <Compile Include="Services\Ink\InkAsyncAnalyzer.cs" />
+    <Compile Include="Services\Ink\InkCopyPasteService.cs" />
+    <Compile Include="Services\Ink\InkFileService.cs" />
+    <Compile Include="Services\Ink\InkLassoSelectionService.cs" />
+    <Compile Include="Services\Ink\InkNodeSelectionService.cs" />
+    <Compile Include="Services\Ink\InkPointerDeviceService.cs" />
+    <Compile Include="Services\Ink\InkSelectionRectangleService.cs" />
+    <Compile Include="Services\Ink\InkStrokesService.cs" />
+    <Compile Include="Services\Ink\InkTransformResult.cs" />
+    <Compile Include="Services\Ink\InkTransformService.cs" />
+    <Compile Include="Services\Ink\InkUndoRedoService.cs" />
+    <Compile Include="Services\Ink\InkZoomService.cs" />
+    <Compile Include="Services\Ink\UndoRedo\AddStrokeUndoRedoOperation.cs" />
+    <Compile Include="Services\Ink\UndoRedo\ClearStrokesAndShapesUndoRedoOperation.cs" />
+    <Compile Include="Services\Ink\UndoRedo\IUndoRedoOperation.cs" />
+    <Compile Include="Services\Ink\UndoRedo\MoveStrokesUndoRedoOperation.cs" />
+    <Compile Include="Services\Ink\UndoRedo\RemoveStrokeUndoRedoOperation.cs" />
+    <Compile Include="Services\Ink\UndoRedo\TransformUndoRedoOperation.cs" />
     <Compile Include="Services\LiveTileService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\ThemeSelectorService.cs" />

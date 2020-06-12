@@ -67,7 +67,7 @@
 
                     </AutoSuggestBox>
                     <Grid x:Name="QuickPinnedGrid">
-                        <Button x:Name="AddItemButton" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" BorderBrush="{ThemeResource SystemAccentColor}" VerticalAlignment="Top" Content="Add Website" HorizontalAlignment="Center" Margin="10">
+                        <Button x:Name="AddItemButton" Background="{ThemeResource SystemAccentColor}" VerticalAlignment="Top" Content="Add Website" HorizontalAlignment="Center" Margin="10">
                             <Button.Flyout>
                                 <Flyout>
                                     <StackPanel Orientation="Vertical" Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="200">
@@ -99,7 +99,7 @@
                         </controls:AdaptiveGridView>
                     </Grid>
                     <Grid x:Name="loadcontentmore">
-                        <Button Content="load more" Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" BorderBrush="{ThemeResource SystemAccentColor}" Click="Button_Click" x:Name="LoadMore" HorizontalAlignment="Center"></Button>
+                        <Button Content="load more" Background="{ThemeResource SystemAccentColor}" Click="Button_Click" x:Name="LoadMore" HorizontalAlignment="Center"></Button>
                         <Pivot Height="800" x:Load="False" x:Name="ContentPivot">
                             <PivotItem Header="News">
                                 <WebView Source="https://lofi.news/" NewWindowRequested="NewsHomePage_NewWindowRequested" x:Name="NewsHomePage"/>
