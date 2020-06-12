@@ -55,6 +55,7 @@ using SwiftBrowser.Extensions.Views;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Input;
 using WinRTXamlToolkit.Controls.Extensions;
+using Windows.Media.SpeechRecognition;
 
 namespace SwiftBrowser.Views
 {
@@ -142,7 +143,50 @@ namespace SwiftBrowser.Views
             }
             InitializeComponent();
         }
-        public async void Startup()
+        public async void OnListenAsync(object sender, RoutedEventArgs e)
+        {
+            this.recognizer = new SpeechRecognizer();
+            await this.recognizer.CompileConstraintsAsync();
+
+            this.recognizer.Timeouts.InitialSilenceTimeout = TimeSpan.FromSeconds(5);
+            this.recognizer.Timeouts.EndSilenceTimeout = TimeSpan.FromSeconds(20);
+
+            this.recognizer.UIOptions.AudiblePrompt = "Search with voice";
+            this.recognizer.UIOptions.ExampleText = "what is the time";
+            this.recognizer.UIOptions.ShowConfirmation = true;
+            this.recognizer.UIOptions.IsReadBackEnabled = true;
+            this.recognizer.Timeouts.BabbleTimeout = TimeSpan.FromSeconds(5);
+
+            var result = await this.recognizer.RecognizeWithUIAsync();
+
+            if (result != null)
+            {
+                StringBuilder builder = new StringBuilder();
+
+                builder.AppendLine(
+                  $"I have {result.Confidence} confidence that you said [{result.Text}] " +
+                  $"and it took {result.PhraseDuration.TotalSeconds} seconds to say it " +
+                  $"starting at {result.PhraseStartTime:g}");
+
+                var alternates = result.GetAlternates(10);
+
+                builder.AppendLine(
+                  $"There were {alternates?.Count} alternates - listed below (if any)");
+
+                if (alternates != null)
+                {
+                    foreach (var alternate in alternates)
+                    {
+                        builder.AppendLine(
+                          $"Alternate {alternate.Confidence} confident you said [{alternate.Text}]");
+                    }
+                }
+              ///  this.txtResults.Text = builder.ToString();
+            }
+        }
+        SpeechRecognizer recognizer;
+    
+    public async void Startup()
         {
             if (isfirst == true)
             {
