@@ -1,10 +1,13 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using Microsoft.UI.Xaml.Controls;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Media.SpeechSynthesis;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -23,6 +26,7 @@ namespace SwiftBrowser.Views
     public sealed partial class ReadingModeFrame : Page
     {
         public static string TitleString { get; set; }
+       MediaElement ReadAloudElement = new MediaElement();
         public static string ImageString { get; set; }
         public static string BodyString { get; set; }
         public List<Tuple<string, FontFamily>> Fonts { get; } = new List<Tuple<string, FontFamily>>()
@@ -80,6 +84,37 @@ namespace SwiftBrowser.Views
             // ImageArticle.Source = new
             RichBodyText.Text = BodyString;
         }
+
+         private async void ReadAloudButton_Click(object sender, RoutedEventArgs e)
+     {
+         var synth = new Windows.Media.SpeechSynthesis.SpeechSynthesizer();
+         SpeechSynthesisStream stream = await synth.SynthesizeTextToStreamAsync(RichBodyText.Text);
+
+         // Send the stream to the media object.
+         ReadAloudElement.SetSource(stream, stream.ContentType);
+         ReadAloudElement.Play();
+         ReadTip.IsOpen = true;
+     }
+
+
+
+     private void ReadTip_CloseButtonClick(TeachingTip sender, object args)
+     {
+         ReadAloudElement.Stop();
+     }
+
+        private void ReadingSwitch_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggle = sender as ToggleSwitch;
+            if (toggle.IsOn == true)
+            {
+                ReadAloudElement.Play();
+            }
+            else
+            {
+                ReadAloudElement.Pause();
+            }
+        }
         private void Combo3_TextSubmitted(ComboBox sender, ComboBoxTextSubmittedEventArgs args)
 
         {
@@ -132,6 +167,12 @@ namespace SwiftBrowser.Views
 
             args.Handled = true;
 
+        }
+
+        private void Combo2_Loaded(object sender, RoutedEventArgs e)
+        {
+            Combo2.SelectedIndex = 3;
+            Combo3.SelectedIndex = 8;
         }
     }
 }

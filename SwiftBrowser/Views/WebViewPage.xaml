@@ -1427,7 +1427,9 @@
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                                                         <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Find" Click="FindFlyoutItem_Click" Margin="5" Label="Find in page"  Width="100"></AppBarButton>
-                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Read" Margin="5" Label="Reading Mode" Click="ReadingModeButton_Click" Width="100"></AppBarButton>
+                                                        <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Margin="5" Label="Reading Mode" Click="ReadingModeButton_Click" Width="100">
+                                                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F1;"/>
+                                                        </AppBarButton>
                                                         <AppBarButton Background="{ThemeResource FlyoutBackgroundThemeBrush}" Style="{ThemeResource AppBarButtonRevealStyle}" CornerRadius="10" Icon="Volume" Margin="5" Label="Read aloud" Click="ReadAloudButton_Click" Width="100"></AppBarButton>
                                                     </StackPanel>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">

@@ -1915,14 +1915,21 @@ namespace SwiftBrowser.Views
         }
         private void NavigateWithHeader(Uri uri)
         {
-            if ((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["UserAgent"] != "default")
+            try
             {
-                HttpRequestMessage requestMsg = new Windows.Web.Http.HttpRequestMessage(HttpMethod.Get, uri);
-                requestMsg.Headers.Add("User-Agent", (string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["UserAgent"]);
-                webView.NavigateWithHttpRequestMessage(requestMsg);
-            }
+                if ((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["UserAgent"] != "default")
+                {
+                    HttpRequestMessage requestMsg = new Windows.Web.Http.HttpRequestMessage(HttpMethod.Get, uri);
+                    requestMsg.Headers.Add("User-Agent", (string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["UserAgent"]);
+                    webView.NavigateWithHttpRequestMessage(requestMsg);
+                }
 
-           webView.NavigationStarting += webView_NavigationStarting;
+                webView.NavigationStarting += webView_NavigationStarting;
+            }
+            catch
+            {
+
+            }
         }
 
         private async void WebView_NavCompleted(object source, ElapsedEventArgs e)
