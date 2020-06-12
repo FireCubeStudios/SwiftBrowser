@@ -6,14 +6,18 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+    Background="NavajoWhite">
 
     <Grid Background="NavajoWhite">
+        <StackPanel Orientation="Horizontal"  Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+            <ComboBox x:Name="Combo2" ItemsSource="{x:Bind Fonts}" Margin="5" SelectedIndex="3" DisplayMemberPath="Item1" SelectedValuePath="Item2" Width="200"  />
+            <ComboBox x:Name="Combo3" IsEditable="True" ItemsSource="{x:Bind FontSizes}" SelectedIndex="8" Margin="5" Width="200"/>
+        </StackPanel>
         <ScrollViewer>
-        <StackPanel HorizontalAlignment="Center">
+            <StackPanel HorizontalAlignment="Center" Margin="0, 60, 0,0 " Background="NavajoWhite">
             <TextBlock x:Name="Title" FontSize="40" Margin="100, 50, 100, 50" Foreground="Black"></TextBlock>
             <Image Margin="5" x:Name="ImageArticle"></Image>
-            <TextBlock x:Name="RichBodyText" FontSize="20" Foreground="Black" Margin="300, 50, 300, 50" TextWrapping="WrapWholeWords">
+                <TextBlock x:Name="RichBodyText" FontSize="{x:Bind (x:Double)Combo3.SelectedValue, Mode=OneWay}" FontFamily="{x:Bind (FontFamily)Combo2.SelectedValue, Mode=OneWay}" Foreground="Black" Margin="300, 50, 300, 0" TextWrapping="WrapWholeWords">
                 
             </TextBlock>
         </StackPanel>
