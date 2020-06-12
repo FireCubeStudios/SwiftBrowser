@@ -54,6 +54,7 @@ using System.Security.Cryptography.X509Certificates;
 using SwiftBrowser.Extensions.Views;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Input;
+using WinRTXamlToolkit.Controls.Extensions;
 
 namespace SwiftBrowser.Views
 {
@@ -1170,10 +1171,14 @@ namespace SwiftBrowser.Views
                 {
                     string stre = webView.Source.ToString().Replace(SearchEngine, string.Empty);
                     SearchWebBox.Text = stre;
+                    TextBox textBox = SearchWebBox.GetDescendantsOfType<TextBox>().FirstOrDefault();
+                    textBox.Select(0, 0);
                 }
                 else
                 {
                     SearchWebBox.Text = webView.Source.ToString();
+                    TextBox textBox = SearchWebBox.GetDescendantsOfType<TextBox>().FirstOrDefault();
+                    textBox.Select(0, 0);
                 }
             }
             catch
@@ -3490,6 +3495,15 @@ namespace SwiftBrowser.Views
         {
             TaskMNGTimer.Enabled = false;
             TaskMNGTimer = null;
+        }
+
+
+ 
+        private void SearchWebBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+          //  AutoSuggestBox s = (AutoSuggestBox)sender;
+         
+        //    textBox.SelectAll();
         }
     }
     ////////////////////////////////////////////////////////////////

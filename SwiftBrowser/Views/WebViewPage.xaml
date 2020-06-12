@@ -103,6 +103,7 @@
                             <SymbolIcon Symbol="Home"/>
                         </Button>
                         <AutoSuggestBox PlaceholderText="Search web"
+                                    GotFocus="SearchWebBox_GotFocus"
                                 TextChanged="SearchWebBox_TextChanged"
                                 Margin="5, 0, 5, 0"
                                 CornerRadius="5"
