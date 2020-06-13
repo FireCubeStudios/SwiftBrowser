@@ -56,6 +56,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Input;
 using WinRTXamlToolkit.Controls.Extensions;
 using Windows.Media.SpeechRecognition;
+using Windows.Media.Capture;
 
 namespace SwiftBrowser.Views
 {
@@ -145,43 +146,87 @@ namespace SwiftBrowser.Views
         }
         public async void OnListenAsync(object sender, RoutedEventArgs e)
         {
-            this.recognizer = new SpeechRecognizer();
-            await this.recognizer.CompileConstraintsAsync();
+          try
+         {
 
-            this.recognizer.Timeouts.InitialSilenceTimeout = TimeSpan.FromSeconds(5);
-            this.recognizer.Timeouts.EndSilenceTimeout = TimeSpan.FromSeconds(20);
 
-            this.recognizer.UIOptions.AudiblePrompt = "Search with voice";
-            this.recognizer.UIOptions.ExampleText = "what is the time";
-            this.recognizer.UIOptions.ShowConfirmation = true;
-            this.recognizer.UIOptions.IsReadBackEnabled = true;
-            this.recognizer.Timeouts.BabbleTimeout = TimeSpan.FromSeconds(5);
+                this.recognizer = new SpeechRecognizer();
+                await this.recognizer.CompileConstraintsAsync();
 
-            var result = await this.recognizer.RecognizeWithUIAsync();
+                this.recognizer.Timeouts.InitialSilenceTimeout = TimeSpan.FromSeconds(5);
+                this.recognizer.Timeouts.EndSilenceTimeout = TimeSpan.FromSeconds(20);
 
-            if (result != null)
-            {
-                StringBuilder builder = new StringBuilder();
+                this.recognizer.UIOptions.AudiblePrompt = "Search with voice";
+                this.recognizer.UIOptions.ExampleText = "what is the time.";
+                this.recognizer.UIOptions.ShowConfirmation = true;
+                this.recognizer.UIOptions.IsReadBackEnabled = true;
+                this.recognizer.Timeouts.BabbleTimeout = TimeSpan.FromSeconds(5);
 
-                builder.AppendLine(
-                  $"I have {result.Confidence} confidence that you said [{result.Text}] " +
-                  $"and it took {result.PhraseDuration.TotalSeconds} seconds to say it " +
-                  $"starting at {result.PhraseStartTime:g}");
+                var result = await this.recognizer.RecognizeWithUIAsync();
 
-                var alternates = result.GetAlternates(10);
-
-                builder.AppendLine(
-                  $"There were {alternates?.Count} alternates - listed below (if any)");
-
-                if (alternates != null)
+                if (result != null)
                 {
-                    foreach (var alternate in alternates)
+                    ContextMenu winRTObject = new ContextMenu();
+                    webView.AddWebAllowedObject("Context", winRTObject);
+                    ConsoleLog winRTConsole = new ConsoleLog();
+                    webView.AddWebAllowedObject("ConsoleWinRT", winRTConsole);
+
+                    webView.Navigate(new Uri(SearchEngine + result.Text));
+                    SearchWebBox.Text = result.Text;
+                }
+           }
+            catch
+            {
+                try
+                {
+                    // Request access to the audio capture device.
+                    MediaCaptureInitializationSettings settings = new MediaCaptureInitializationSettings();
+                    settings.StreamingCaptureMode = StreamingCaptureMode.Audio;
+                    settings.MediaCategory = MediaCategory.Speech;
+                    MediaCapture capture = new MediaCapture();
+
+                    await capture.InitializeAsync(settings);
+                }
+                catch (TypeLoadException)
+                {
+                    // Thrown when a media player is not available.
+                    int duration = 3000;
+                    try
                     {
-                        builder.AppendLine(
-                          $"Alternate {alternate.Confidence} confident you said [{alternate.Text}]");
+                        TabViewPage.InAppNotificationMain.Show("Components unavailable", duration);
+                    }
+                    catch
+                    {
+                        IncognitoTabView.InAppNotificationMain.Show("Components unavailable", duration);
                     }
                 }
-              ///  this.txtResults.Text = builder.ToString();
+                catch (UnauthorizedAccessException)
+                {
+                    // Thrown when permission to use the audio capture device is denied.
+                    // If this occurs, show an error or disable recognition functionality.
+                    int duration = 3000;
+                    try
+                    {
+                        TabViewPage.InAppNotificationMain.Show("Access denied", duration);
+                    }
+                    catch
+                    {
+                        IncognitoTabView.InAppNotificationMain.Show("Acces denied", duration);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    int duration = 3000;
+                    try
+                    {
+                        TabViewPage.InAppNotificationMain.Show("Error occured", duration);
+                    }
+                    catch
+                    {
+                        IncognitoTabView.InAppNotificationMain.Show("Error occured", duration);
+                    }
+                }
+        
             }
         }
         SpeechRecognizer recognizer;
