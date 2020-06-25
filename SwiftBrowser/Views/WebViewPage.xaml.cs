@@ -118,6 +118,7 @@ namespace SwiftBrowser.Views
             //  UserAgentbuttonControl = UserAgentbutton;
             InfoDialog = InfoTip;
             SingletonReference = this;
+            SystemNavigationManager.GetForCurrentView().BackRequested += OnBackRequested;
             StringToNavigate = (string)localSettings.Values["SourceToGo"];
             BackupStringToNavigate = (string)localSettings.Values["BackupSourceToGo"];
             localSettings.Values["SourceToGo"] = null;
@@ -144,6 +145,154 @@ namespace SwiftBrowser.Views
             }
             InitializeComponent();
         }
+
+        private void OnBackRequested(object sender, BackRequestedEventArgs e)
+        {
+            try
+            {
+                if (webView.CanGoBack == true && HomeFrame.IsLoaded == false)
+                {
+                    webView.GoBack();
+                }
+                else if (webView.CanGoBack == true)
+                {
+                    navigated = false;
+                    UnloadObject(HomeFrame);
+                    ContextMenu winRTObject = new ContextMenu();
+                    webView.AddWebAllowedObject("Context", winRTObject);
+                    InkingFrameGrid.Visibility = Visibility.Collapsed;
+                    BackButton.IsEnabled = true;
+                    ForwardButton.IsEnabled = true;
+                    RefreshButton.IsEnabled = true;
+
+                    ExtensionsButton.IsEnabled = true;
+                    MenuButton.IsEnabled = true;
+                    MenuFrameButton.Visibility = Visibility.Collapsed;
+                    MenuButton.Visibility = Visibility.Visible;
+                }
+                else if (HomeFrame.IsLoaded == true | InkingFrameGrid.Visibility == Visibility.Visible)
+                {
+                    navigated = false;
+                    UnloadObject(HomeFrame);
+                    ContextMenu winRTObject = new ContextMenu();
+                    webView.AddWebAllowedObject("Context", winRTObject);
+                    InkingFrameGrid.Visibility = Visibility.Collapsed;
+                    BackButton.IsEnabled = true;
+                    ForwardButton.IsEnabled = true;
+                    RefreshButton.IsEnabled = true;
+
+                    ExtensionsButton.IsEnabled = true;
+                    MenuButton.IsEnabled = true;
+                    MenuFrameButton.Visibility = Visibility.Collapsed;
+                    MenuButton.Visibility = Visibility.Visible;
+
+                }
+                else
+                {
+                    try
+                    {
+                        UnloadObject(webView);
+                    }
+                    catch
+                    {
+                        UnloadObject(InfoFrameGrid);
+                    }
+                    SearchWebBox.Text = "";
+                    BackButton.IsEnabled = false;
+                    ForwardButton.IsEnabled = false;
+                    if (webView.CanGoForward == true)
+                    {
+                        IsForwardEnabled = true;
+                    }
+                    RefreshButton.IsEnabled = false;
+                    ExtensionsButton.IsEnabled = false;
+                    MenuButton.IsEnabled = false;
+                    MenuFrameButton.Visibility = Visibility.Visible;
+                    MenuButton.Visibility = Visibility.Collapsed;
+                    InkingFrameGrid.Visibility = Visibility.Collapsed;
+                    FindName("HomeFrame");
+                    HomeFrame.Visibility = Visibility.Visible;
+                    HomeFrameFrameFrame.BackStack.Clear();
+                    GC.Collect();
+                    if (IncognitoMode == false)
+                    {
+                        HomePage.WebViewControl = webView;
+                        HomeFrameFrameFrame.Navigate(typeof(HomePage));
+                    }
+                    else
+                    {
+                        HomePage.WebViewControl = webView;
+                        HomeFrameFrameFrame.Navigate(typeof(Incognitomode));
+                    }
+                    CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Home };
+                    CurrentTab.Header = "Home Tab";
+                }
+            }
+            catch
+            {
+                if (webView.CanGoBack == true && InkingFrameGrid.Visibility == Visibility.Visible)
+                {
+                    navigated = false;
+                    UnloadObject(HomeFrame);
+                    ContextMenu winRTObject = new ContextMenu();
+                    webView.AddWebAllowedObject("Context", winRTObject);
+                    InkingFrameGrid.Visibility = Visibility.Collapsed;
+                    BackButton.IsEnabled = true;
+                    ForwardButton.IsEnabled = true;
+                    RefreshButton.IsEnabled = true;
+
+                    ExtensionsButton.IsEnabled = true;
+                    MenuButton.IsEnabled = true;
+                    MenuFrameButton.Visibility = Visibility.Collapsed;
+                    MenuButton.Visibility = Visibility.Visible;
+                }
+                else if (webView.CanGoBack == true)
+                {
+                    webView.GoBack();
+                }
+                else
+                {
+                    try
+                    {
+                        UnloadObject(webView);
+                    }
+                    catch
+                    {
+                        UnloadObject(InfoFrameGrid);
+                    }
+                    SearchWebBox.Text = "";
+                    BackButton.IsEnabled = false;
+                    ForwardButton.IsEnabled = false;
+                    if (webView.CanGoForward == true)
+                    {
+                        IsForwardEnabled = true;
+                    }
+                    RefreshButton.IsEnabled = false;
+                    ExtensionsButton.IsEnabled = false;
+                    MenuButton.IsEnabled = false;
+                    MenuFrameButton.Visibility = Visibility.Visible;
+                    MenuButton.Visibility = Visibility.Collapsed;
+                    InkingFrameGrid.Visibility = Visibility.Collapsed;
+                    FindName("HomeFrame");
+                    HomeFrame.Visibility = Visibility.Visible;
+                    HomeFrameFrameFrame.BackStack.Clear();
+                    GC.Collect();
+                    if (IncognitoMode == false)
+                    {
+                        HomePage.WebViewControl = webView;
+                        HomeFrameFrameFrame.Navigate(typeof(HomePage));
+                    }
+                    else
+                    {
+                        HomePage.WebViewControl = webView;
+                        HomeFrameFrameFrame.Navigate(typeof(Incognitomode));
+                    }
+                    CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Home };
+                    CurrentTab.Header = "Home Tab";
+                }
+            }
+        }
+
         public async void OnListenAsync(object sender, RoutedEventArgs e)
         {
           try
@@ -317,6 +466,11 @@ namespace SwiftBrowser.Views
                 webView.Width = Window.Current.Bounds.Width;
                 //    webView.ScriptNotify += webView_ScriptNotify;
                 //   webView.Loaded += WebView_Loaded;
+                if(Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "´Windows.Mobile")
+                 {
+                Bar.Visibility = Visibility.Collapsed;
+                FindName("MobileBar");
+               }
                 webView.DOMContentLoaded += WebView_DOMContentLoaded;
                 webView.IsRightTapEnabled = true;
                 webView.PointerWheelChanged += WebView_PointerWheelChanged;
@@ -477,11 +631,31 @@ namespace SwiftBrowser.Views
                     int math = toolCount * 35;
                     int total = math + 340;
                     SearchWebBox.Width = Window.Current.Bounds.Width - total;
+                    try { 
+                    if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Mobile")
+                    {
+                       SearchWebMobileBox.Width = Window.Current.Bounds.Width - total;
+                    }
+                    }
+                    catch
+                    {
+
+                    }
                 }
                 catch
                 {
                     SearchWebBox.Width = 900;
+                    try { 
+                    if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Mobile")
+                    {
+                        SearchWebMobileBox.Width = 900;
+                    }
                 }
+                catch
+                {
+
+                }
+            }
                 string filepathx = @"Assets\AdblockerText.txt";
                 StorageFolder folderx = Windows.ApplicationModel.Package.Current.InstalledLocation;
                 fileExtensionAdblocker = await folderx.GetFileAsync(filepathx);
@@ -526,34 +700,34 @@ namespace SwiftBrowser.Views
             }
         }
 
-        private async void WebView_WebResourceRequested(WebView sender, WebViewWebResourceRequestedEventArgs args)
-        {
-            try
+            private async void WebView_WebResourceRequested(WebView sender, WebViewWebResourceRequestedEventArgs args)
             {
-                if ((bool)localSettings.Values["AdBlocker"] == true)
+                try
                 {
-                    try
+                    if ((bool)localSettings.Values["AdBlocker"] == true)
                     {
-                        if (fileExtensionAdblockerText.Contains(args.Request.RequestUri.Host) == true)
+                        try
                         {
-                            args.Response = new HttpResponseMessage(Windows.Web.Http.HttpStatusCode.Ok);
+                            if (fileExtensionAdblockerText.Contains(args.Request.RequestUri.Host) == true)
+                            {
+                                args.Response = new HttpResponseMessage(Windows.Web.Http.HttpStatusCode.Ok);
+                            }
+                        }
+                        catch
+                        {
+                            string filepathx = @"Assets\AdblockerText.txt";
+                            StorageFolder folderx = Windows.ApplicationModel.Package.Current.InstalledLocation;
+                            fileExtensionAdblocker = await folderx.GetFileAsync(filepathx);
+                            fileExtensionAdblockerText = await Windows.Storage.FileIO.ReadTextAsync(fileExtensionAdblocker);
                         }
                     }
-                    catch
-                    {
-                        string filepathx = @"Assets\AdblockerText.txt";
-                        StorageFolder folderx = Windows.ApplicationModel.Package.Current.InstalledLocation;
-                        fileExtensionAdblocker = await folderx.GetFileAsync(filepathx);
-                        fileExtensionAdblockerText = await Windows.Storage.FileIO.ReadTextAsync(fileExtensionAdblocker);
-                    }
+                }
+                catch
+                {
+
                 }
             }
-            catch
-            {
-
-            }
-
-        }
+        
 
         public bool ee = false;
         private async void WebView_FrameNavigationStarting(WebView sender, WebViewNavigationStartingEventArgs args)
@@ -607,12 +781,20 @@ namespace SwiftBrowser.Views
                 int math = toolCount * 35;
                 int total = math + 340;
                 SearchWebBox.Width = Window.Current.Bounds.Width - total;
+                if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Mobile")
+                {
+                    SearchWebMobileBox.Width = Window.Current.Bounds.Width - total;
+                }
             }
             catch
             {
                 try
                 {
                     SearchWebBox.Width = 900;
+                    if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Mobile")
+                    {
+                        SearchWebMobileBox.Width = 900;
+                    }
                 }
                 catch
                 {
@@ -1400,8 +1582,7 @@ namespace SwiftBrowser.Views
 
         public bool IsForwardEnabled = false;
 
-
-
+  
         private void OnGoBack(object sender, RoutedEventArgs e)
         {
             try
@@ -1572,7 +1753,14 @@ namespace SwiftBrowser.Views
             }
             catch
             {
-                webView.Refresh();
+                try
+                {
+                    webView.Refresh();
+                }
+                catch
+                {
+
+                }
             }
         }
 
@@ -3572,11 +3760,32 @@ namespace SwiftBrowser.Views
                 int math = toolCount * 35;
                 int total = math + 340;
                 SearchWebBox.Width = Window.Current.Bounds.Width - total;
+                try
+                {
+                    if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Mobile")
+                    {
+                        SearchWebMobileBox.Width = Window.Current.Bounds.Width - total;
+                    }
+                }
+                catch
+                {
+
+                }
             }
             catch
             {
                 SearchWebBox.Width = 900;
+                try { 
+                if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Mobile")
+                {
+                    SearchWebMobileBox.Width = 900;
+                }
             }
+            catch
+            {
+
+            }
+        }
             Startup();
         }
 
@@ -3590,9 +3799,102 @@ namespace SwiftBrowser.Views
  
         private void SearchWebBox_GotFocus(object sender, RoutedEventArgs e)
         {
-          //  AutoSuggestBox s = (AutoSuggestBox)sender;
-         
-        //    textBox.SelectAll();
+            //  AutoSuggestBox s = (AutoSuggestBox)sender;
+            if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Mobile")
+             {
+            SearchWebMobileBox.Width = SearchWebMobileBox.Width + 120;
+       //     SearchWebMobileBox.MaxWidth = SearchWebMobileBox.Width + 120;
+            eo.Visibility = Visibility.Collapsed;
+            BackMobileButton.Visibility = Visibility.Collapsed;
+          }
+            //    textBox.SelectAll();
+        }
+
+        private void FlyoutMobileButton_Click(object sender, RoutedEventArgs e)
+        {
+            MainFlyout.ShowAt(MobileBar);
+        }
+
+        private void SearchWebMobileBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            SearchWebMobileBox.Width = SearchWebMobileBox.Width - 120;
+       //     SearchWebMobileBox.MaxWidth = SearchWebMobileBox.Width;
+            eo.Visibility = Visibility.Visible;
+            BackMobileButton.Visibility = Visibility.Visible;
+        }
+
+        private async void TabsButton_Checked(object sender, RoutedEventArgs e)
+        {
+            Thickness Thicc = new Thickness();
+            Thicc.Top = -37;
+            TabviewMain.Margin = Thicc;
+            //  TabviewMain.VerticalContentAlignment = VerticalAlignment.Stretch;
+            // TabviewMain.VerticalAlignment = VerticalAlignment.Stretch;
+            //  ContentGrid.VerticalAlignment = VerticalAlignment.Stretch;
+            //  ContentControl.VerticalAlignment = VerticalAlignment.Stretch;
+            //    Canvas.SetZIndex(webView, 1000);
+            await Task.Delay(1350);
+            try
+            {
+                int height;
+                var heightString = await webView.InvokeScriptAsync("eval", new[] { "document.body.scrollHeight.toString()" });
+
+                if (!int.TryParse(heightString, out height))
+                {
+                    throw new Exception("Unable to get page height");
+                }
+                webView.Height = Window.Current.Bounds.Height;
+                webView.Width = Window.Current.Bounds.Width;
+            }
+            catch
+            {
+                try
+                {
+                    webView.Height = Window.Current.Bounds.Height;
+                    webView.Width = Window.Current.Bounds.Width;
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+        private async void TabsButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Thickness Thicc = new Thickness();
+            Thicc.Top = -8.5;
+            TabviewMain.Margin = Thicc;
+            Thickness thicc = new Thickness();
+            thicc.Top = 0;
+            webView.Margin = thicc;
+            await Task.Delay(1350);
+            //  TabviewMain.Height = webView.Height - 300;
+            //   webView.Height = webView.Height - 300;
+            try
+            {
+                int height;
+                var heightString = await webView.InvokeScriptAsync("eval", new[] { "document.body.scrollHeight.toString()" });
+
+                if (!int.TryParse(heightString, out height))
+                {
+                    throw new Exception("Unable to get page height");
+                }
+                webView.Height = Window.Current.Bounds.Height - 87;
+                webView.Width = Window.Current.Bounds.Width;
+            }
+            catch
+            {
+                try
+                {
+                    webView.Height = Window.Current.Bounds.Height - 89;
+                    webView.Width = Window.Current.Bounds.Width;
+                }
+                catch
+                {
+
+                }
+            }
         }
     }
     ////////////////////////////////////////////////////////////////

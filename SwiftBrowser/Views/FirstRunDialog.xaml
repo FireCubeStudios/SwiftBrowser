@@ -25,7 +25,35 @@
     </ContentDialog.TitleTemplate>
     <ScrollViewer>
         <StackPanel>
-            <TextBlock x:Uid="FirstRun_Body" TextWrapping="WrapWholeWords" />
+            <TextBlock TextWrapping="WrapWholeWords" x:Name="Tex">
+                Introducing Swift browser. Swiftbrowser has syncing between windows 10 devices and android phones(soon) so you can continue your work anywhere, integrated adblock, offline pages to view websites on the go, password manager with keepass and lastpass support and extensions like darkmode and vpn(soon). Swift browser is the best uwp browser thats actively supported.
+<LineBreak/>
+PRIVATE. SAFE.<LineBreak/>
+Block ads from 7000 different networks, block trackers (soon) and also block malicious websites with windows defender. Also use keepass database to store passwords locally so no one can get your passwords.
+<LineBreak/><LineBreak/>
+SEARCH INTELLIGENTLY AND GET THERE FAST<LineBreak/>
+- Search websites with multiple search engines in multiple user agents. Quickly access your websites form the jumplists, live tiles and quick pinned sites<LineBreak/>
+- Voice search<LineBreak/>
+
+<LineBreak/>
+EASY ACCESS TO YOUR TOP SITES ONLINE AND OFFLINE<LineBreak/>
+- Easily access your sites with favorites and quick pinned<LineBreak/>
+- Browse sites offline when there is no or slow internet<LineBreak/>
+<LineBreak/>
+EXTENSIONS SUPPORT<LineBreak/>
+- Personalise your browser with many extensions<LineBreak/>
+- Use third party extensions or make your own (soon)<LineBreak/>
+<LineBreak/>
+QUICK SHARE<LineBreak/>
+- Share content quickly with native share support<LineBreak/>
+<LineBreak/>
+NATIVE UWP PERFORMANCE<LineBreak/>
+- Uwp app is fast, light weight and is using native technologies for windows 10<LineBreak/>
+<LineBreak/>
+
+<LineBreak/>
+NOTE: The app is still in its early stages and some features have not been implemented such as syncing with mobile, lastpass integration.
+            </TextBlock>
         </StackPanel>
     </ScrollViewer>
 </ContentDialog>

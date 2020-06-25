@@ -26,17 +26,12 @@
     <ScrollViewer>
         <StackPanel>
             <TextBlock  TextWrapping="WrapWholeWords" >
-                changelog:
+               0.16.0.0 changelog:
                 <LineBreak/>
-                - Fixed too many bugs to list here but i fixed half of all known bugs in the app thus bringing balance to the app
+                - Windows 10 mobile support with different ui
                 <LineBreak/>
-                - Design changes and new acrylic and tabview drag however fullscreen is broken but thats a small price to pay for salvation
+                - added a new feature
                 <LineBreak/>
-                - a dialog is shown during unhandled exceptions instead of crashing the app. This new feature does put a smile on my face
-                <LineBreak/>
-                -i shredded the "secondary windows" to atoms and replaced it with a better solution
-                <LineBreak/>
-                - Added jumplist support because reality can be whatever i want
             </TextBlock>
         </StackPanel>
     </ScrollViewer>

@@ -54,10 +54,16 @@ namespace SwiftBrowser.Views
             var coreTitleBar = CoreApplication.GetCurrentView().TitleBar;
             coreTitleBar.ExtendViewIntoTitleBar = true;
             //    coreTitleBar.LayoutMetricsChanged += CustomDragRegion_SizeChanged;
-
-            Window.Current.SetTitleBar(AppTitleBar);
+            if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Desktop")
+            {
+                Window.Current.SetTitleBar(AppTitleBar);
+            }
+            if (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "Windows.Mobile")
+            {
+                AppTitleBar.Visibility = Visibility.Collapsed;
+                TabsControl.TabWidthMode = TabViewWidthMode.Compact;
+            }
         }
-
         private void CoreTitleBar_LayoutMetricsChanged(CoreApplicationViewTitleBar sender, object args)
         {
             if (FlowDirection == FlowDirection.LeftToRight)
