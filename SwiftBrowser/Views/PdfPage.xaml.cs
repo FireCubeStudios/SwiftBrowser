@@ -67,7 +67,11 @@ namespace SwiftBrowser.Views
 
             Load(doc);
         }
-      
+        public ObservableCollection<BitmapImage> PdfPages
+        {
+            get;
+            set;
+        } = new ObservableCollection<BitmapImage>();
     }
 }
 
