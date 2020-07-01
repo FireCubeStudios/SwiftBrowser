@@ -34,9 +34,11 @@
                 <LineBreak/>
                 - fixed many bugs also removed internal testing error dialog
                 <LineBreak/>
+                - built in messenger
+                <LineBreak/>
                 - Basic pdf viewing
                 <LineBreak/>
-                - Update: Extensions are temporarily disabled in this version to expand support for more devices.<LineBreak/>I am sorry for the inconvenience.<LineBreak/>In addition ot this im evaluating to change how extensions work in the backend.
+                - Update: SOME Extensions are temporarily disabled in this version to expand support for more devices.<LineBreak/>I am sorry for the inconvenience.<LineBreak/>In addition ot this im evaluating to change how extensions work in the backend.
                 <LineBreak/>
             </TextBlock>
         </StackPanel>

@@ -59,7 +59,7 @@ namespace SwiftBrowser.Views
         {
             HttpClient client = new HttpClient();
             var stream = await
-                client.GetStreamAsync("http://www.adobe.com/content/dam/Adobe/en/accessibility/products/acrobat/pdfs/acrobat-x-accessible-pdf-from-word.pdf");
+                client.GetStreamAsync(uri);
             var memStream = new MemoryStream();
             await stream.CopyToAsync(memStream);
             memStream.Position = 0;

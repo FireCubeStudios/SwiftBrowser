@@ -612,9 +612,9 @@ namespace SwiftBrowser.Views
                     ExtensionsClass ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
                     foreach (var item in ExtensionsListJSONJSON.Extensions)
                     {
-                        var m = new MessageDialog(item.DescriptionJSON + item.Page + item.Id.ToString());
-                        await m.ShowAsync();
-                        /*  if (item.IsEnabledJSON == true && item.IsToolbar == true)
+                       // var m = new MessageDialog(item.DescriptionJSON + item.Page + item.Id.ToString());
+                  //      await m.ShowAsync();
+                          if (item.IsEnabledJSON == true && item.IsToolbar == true)
                          {
                               ExtensionsListJSON.Add(new ExtensionsJSON()
                               {
@@ -623,7 +623,7 @@ namespace SwiftBrowser.Views
                                   IconJSON = item.IconJSON,
                                   Page = item.Page
                               });
-                          }*/
+                          }
                     }
                     ExtensionsListToolbar.ItemsSource = ExtensionsListJSON;
                 }

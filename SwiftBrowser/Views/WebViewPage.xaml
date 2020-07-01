@@ -1422,7 +1422,7 @@ Click="OnListenAsync"
                                             <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="15">My Extensions</TextBlock>
                                             <Button Margin="5" x:Name="ExtensionsManger" Click="ExtensionsManger_Click">Extensions manager</Button>
                                         </StackPanel>
-                                            <TextBlock HorizontalAlignment="Center" Margin="5" FontSize="15" FontWeight="Bold">Extensions are temporarily disabled in this version to expand support for more devices.<LineBreak/>I am sorry for the inconvenience.<LineBreak/>In addition ot this im evaluating to change how extensions work in the backend.</TextBlock>
+                                          
                                             <controls1:AdaptiveGridView x:Name="ExtensionsList" Margin="5">
                                             <controls1:AdaptiveGridView.ItemTemplate>
                                                 <DataTemplate>
