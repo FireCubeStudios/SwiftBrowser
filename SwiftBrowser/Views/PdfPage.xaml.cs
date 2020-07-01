@@ -55,7 +55,19 @@ namespace SwiftBrowser.Views
                 PdfPages.Add(image);
             }
         }
+        public async void loadstart()
+        {
+            HttpClient client = new HttpClient();
+            var stream = await
+                client.GetStreamAsync("http://www.adobe.com/content/dam/Adobe/en/accessibility/products/acrobat/pdfs/acrobat-x-accessible-pdf-from-word.pdf");
+            var memStream = new MemoryStream();
+            await stream.CopyToAsync(memStream);
+            memStream.Position = 0;
+            PdfDocument doc = await PdfDocument.LoadFromStreamAsync(memStream.AsRandomAccessStream());
 
+            Load(doc);
+        }
+      
     }
 }
 
