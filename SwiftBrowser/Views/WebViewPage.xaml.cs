@@ -2034,7 +2034,7 @@ namespace SwiftBrowser.Views
                     InkingFrameGrid.Visibility = Visibility.Visible;
                     GC.Collect();
                     HomePage.WebViewControl = webView;
-            
+                    PdfPage.STATICURI = downloadSource.ToString();
                     InkingFrame.Navigate(typeof(PdfPage));
                     CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Document };
                     CurrentTab.Header = "Online pdf document";
