@@ -57,6 +57,7 @@ using Windows.UI.Input;
 using WinRTXamlToolkit.Controls.Extensions;
 using Windows.Media.SpeechRecognition;
 using Windows.Media.Capture;
+using Windows.UI.ViewManagement.Core;
 
 namespace SwiftBrowser.Views
 {
@@ -466,7 +467,7 @@ namespace SwiftBrowser.Views
                 webView.Width = Window.Current.Bounds.Width;
                 //    webView.ScriptNotify += webView_ScriptNotify;
                 //   webView.Loaded += WebView_Loaded;
-                if(Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "´Windows.Mobile")
+                if(Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily.ToString() == "´Windows.Mobi")
                  {
                 Bar.Visibility = Visibility.Collapsed;
                 FindName("MobileBar");
@@ -611,20 +612,25 @@ namespace SwiftBrowser.Views
                     ExtensionsClass ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
                     foreach (var item in ExtensionsListJSONJSON.Extensions)
                     {
-                        if (item.IsEnabledJSON == true && item.IsToolbar == true)
-                        {
-                            ExtensionsListJSON.Add(new ExtensionsJSON()
-                            {
-                                NameJSON = item.NameJSON,
-                                DescriptionJSON = item.DescriptionJSON,
-                                IconJSON = item.IconJSON,
-                                Page = item.Page
-                            });
-                        }
+                        var m = new MessageDialog(item.DescriptionJSON + item.Page + item.Id.ToString());
+                        await m.ShowAsync();
+                        /*  if (item.IsEnabledJSON == true && item.IsToolbar == true)
+                         {
+                              ExtensionsListJSON.Add(new ExtensionsJSON()
+                              {
+                                  NameJSON = item.NameJSON,
+                                  DescriptionJSON = item.DescriptionJSON,
+                                  IconJSON = item.IconJSON,
+                                  Page = item.Page
+                              });
+                          }*/
                     }
                     ExtensionsListToolbar.ItemsSource = ExtensionsListJSON;
                 }
-                catch { }
+                catch
+                {
+
+                }
                 try
                 {
                     int toolCount = ExtensionsListToolbar.Items.Count;
@@ -2018,7 +2024,33 @@ namespace SwiftBrowser.Views
             try
             {
                 downloadSource = args.Uri;
+                if(downloadSource.ToString().EndsWith(".pdf"))
+                {
+                    MainFlyout.Hide();
+                    ExtensionsButton.IsEnabled = false;
+                    MenuButton.IsEnabled = false;
+                    MenuFrameButton.Visibility = Visibility.Visible;
+                    MenuButton.Visibility = Visibility.Collapsed;
+                    InkingFrameGrid.Visibility = Visibility.Visible;
+                    GC.Collect();
+                    HomePage.WebViewControl = webView;
+            
+                    InkingFrame.Navigate(typeof(PdfPage));
+                    CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Document };
+                    CurrentTab.Header = "Online pdf document";
+                    try
+                    {
+                        UnloadObject(webView);
+                    }
+                    catch
+                    {
+                        UnloadObject(InfoFrameGrid);
+                    }
+                }
+                else
+                    { 
                 DownloadNotification.Show();
+                }
             }
             catch
             {
@@ -3047,7 +3079,7 @@ namespace SwiftBrowser.Views
             HomePage.WebViewControl = webView;
             inkingPage.WebView = webView;
             InkingFrame.Navigate(typeof(inkingPage));
-            CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Home };
+            CurrentTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.Edit };
             CurrentTab.Header = "Inking Tab";
             try
             {
@@ -3542,30 +3574,37 @@ namespace SwiftBrowser.Views
         }
         private async void ExtensionsButton_Click(object sender, RoutedEventArgs e)
         {
-            List<ExtensionsJSON> ExtensionsListJSON = new List<ExtensionsJSON>();
-            StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
-            StorageFile file = await folder.GetFileAsync("Extensions.json"); // error here
-            var JSONData = "e";
-            JSONData = await Windows.Storage.FileIO.ReadTextAsync(file);
-            ExtensionsClass ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
-            foreach (var item in ExtensionsListJSONJSON.Extensions)
+            try
             {
-                if (item.IsEnabledJSON == true)
+                List<ExtensionsJSON> ExtensionsListJSON = new List<ExtensionsJSON>();
+                StorageFolder folder = Windows.Storage.ApplicationData.Current.LocalFolder;
+                StorageFile file = await folder.GetFileAsync("Extensions.json"); // error here
+                var JSONData = "e";
+                JSONData = await Windows.Storage.FileIO.ReadTextAsync(file);
+                ExtensionsClass ExtensionsListJSONJSON = JsonConvert.DeserializeObject<ExtensionsClass>(JSONData);
+                foreach (var item in ExtensionsListJSONJSON.Extensions)
                 {
-                    ExtensionsListJSON.Add(new ExtensionsJSON()
+                    if (item.IsEnabledJSON == true)
                     {
-                        NameJSON = item.NameJSON,
-                        DescriptionJSON = item.DescriptionJSON,
-                        IconJSON = item.IconJSON,
-                        Page = item.Page
-                    });
+                        ExtensionsListJSON.Add(new ExtensionsJSON()
+                        {
+                            NameJSON = item.NameJSON,
+                            DescriptionJSON = item.DescriptionJSON,
+                            IconJSON = item.IconJSON,
+                            Page = item.Page
+                        });
+                    }
                 }
+                ExtensionsList.ItemsSource = ExtensionsListJSON;
             }
-            ExtensionsList.ItemsSource = ExtensionsListJSON;
+            catch
+            {
+
+            }
         }
 
 
-        private void Frame_Loaded(object sender, RoutedEventArgs e)
+        private async void Frame_Loaded(object sender, RoutedEventArgs e)
         {
             Frame f = sender as Frame;
             var SenderFramework = (FrameworkElement)sender;
@@ -3581,26 +3620,51 @@ namespace SwiftBrowser.Views
                     DarkmodeSwiftBrowserBuiltInExtension.w = webView;
                     f.Navigate(typeof(DarkmodeSwiftBrowserBuiltInExtension));
                     break;
+                case "nonexistentemojipage":
+                    CoreInputView.GetForCurrentView().TryShow(CoreInputViewKind.Emoji);
+                    break;
+                 
+                   
             }
         }
-
+        WebView webviewE;
         private void Image_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
-            Image i = sender as Image;
-            i.ContextFlyout.ShowAt(i);
+            Frame f = sender as Frame;
+            var SenderFramework = (FrameworkElement)sender;
+            var DataContext = SenderFramework.DataContext;
+            ExtensionsJSON Json = DataContext as ExtensionsJSON;
+
+           if(Json.Page == "nonexistentemojipage")
+            {
+                CoreInputView.GetForCurrentView().TryShow(CoreInputViewKind.Emoji);
+            }
+            else if(Json.Page.Contains("http"))
+            {
+          
+
+                ExtensionsplitView.IsPaneOpen = true;
+                
+                 webviewE = new WebView(executionMode: WebViewExecutionMode.SeparateProcess);
+                webviewE.Width = 500;
+           
+                ExtensionsplitView.Content = webviewE;
+                webviewE.Navigate(new Uri(Json.Page));
+            }
+           else
+            {
+                Image i = sender as Image;
+                i.ContextFlyout.ShowAt(i);
+            }
         }
 
         private async void ExtensionsManger_Click(object sender, RoutedEventArgs e)
         {
+            ExtensionsFlyout.Hide();
             MainFlyout.Hide();
             SecondFlyout.Hide();
-            ExtensionsStoreFrame.Navigate(typeof(ExtensionsStore));
-            await ExtensionsStoreDialog.ShowAsync();
-        }
-
-        private void ExtensionsStoreDialog_CloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
-        {
-            ExtensionsStore.methods.closing();
+           HubsplitView.IsPaneOpen = true;
+         HubFrame.Navigate(typeof(ExtensionsStore));
         }
 
         private void SecureTextTemporary_Loaded(object sender, RoutedEventArgs e)
@@ -3895,6 +3959,16 @@ namespace SwiftBrowser.Views
 
                 }
             }
+        }
+
+        private void ExtensionsplitView_PaneClosed(SplitView sender, object args)
+        {
+            ExtensionsplitView.Content = null;
+        }
+
+        private void HubsplitView_PaneClosed(SplitView sender, object args)
+        {
+            ExtensionsStore.methods.closing();
         }
     }
     ////////////////////////////////////////////////////////////////

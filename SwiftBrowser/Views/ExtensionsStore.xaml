@@ -9,13 +9,14 @@
     mc:Ignorable="d"
     Background="Transparent">
 
-    <Grid>
-        <StackPanel>
-            <StackPanel Orientation="Horizontal">
+    <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
+        <Grid>
+           
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
                 <Image Source="/Assets/2073122.png" x:Name="icon" Margin="10" Width="50" Height="50"></Image>
                 <Button IsEnabled="False">submit extension</Button>
             </StackPanel>
-            <ListView x:Name="ExtensionsList" Margin="5">
+            <ListView x:Name="ExtensionsList" Margin="5" VerticalAlignment="Bottom" ScrollViewer.VerticalScrollBarVisibility="Visible" Height="800" ScrollViewer.VerticalScrollMode="Enabled">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
@@ -34,7 +35,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <controls:Loading x:Name="LoadingControl" VerticalAlignment="Center" HorizontalAlignment="Center">
+           <!-- <controls:Loading x:Name="LoadingControl" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <controls:Loading.Background>
                     <SolidColorBrush Color="Black" Opacity="0.7" />
                 </controls:Loading.Background>
@@ -42,7 +43,8 @@
                     <ProgressRing Margin="5" IsActive="True"></ProgressRing>
                     <TextBlock Margin="5">Saving changes</TextBlock>
                 </StackPanel>
-            </controls:Loading>
-        </StackPanel>
+            </controls:Loading>-->
     </Grid>
+    </ScrollViewer>
+   
 </Page>

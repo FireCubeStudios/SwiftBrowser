@@ -27,7 +27,7 @@
         <StackPanel>
             <TextBlock TextWrapping="WrapWholeWords" x:Name="Tex">
                 Introducing Swift browser. Swiftbrowser has syncing between windows 10 devices and android phones(soon) so you can continue your work anywhere, integrated adblock, offline pages to view websites on the go, password manager with keepass and lastpass support and extensions like darkmode and vpn(soon). Swift browser is the best uwp browser thats actively supported.
-<LineBreak/>
+<LineBreak/><LineBreak/>
 PRIVATE. SAFE.<LineBreak/>
 Block ads from 7000 different networks, block trackers (soon) and also block malicious websites with windows defender. Also use keepass database to store passwords locally so no one can get your passwords.
 <LineBreak/><LineBreak/>

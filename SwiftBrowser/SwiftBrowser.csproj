@@ -12,7 +12,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -217,6 +217,9 @@
     <Compile Include="Extensions\Views\DarkmodeSwiftBrowserBuiltInExtension.xaml.cs">
       <DependentUpon>DarkmodeSwiftBrowserBuiltInExtension.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\Views\ExtensionsWebView.xaml.cs">
+      <DependentUpon>ExtensionsWebView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\EnumToBooleanConverter.cs" />
     <Compile Include="Helpers\GetHistory.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
@@ -356,6 +359,9 @@
     <Compile Include="Views\OfflineModePage.xaml.cs">
       <DependentUpon>OfflineModePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\PdfPage.xaml.cs">
+      <DependentUpon>PdfPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PorcessLost.xaml.cs">
       <DependentUpon>PorcessLost.xaml</DependentUpon>
     </Compile>
@@ -393,6 +399,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Extensions\Views\DarkmodeSwiftBrowserBuiltInExtension.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Extensions\Views\ExtensionsWebView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -528,6 +538,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\PdfPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\PorcessLost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -652,6 +666,8 @@
     <Content Include="Extensions\Assets\1389169 - Copy - Copy %289%29.png" />
     <Content Include="Extensions\Assets\2338119.png" />
     <Content Include="Extensions\Assets\23547687.png" />
+    <Content Include="Extensions\Assets\messenger.png" />
+    <Content Include="Extensions\Assets\emoji.png" />
     <Content Include="HomeView\Failed.html" />
     <Content Include="HomeView\surf.html" />
     <None Include="Package.StoreAssociation.xml" />

@@ -19,6 +19,48 @@
       "IsToolbar": false,
       "Page": "DarkmodeSwiftBrowserBuiltInExtension",
       "NameJSON": "Dark mode"
+    },
+
+    {
+      "DescriptionJSON": "Quickly view messenger while browsing",
+      "IconJSON": "/Extensions/Assets/messenger.png",
+      "Id": 694202445,
+      "IsEnabledJSON": false,
+      "IsIncognitoEnabled": false,
+      "IsToolbar": false,
+      "Page": "https://www.messenger.com",
+      "NameJSON": "Messenger viewer"
+    },
+    {
+      "DescriptionJSON": "Access a calculator",
+      "IconJSON": "/Extensions/Assets/messenger.png",
+      "Id": 69420244435345345345,
+      "IsEnabledJSON": false,
+      "IsIncognitoEnabled": false,
+      "IsToolbar": false,
+      "Page": "https://calculator.iondrimbafilho.me/",
+      "NameJSON": "Calculator"
+    },
+    {
+      "DescriptionJSON": "super simple quick note taking",
+      "IconJSON": "/Extensions/Assets/messenger.png",
+      "Id": 3242323,
+      "IsEnabledJSON": false,
+      "IsIncognitoEnabled": false,
+      "IsToolbar": false,
+      "Page": "https://sii.im/playground/notes/",
+      "NameJSON": "Super Simple Notes"
+    },
+    {
+      "DescriptionJSON": "simple, easy to use and fully configurable, strong password generator that creates excellent passwords that are hard to crack or guess.",
+      "IconJSON": "/Extensions/Assets/messenger.png",
+      "Id": 32657567567567,
+      "IsEnabledJSON": false,
+      "IsIncognitoEnabled": false,
+      "IsToolbar": false,
+      "Page": "https://passwrd.app/",
+      "NameJSON": "Password Generator"
     }
+
   ]
 }

@@ -87,7 +87,7 @@ namespace SwiftBrowser.Views
             var SerializedObject = JsonConvert.SerializeObject(ExtensionsListJSONJSON, Formatting.Indented);
 
                 await Windows.Storage.FileIO.WriteTextAsync(file, SerializedObject);
-                LoadingControl.IsLoading = false;
+           //     LoadingControl.IsLoading = false;
 
         }
         private void Toggle_Toggled(object sender, RoutedEventArgs e)

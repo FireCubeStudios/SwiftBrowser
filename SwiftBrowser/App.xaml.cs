@@ -37,10 +37,10 @@ namespace SwiftBrowser
         private async void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs unhandledExceptionEventArgs)
         {
             unhandledExceptionEventArgs.Handled = true;
-            ErrorDialog E = new ErrorDialog();
+           /* ErrorDialog E = new ErrorDialog();
             ErrorDialog.errormsgStatic = unhandledExceptionEventArgs.Message;
             ErrorDialog.errormsgExeptionStatic = unhandledExceptionEventArgs.Exception.ToString();
-               await E.ShowAsync();
+               await E.ShowAsync();*/
         }
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {

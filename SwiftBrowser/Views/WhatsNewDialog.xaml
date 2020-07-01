@@ -26,11 +26,17 @@
     <ScrollViewer>
         <StackPanel>
             <TextBlock  TextWrapping="WrapWholeWords" >
-               0.16.0.0 changelog:
+               0.18.0.0 (0.19.0.0 mobile) changelog:
                 <LineBreak/>
-                - Windows 10 mobile support with different ui
+                - Windows 10 mobile support is only for fall creators
                 <LineBreak/>
-                - added a new feature
+                - added several new extensions
+                <LineBreak/>
+                - fixed many bugs also removed internal testing error dialog
+                <LineBreak/>
+                - Basic pdf viewing
+                <LineBreak/>
+                - Update: Extensions are temporarily disabled in this version to expand support for more devices.<LineBreak/>I am sorry for the inconvenience.<LineBreak/>In addition ot this im evaluating to change how extensions work in the backend.
                 <LineBreak/>
             </TextBlock>
         </StackPanel>
