@@ -14,7 +14,7 @@ xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/re
   <Identity
     Name="2505FireCubeStudios.Swiftbrowser"
     Publisher="CN=3C7C8FC9-7104-4B33-8730-EE1E929D5D3B"
-    Version="0.18.20.0" />
+    Version="0.18.24.0" />
 
   <mp:PhoneIdentity PhoneProductId="5be2133d-e6c9-4a1b-816d-ae1c8cf0dc25" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
