@@ -17,6 +17,7 @@ function SubHeader()
 {
 console.log("community for tech enthusiasts, developers and designers");
 }```
+
 ```python
 def Python_Description():
   print("It is a gratefull perfectly balanced server about development where you can share apps, get programming help, discuss development.")
