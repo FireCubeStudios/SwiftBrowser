@@ -20,7 +20,6 @@
       "Page": "DarkmodeSwiftBrowserBuiltInExtension",
       "NameJSON": "Dark mode"
     },
-
     {
       "DescriptionJSON": "Quickly view messenger while browsing",
       "IconJSON": "/Extensions/Assets/messenger.png",
@@ -31,6 +30,5 @@
       "Page": "https://www.messenger.com",
       "NameJSON": "Messenger viewer"
     }
-
   ]
 }

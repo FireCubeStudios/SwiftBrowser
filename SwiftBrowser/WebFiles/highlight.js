@@ -23,7 +23,6 @@
 //if (qsParm['hilite'] != null) kw = qsParm['hilite'].split(',');
 
 
-
 //function start()
 //{
 //    var bdy = document.getElementsByTagName('body')[0].innerHTML;
@@ -43,23 +42,33 @@
 //window.onload = start;
 
 
-
 var OriginalBody;
 
 function HighlightFunction(SearchTerm) {
-    if (OriginalBody == null) { OriginalBody = document.getElementsByTagName('body')[0].innerHTML; }
-    var bdy = document.getElementsByTagName('body')[0].innerHTML;
-    var re = new RegExp('(\\b' + SearchTerm + '\\b)', 'ig');
+    if (OriginalBody == null) {
+        OriginalBody = document.getElementsByTagName("body")[0].innerHTML;
+    }
+    var bdy = document.getElementsByTagName("body")[0].innerHTML;
+    var re = new RegExp("(\\b" + SearchTerm + "\\b)", "ig");
     bdy = bdy.replace(re, '<span style="background-color:yellow; font-weight:bold;">$1<\/span>');
-    var re1 = new RegExp('(<[^>]*?)<span style="background-color:yellow; font-weight:bold;">(' + SearchTerm + ')<\/span>(.*?>)', 'ig');
-    bdy = bdy.replace(re1, '$1$2$3');
-    var re2 = new RegExp('(<script.*?>)<span style="background-color:yellow; font-weight:bold;">(' + SearchTerm + ')<\/span>(<\/script>)', 'ig');
-    bdy = bdy.replace(re2, '$1$2$3');
-    var re3 = new RegExp('(<textarea.*?>)<span style="background-color:yellow; font-weight:bold;">(' + SearchTerm + ')<\/span>(<\/textarea>)', 'ig');
-    bdy = bdy.replace(re3, '$1$2$3');
-    document.getElementsByTagName('body')[0].innerHTML = bdy;
+    var re1 = new RegExp('(<[^>]*?)<span style="background-color:yellow; font-weight:bold;">(' +
+        SearchTerm +
+        ")<\/span>(.*?>)",
+        "ig");
+    bdy = bdy.replace(re1, "$1$2$3");
+    var re2 = new RegExp('(<script.*?>)<span style="background-color:yellow; font-weight:bold;">(' +
+        SearchTerm +
+        ")<\/span>(<\/script>)",
+        "ig");
+    bdy = bdy.replace(re2, "$1$2$3");
+    var re3 = new RegExp('(<textarea.*?>)<span style="background-color:yellow; font-weight:bold;">(' +
+        SearchTerm +
+        ")<\/span>(<\/textarea>)",
+        "ig");
+    bdy = bdy.replace(re3, "$1$2$3");
+    document.getElementsByTagName("body")[0].innerHTML = bdy;
 }
 
 function RestoreFunction() {
-    document.getElementsByTagName('body')[0].innerHTML = OriginalBody;
+    document.getElementsByTagName("body")[0].innerHTML = OriginalBody;
 }

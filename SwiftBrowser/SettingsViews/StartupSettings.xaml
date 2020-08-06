@@ -10,16 +10,18 @@
     Background="Transparent">
 
     <Grid Margin="10" HorizontalAlignment="Left">
-  
-        <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="270, 60 ,150,0" >
 
-            <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100"/>
+        <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="270, 60 ,150,0">
+
+            <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100" />
 
         </Canvas>
         <muxc:RadioButtons Header="Start-up options">
-            <RadioButton x:Name="Option1RadioButton" Content="Dont show restore dialog" Click="Option1RadioButton_Click"/>
-            <RadioButton x:Name="Option2RadioButton" Content="Show restore dialog" Click="Option2RadioButton_Click"/>
-            <RadioButton x:Name="Option3RadioButton" Content="Automatically restore all tabs" Click="Option3RadioButton_Click"/>
+            <RadioButton x:Name="Option1RadioButton" Content="Dont show restore dialog"
+                         Click="Option1RadioButton_Click" />
+            <RadioButton x:Name="Option2RadioButton" Content="Show restore dialog" Click="Option2RadioButton_Click" />
+            <RadioButton x:Name="Option3RadioButton" Content="Automatically restore all tabs"
+                         Click="Option3RadioButton_Click" />
         </muxc:RadioButtons>
     </Grid>
 </Page>

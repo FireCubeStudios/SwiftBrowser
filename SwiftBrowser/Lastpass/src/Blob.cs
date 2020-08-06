@@ -12,13 +12,13 @@ namespace LastPass
             EncryptedPrivateKey = encryptedPrivateKey;
         }
 
+        public byte[] Bytes { get; }
+        public int KeyIterationCount { get; }
+        public string EncryptedPrivateKey { get; }
+
         public byte[] MakeEncryptionKey(string username, string password)
         {
             return FetcherHelper.MakeKey(username, password, KeyIterationCount);
         }
-
-        public byte[] Bytes { get; private set; }
-        public int KeyIterationCount { get; private set; }
-        public string EncryptedPrivateKey { get; private set; }
     }
 }

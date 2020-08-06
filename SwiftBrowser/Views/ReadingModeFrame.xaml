@@ -10,33 +10,39 @@
     Background="NavajoWhite">
 
     <Grid Background="NavajoWhite">
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Canvas.ZIndex="3" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-            <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" Canvas.ZIndex="2" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
-                <AppBarButton Click="ReadAloudButton_Click" Background="{ThemeResource SystemAccentColor}" Icon="Volume" Label="Read aloud"></AppBarButton>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Canvas.ZIndex="3"
+                    Background="{ThemeResource SystemControlAcrylicWindowBrush}">
+            <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" Canvas.ZIndex="2"
+                        VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
+                <AppBarButton Click="ReadAloudButton_Click" Background="{ThemeResource SystemAccentColor}"
+                              Icon="Volume" Label="Read aloud" />
             </CommandBar>
-            <ComboBox x:Name="Combo2" ItemsSource="{x:Bind Fonts}" Margin="5" DisplayMemberPath="Item1" Loaded="Combo2_Loaded" SelectedValuePath="Item2" Width="200"  />
-            <ComboBox x:Name="Combo3" IsEditable="True" ItemsSource="{x:Bind FontSizes}" Margin="5" Width="200"/>
+            <ComboBox x:Name="Combo2" ItemsSource="{x:Bind Fonts}" Margin="5" DisplayMemberPath="Item1"
+                      Loaded="Combo2_Loaded" SelectedValuePath="Item2" Width="200" />
+            <ComboBox x:Name="Combo3" IsEditable="True" ItemsSource="{x:Bind FontSizes}" Margin="5" Width="200" />
         </StackPanel>
         <ScrollViewer>
             <StackPanel HorizontalAlignment="Center" Margin="0, 60, 0,0 " Background="NavajoWhite">
-            <TextBlock x:Name="Title" FontSize="40" Margin="100, 50, 100, 50" Foreground="Black"></TextBlock>
-            <Image Margin="5" x:Name="ImageArticle"></Image>
-                <TextBlock x:Name="RichBodyText" FontSize="{x:Bind (x:Double)Combo3.SelectedValue, Mode=OneWay}" FontFamily="{x:Bind (FontFamily)Combo2.SelectedValue, Mode=OneWay}" IsTextSelectionEnabled="True" Foreground="Black" Margin="300, 50, 300, 0" TextWrapping="WrapWholeWords">
-                
-            </TextBlock>
-        </StackPanel>
+                <TextBlock x:Name="Title" FontSize="40" Margin="100, 50, 100, 50" Foreground="Black" />
+                <Image Margin="5" x:Name="ImageArticle" />
+                <TextBlock x:Name="RichBodyText" FontSize="{x:Bind (x:Double)Combo3.SelectedValue, Mode=OneWay}"
+                           FontFamily="{x:Bind (FontFamily)Combo2.SelectedValue, Mode=OneWay}"
+                           IsTextSelectionEnabled="True" Foreground="Black" Margin="300, 50, 300, 0"
+                           TextWrapping="WrapWholeWords" />
+            </StackPanel>
         </ScrollViewer>
         <controls:TeachingTip x:Name="ReadTip"
                               CloseButtonClick="ReadTip_CloseButtonClick"
-                                  Canvas.ZIndex="3000"
-                   HorizontalAlignment="Right" VerticalAlignment="Top"
-	Title="ReadAloud">
+                              Canvas.ZIndex="3000"
+                              HorizontalAlignment="Right" VerticalAlignment="Top"
+                              Title="ReadAloud">
             <controls:TeachingTip.IconSource>
                 <controls:SymbolIconSource Symbol="Volume" />
             </controls:TeachingTip.IconSource>
             <controls:TeachingTip.Content>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <ToggleSwitch Header="Toggle read aloud" OffContent="Paused" OnContent="Playing" IsOn="True" Toggled="ReadingSwitch_Toggled"/>
+                    <ToggleSwitch Header="Toggle read aloud" OffContent="Paused" OnContent="Playing" IsOn="True"
+                                  Toggled="ReadingSwitch_Toggled" />
                 </StackPanel>
             </controls:TeachingTip.Content>
         </controls:TeachingTip>

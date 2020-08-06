@@ -3,7 +3,7 @@
 
 namespace LastPass
 {
-    class Session
+    internal class Session
     {
         public Session(string id, int keyIterationCount, string token, string encryptedPrivateKey, Platform platform)
         {
@@ -14,10 +14,10 @@ namespace LastPass
             Platform = platform;
         }
 
-        public string Id { get; private set; }
-        public int KeyIterationCount { get; private set; }
-        public string Token { get; private set; }
-        public string EncryptedPrivateKey { get; private set; }
-        public Platform Platform { get; private set; }
+        public string Id { get; }
+        public int KeyIterationCount { get; }
+        public string Token { get; }
+        public string EncryptedPrivateKey { get; }
+        public Platform Platform { get; }
     }
 }

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SwiftBrowser.Services
+﻿namespace SwiftBrowser.Services
 {
-    class ContextMenuService
+    internal class ContextMenuService
     {
     }
 }

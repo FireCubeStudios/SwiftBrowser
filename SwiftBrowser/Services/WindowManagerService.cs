@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Windows.ApplicationModel.Core;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
@@ -11,8 +10,6 @@ using Windows.UI.Xaml.Controls;
 
 namespace SwiftBrowser.Services
 {
-    public delegate void ViewClosedHandler(ViewLifetimeControl viewControl, EventArgs e);
-
     // For instructions on using this service see https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/features/multiple-views.md
     // More details about showing multiple views at https://docs.microsoft.com/windows/uwp/design/layout/show-multiple-views
     public class WindowManagerService
@@ -22,7 +19,8 @@ namespace SwiftBrowser.Services
         public static WindowManagerService Current => _current ?? (_current = new WindowManagerService());
 
         // Contains all the opened secondary views.
-        public ObservableCollection<ViewLifetimeControl> SecondaryViews { get; } = new ObservableCollection<ViewLifetimeControl>();
+        public ObservableCollection<ViewLifetimeControl> SecondaryViews { get; } =
+            new ObservableCollection<ViewLifetimeControl>();
 
         public int MainViewId { get; private set; }
 
@@ -41,18 +39,20 @@ namespace SwiftBrowser.Services
         // You can use the resulting ViewLifeTileControl to interact with the new window.
         public async Task<ViewLifetimeControl> TryShowAsStandaloneAsync(string windowTitle, Type pageType)
         {
-            ViewLifetimeControl viewControl = await CreateViewLifetimeControlAsync(windowTitle, pageType);
+            var viewControl = await CreateViewLifetimeControlAsync(windowTitle, pageType);
             SecondaryViews.Add(viewControl);
             viewControl.StartViewInUse();
-            await ApplicationViewSwitcher.TryShowAsStandaloneAsync(viewControl.Id, ViewSizePreference.Default, ApplicationView.GetForCurrentView().Id, ViewSizePreference.Default);
+            await ApplicationViewSwitcher.TryShowAsStandaloneAsync(viewControl.Id, ViewSizePreference.Default,
+                ApplicationView.GetForCurrentView().Id, ViewSizePreference.Default);
             viewControl.StopViewInUse();
             return viewControl;
         }
 
         // Displays a view in the specified view mode
-        public async Task<ViewLifetimeControl> TryShowAsViewModeAsync(string windowTitle, Type pageType, ApplicationViewMode viewMode = ApplicationViewMode.Default)
+        public async Task<ViewLifetimeControl> TryShowAsViewModeAsync(string windowTitle, Type pageType,
+            ApplicationViewMode viewMode = ApplicationViewMode.Default)
         {
-            ViewLifetimeControl viewControl = await CreateViewLifetimeControlAsync(windowTitle, pageType);
+            var viewControl = await CreateViewLifetimeControlAsync(windowTitle, pageType);
             SecondaryViews.Add(viewControl);
             viewControl.StartViewInUse();
             await ApplicationViewSwitcher.TryShowAsViewModeAsync(viewControl.Id, viewMode);
@@ -80,6 +80,9 @@ namespace SwiftBrowser.Services
             return viewControl;
         }
 
-        public bool IsWindowOpen(string windowTitle) => SecondaryViews.Any(v => v.Title == windowTitle);
+        public bool IsWindowOpen(string windowTitle)
+        {
+            return SecondaryViews.Any(v => v.Title == windowTitle);
+        }
     }
 }

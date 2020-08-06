@@ -25,21 +25,14 @@
     </ContentDialog.TitleTemplate>
     <ScrollViewer>
         <StackPanel>
-            <TextBlock  TextWrapping="WrapWholeWords" >
-               0.18.0.0 (0.19.0.0 mobile) changelog:
-                <LineBreak/>
-                - Windows 10 mobile support is only for fall creators
-                <LineBreak/>
-                - added several new extensions
-                <LineBreak/>
-                - fixed many bugs also removed internal testing error dialog
-                <LineBreak/>
-                - built in messenger
-                <LineBreak/>
-                - Basic pdf viewing
-                <LineBreak/>
-                - Update: SOME Extensions are temporarily disabled in this version to expand support for more devices.<LineBreak/>I am sorry for the inconvenience.<LineBreak/>In addition ot this im evaluating to change how extensions work in the backend.
-                <LineBreak/>
+            <TextBlock TextWrapping="WrapWholeWords">
+                0.19.0.0 changelog:
+                <LineBreak />
+
+                <LineBreak />
+                - Update: SOME Extensions are temporarily disabled in this version to expand support for more devices.
+                <LineBreak />I am sorry for the inconvenience.<LineBreak />In addition ot this im evaluating to change how extensions work in the backend.
+                <LineBreak />
             </TextBlock>
         </StackPanel>
     </ScrollViewer>

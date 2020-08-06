@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-
-using SwiftBrowser.Helpers;
-
 using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using SwiftBrowser.Helpers;
 
 namespace SwiftBrowser.Services
 {
@@ -32,26 +30,19 @@ namespace SwiftBrowser.Services
         public static async Task SetRequestedThemeAsync()
         {
             foreach (var view in CoreApplication.Views)
-            {
                 await view.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
                     if (Window.Current.Content is FrameworkElement frameworkElement)
-                    {
                         frameworkElement.RequestedTheme = Theme;
-                    }
                 });
-            }
         }
 
         private static async Task<ElementTheme> LoadThemeFromSettingsAsync()
         {
-            ElementTheme cacheTheme = ElementTheme.Default;
-            string themeName = await ApplicationData.Current.LocalSettings.ReadAsync<string>(SettingsKey);
+            var cacheTheme = ElementTheme.Default;
+            var themeName = await ApplicationData.Current.LocalSettings.ReadAsync<string>(SettingsKey);
 
-            if (!string.IsNullOrEmpty(themeName))
-            {
-                Enum.TryParse(themeName, out cacheTheme);
-            }
+            if (!string.IsNullOrEmpty(themeName)) Enum.TryParse(themeName, out cacheTheme);
 
             return cacheTheme;
         }

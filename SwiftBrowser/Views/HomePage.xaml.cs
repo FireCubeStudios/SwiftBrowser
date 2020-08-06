@@ -1,47 +1,41 @@
-﻿using Microsoft.Toolkit.Uwp.UI.Controls;
-using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
-using SwiftBrowser.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.ApplicationModel;
 using Windows.Storage;
-using Windows.UI.Popups;
-using Windows.UI.StartScreen;
+using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
+using Microsoft.Toolkit.Uwp.UI.Controls;
+using Newtonsoft.Json;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SwiftBrowser.Views
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    ///     An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class HomePage : Page
     {
-        public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
-        Windows.Storage.StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
-        public static AdaptiveGridView HomeGrid { get; set; }
-        public static WebView WebViewControl { get; set; }
-        WebView webViewControl;
+        private bool f;
+        private List<FavouritesJSON> FavouritesList;
+        private List<FavouritesJSON> FavouritesListQuick;
         public bool isfirst = true;
+        private readonly StorageFolder localFolder = ApplicationData.Current.LocalFolder;
+        public ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+        private WebView webViewControl;
+
         public HomePage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
+
+        public static AdaptiveGridView HomeGrid { get; set; }
+        public static WebView WebViewControl { get; set; }
+
         private void Option2RadioButton_Checked(object sender, RoutedEventArgs e)
         {
             TextUrl.Visibility = Visibility.Visible;
@@ -50,25 +44,26 @@ namespace SwiftBrowser.Views
         private void Option1RadioButton_Checked(object sender, RoutedEventArgs e)
         {
             TextUrl.Visibility = Visibility.Collapsed;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = Option2RadioButton.IsChecked;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"] = "";
+            ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = Option2RadioButton.IsChecked;
+            ApplicationData.Current.LocalSettings.Values["CustomUrl"] = "";
         }
 
         private async void TextUrl_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            if (sender.Text.StartsWith("https://") == true)
+            if (sender.Text.StartsWith("https://"))
             {
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = Option2RadioButton.IsChecked;
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"] = args.QueryText;
+                ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = Option2RadioButton.IsChecked;
+                ApplicationData.Current.LocalSettings.Values["CustomUrl"] = args.QueryText;
                 FindName("WebViewHome");
                 WebViewHome.Navigate(new Uri(args.QueryText));
                 Home.Visibility = Visibility.Collapsed;
             }
             else
             {
-                int duration = 3000;
-                try { 
-                TabViewPage.InAppNotificationMain.Show("Not a valid url", duration);
+                var duration = 3000;
+                try
+                {
+                    TabViewPage.InAppNotificationMain.Show("Not a valid url", duration);
                 }
                 catch
                 {
@@ -76,61 +71,48 @@ namespace SwiftBrowser.Views
                 }
             }
         }
-        List<FavouritesJSON> FavouritesList;
-        List<FavouritesJSON> FavouritesListQuick;
-        public class FavouritesJSON
+
+        private async void LoadFavorites()
         {
-            public string HeaderJSON { get; set; }
-            public string UrlJSON { get; set; }
-            public string FavIconJSON { get; set; }
-        }
-        public class FavouritesClass
-        {
-            public List<FavouritesJSON> Websites { get; set; }
-        }
-    
-    private async void LoadFavorites()
-    {
-            try { 
-            FavouritesList = new List<FavouritesJSON>();
-            StorageFile sampleFile = await localFolder.GetFileAsync("Favorites.json");
-            var JSONData = await FileIO.ReadTextAsync(sampleFile);
-            FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
-            foreach (var item in FavouritesListJSON.Websites)
+            try
             {
-                FavouritesList.Add(new FavouritesJSON()
-                {
-                    HeaderJSON = item.HeaderJSON,
-                    UrlJSON = item.UrlJSON,
-                    FavIconJSON = item.FavIconJSON,
-                });
-            }
-            FavouritesGridView.ItemsSource = FavouritesList;
+                FavouritesList = new List<FavouritesJSON>();
+                var sampleFile = await localFolder.GetFileAsync("Favorites.json");
+                var JSONData = await FileIO.ReadTextAsync(sampleFile);
+                var FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
+                foreach (var item in FavouritesListJSON.Websites)
+                    FavouritesList.Add(new FavouritesJSON
+                    {
+                        HeaderJSON = item.HeaderJSON,
+                        UrlJSON = item.UrlJSON,
+                        FavIconJSON = item.FavIconJSON
+                    });
+                FavouritesGridView.ItemsSource = FavouritesList;
             }
             catch
             {
                 var JSONData = "e";
-                string filepath = @"Assets\Favorites.json";
-                StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-                StorageFile file = await folder.GetFileAsync(filepath); // error here
-              //  StorageFile sfile = await localFolder.CreateFileAsync("Favorites.json", CreationCollisionOption.ReplaceExisting);
-              //  await FileIO.WriteTextAsync(sfile, JSONData);
-                JSONData = await Windows.Storage.FileIO.ReadTextAsync(file);
-                StorageFile sampleFile = await localFolder.CreateFileAsync("Favorites.json", CreationCollisionOption.ReplaceExisting);
+                var filepath = @"Assets\Favorites.json";
+                var folder = Package.Current.InstalledLocation;
+                var file = await folder.GetFileAsync(filepath); // error here
+                //  StorageFile sfile = await localFolder.CreateFileAsync("Favorites.json", CreationCollisionOption.ReplaceExisting);
+                //  await FileIO.WriteTextAsync(sfile, JSONData);
+                JSONData = await FileIO.ReadTextAsync(file);
+                var sampleFile =
+                    await localFolder.CreateFileAsync("Favorites.json", CreationCollisionOption.ReplaceExisting);
                 await FileIO.WriteTextAsync(sampleFile, JSONData);
-                FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
+                var FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
                 foreach (var item in FavouritesListJSON.Websites)
-                {
-                    FavouritesList.Add(new FavouritesJSON()
+                    FavouritesList.Add(new FavouritesJSON
                     {
                         HeaderJSON = item.HeaderJSON,
                         UrlJSON = item.UrlJSON,
-                        FavIconJSON = item.FavIconJSON,
+                        FavIconJSON = item.FavIconJSON
                     });
-                }
                 FavouritesGridView.ItemsSource = FavouritesList;
             }
         }
+
         private async void LoadQuickPinned()
         {
             // using the favorites class
@@ -140,71 +122,64 @@ namespace SwiftBrowser.Views
 
             try
             {
-                StorageFile sampleFile = await localFolder.GetFileAsync("QuickPinWeb.json");
+                var sampleFile = await localFolder.GetFileAsync("QuickPinWeb.json");
                 var JSONData = await FileIO.ReadTextAsync(sampleFile);
-                FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
+                var FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
                 foreach (var item in FavouritesListJSON.Websites)
-                {
-                    FavouritesListQuick.Add(new FavouritesJSON()
+                    FavouritesListQuick.Add(new FavouritesJSON
                     {
                         HeaderJSON = item.HeaderJSON,
                         UrlJSON = item.UrlJSON,
-                        FavIconJSON = item.FavIconJSON,
+                        FavIconJSON = item.FavIconJSON
                     });
-
-                }
                 QuickPinnedGridView.ItemsSource = FavouritesListQuick;
             }
             catch
             {
                 var JSONData = "e";
-                string filepath = @"Assets\QuickPinWeb.json";
-                StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-                StorageFile file = await folder.GetFileAsync(filepath); 
-                JSONData = await Windows.Storage.FileIO.ReadTextAsync(file);
-              //  StorageFile sfile = await localFolder.CreateFileAsync("QuickPinWeb.json", CreationCollisionOption.ReplaceExisting);
-              //  await FileIO.WriteTextAsync(sfile, JSONData);
-                StorageFile sampleFile = await localFolder.CreateFileAsync("QuickPinWeb.json", CreationCollisionOption.ReplaceExisting);
+                var filepath = @"Assets\QuickPinWeb.json";
+                var folder = Package.Current.InstalledLocation;
+                var file = await folder.GetFileAsync(filepath);
+                JSONData = await FileIO.ReadTextAsync(file);
+                //  StorageFile sfile = await localFolder.CreateFileAsync("QuickPinWeb.json", CreationCollisionOption.ReplaceExisting);
+                //  await FileIO.WriteTextAsync(sfile, JSONData);
+                var sampleFile =
+                    await localFolder.CreateFileAsync("QuickPinWeb.json", CreationCollisionOption.ReplaceExisting);
                 await FileIO.WriteTextAsync(sampleFile, JSONData);
-                FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
+                var FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
                 foreach (var item in FavouritesListJSON.Websites)
-                {
-                    FavouritesListQuick.Add(new FavouritesJSON()
+                    FavouritesListQuick.Add(new FavouritesJSON
                     {
                         HeaderJSON = item.HeaderJSON,
                         UrlJSON = item.UrlJSON,
-                        FavIconJSON = item.FavIconJSON,
+                        FavIconJSON = item.FavIconJSON
                     });
-
-                }
                 QuickPinnedGridView.ItemsSource = FavouritesListQuick;
             }
-
         }
+
         private async void DeleteFavButton_Click(object sender, RoutedEventArgs e)
         {
-            StorageFile sampleFile = await localFolder.GetFileAsync("QuickPinWeb.json");
-            var SenderFramework = (FrameworkElement)sender;
+            var sampleFile = await localFolder.GetFileAsync("QuickPinWeb.json");
+            var SenderFramework = (FrameworkElement) sender;
             var DataContext = SenderFramework.DataContext;
-            FavouritesJSON SenderPost = DataContext as FavouritesJSON;
-            var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
-            FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
-            FavouritesJSON FoundItem = FavouritesListJSON.Websites.Find(x => x.UrlJSON == SenderPost.UrlJSON);
+            var SenderPost = DataContext as FavouritesJSON;
+            var JSONData = await FileIO.ReadTextAsync(sampleFile);
+            var FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
+            var FoundItem = FavouritesListJSON.Websites.Find(x => x.UrlJSON == SenderPost.UrlJSON);
             FavouritesListJSON.Websites.Remove(FoundItem);
             var SerializedObject = JsonConvert.SerializeObject(FavouritesListJSON, Formatting.Indented);
-            await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
+            await FileIO.WriteTextAsync(sampleFile, SerializedObject);
             var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
-            FavouritesClass FavouritesListsJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONDatas);
+            var FavouritesListsJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONDatas);
             FavouritesListQuick.Clear();
             foreach (var item in FavouritesListsJSON.Websites)
-            {
-                FavouritesListQuick.Add(new FavouritesJSON()
+                FavouritesListQuick.Add(new FavouritesJSON
                 {
                     HeaderJSON = item.HeaderJSON,
                     UrlJSON = item.UrlJSON,
-                    FavIconJSON = item.FavIconJSON,
+                    FavIconJSON = item.FavIconJSON
                 });
-            }
             QuickPinnedGridView.ItemsSource = null;
             UnloadObject(QuickPinnedGridView);
             FindName("QuickPinnedGridView");
@@ -218,7 +193,7 @@ namespace SwiftBrowser.Views
             args.Handled = true;
         }
 
-      
+
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             FindName("ContentPivot");
@@ -239,33 +214,31 @@ namespace SwiftBrowser.Views
                 }
                 catch
                 {
-                   
-                        
-                    
                 }
             }
-            LoadMore.Visibility = Visibility.Collapsed;
 
+            LoadMore.Visibility = Visibility.Collapsed;
         }
 
         private void FavStackPanel_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var SenderFramework = (FrameworkElement)sender;
+            var SenderFramework = (FrameworkElement) sender;
             var DataContext = SenderFramework.DataContext;
-            FavouritesJSON SenderPost = DataContext as FavouritesJSON;
-          webViewControl.Navigate(new Uri(SenderPost.UrlJSON));
+            var SenderPost = DataContext as FavouritesJSON;
+            webViewControl.Navigate(new Uri(SenderPost.UrlJSON));
         }
 
         private void AutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-           webViewControl.Navigate(new Uri((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["SearchEngine"] + sender.Text));
+            webViewControl.Navigate(new Uri((string) ApplicationData.Current.LocalSettings.Values["SearchEngine"] +
+                                            sender.Text));
         }
 
         private void QGrid_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var SenderFramework = (FrameworkElement)sender;
+            var SenderFramework = (FrameworkElement) sender;
             var DataContext = SenderFramework.DataContext;
-            FavouritesJSON SenderPost = DataContext as FavouritesJSON;
+            var SenderPost = DataContext as FavouritesJSON;
             webViewControl.Navigate(new Uri(SenderPost.UrlJSON));
         }
 
@@ -273,41 +246,36 @@ namespace SwiftBrowser.Views
         {
             try
             {
-                String Url = UrlBox.Text.Replace("https://", "");
-                Uri ArgsUri = new Uri(UrlBox.Text);
-                string host = ArgsUri.Host;
+                var Url = UrlBox.Text.Replace("https://", "");
+                var ArgsUri = new Uri(UrlBox.Text);
+                var host = ArgsUri.Host;
                 string Header;
-                if (string.IsNullOrEmpty(NameBox.Text) == true)
-                {
+                if (string.IsNullOrEmpty(NameBox.Text))
                     Header = UrlBox.Text;
-                }
                 else
-                {
                     Header = NameBox.Text;
-                }
-                StorageFile sampleFile = await localFolder.GetFileAsync("QuickPinWeb.json");
-                var JSONData = await Windows.Storage.FileIO.ReadTextAsync(sampleFile);
-                FavouritesClass FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
-                FavouritesListJSON.Websites.Add(new FavouritesJSON()
+                var sampleFile = await localFolder.GetFileAsync("QuickPinWeb.json");
+                var JSONData = await FileIO.ReadTextAsync(sampleFile);
+                var FavouritesListJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONData);
+                FavouritesListJSON.Websites.Add(new FavouritesJSON
                 {
                     FavIconJSON = " https://icons.duckduckgo.com/ip2/" + host + ".ico",
                     UrlJSON = UrlBox.Text,
                     HeaderJSON = Header
-                }); ;
+                });
+                ;
                 var SerializedObject = JsonConvert.SerializeObject(FavouritesListJSON, Formatting.Indented);
-                await Windows.Storage.FileIO.WriteTextAsync(sampleFile, SerializedObject);
+                await FileIO.WriteTextAsync(sampleFile, SerializedObject);
                 var JSONDatas = await FileIO.ReadTextAsync(sampleFile);
-                FavouritesClass FavouritesListsJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONDatas);
+                var FavouritesListsJSON = JsonConvert.DeserializeObject<FavouritesClass>(JSONDatas);
                 FavouritesListQuick.Clear();
                 foreach (var item in FavouritesListsJSON.Websites)
-                {
-                    FavouritesListQuick.Add(new FavouritesJSON()
+                    FavouritesListQuick.Add(new FavouritesJSON
                     {
                         HeaderJSON = item.HeaderJSON,
                         UrlJSON = item.UrlJSON,
-                        FavIconJSON = item.FavIconJSON,
+                        FavIconJSON = item.FavIconJSON
                     });
-                }
                 QuickPinnedGridView.ItemsSource = null;
                 UnloadObject(QuickPinnedGridView);
                 FindName("QuickPinnedGridView");
@@ -315,84 +283,62 @@ namespace SwiftBrowser.Views
             }
             catch
             {
-                return;
             }
         }
 
         private void TICO_Toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggle = sender as ToggleSwitch;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = toggle.IsOn;
-            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] == true)
-            {
+            var toggle = sender as ToggleSwitch;
+            ApplicationData.Current.LocalSettings.Values["HomeIcon"] = toggle.IsOn;
+            if ((bool) ApplicationData.Current.LocalSettings.Values["HomeIcon"])
                 icon.Visibility = Visibility.Visible;
-            }
             else
-            {
                 icon.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void TfAV_Toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggle = sender as ToggleSwitch;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = toggle.IsOn;
-            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] == true)
-            {
+            var toggle = sender as ToggleSwitch;
+            ApplicationData.Current.LocalSettings.Values["HomeFav"] = toggle.IsOn;
+            if ((bool) ApplicationData.Current.LocalSettings.Values["HomeFav"])
                 FavouritesGridView.Visibility = Visibility.Visible;
-            }
             else
-            {
                 FavouritesGridView.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void TqUI_Toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggle = sender as ToggleSwitch;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = toggle.IsOn;
-            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] == true)
-            {
+            var toggle = sender as ToggleSwitch;
+            ApplicationData.Current.LocalSettings.Values["HomePin"] = toggle.IsOn;
+            if ((bool) ApplicationData.Current.LocalSettings.Values["HomePin"])
                 QuickPinnedGrid.Visibility = Visibility.Visible;
-            }
             else
-            {
                 QuickPinnedGrid.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void TmOR_Toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggle = sender as ToggleSwitch;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = toggle.IsOn;
-            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] == true)
-                {
+            var toggle = sender as ToggleSwitch;
+            ApplicationData.Current.LocalSettings.Values["HomeMore"] = toggle.IsOn;
+            if ((bool) ApplicationData.Current.LocalSettings.Values["HomeMore"])
                 loadcontentmore.Visibility = Visibility.Visible;
-            }
-                else
-            {
+            else
                 loadcontentmore.Visibility = Visibility.Collapsed;
-            }
-            
         }
 
         private void TSea_Toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggle = sender as ToggleSwitch;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = toggle.IsOn;
-            if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] == true)
-            {
+            var toggle = sender as ToggleSwitch;
+            ApplicationData.Current.LocalSettings.Values["HomeSearch"] = toggle.IsOn;
+            if ((bool) ApplicationData.Current.LocalSettings.Values["HomeSearch"])
                 SearchBox.Visibility = Visibility.Visible;
-            }
             else
-            {
                 SearchBox.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void QuickPinnedGridView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            FavouritesJSON SenderPost = e.ClickedItem as FavouritesJSON;
+            var SenderPost = e.ClickedItem as FavouritesJSON;
             webViewControl.Navigate(new Uri(SenderPost.UrlJSON));
         }
 
@@ -403,84 +349,65 @@ namespace SwiftBrowser.Views
 
         private void Home_Loaded(object sender, RoutedEventArgs e)
         {
-            if (isfirst == true)
+            if (isfirst)
             {
                 isfirst = false;
                 HomeGrid = FavouritesGridView;
                 webViewControl = WebViewControl;
                 try
                 {
-                    tICO.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
-                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] == true)
-                    {
+                    tICO.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomeIcon"];
+                    if ((bool) ApplicationData.Current.LocalSettings.Values["HomeIcon"])
                         icon.Visibility = Visibility.Visible;
-                    }
                     else
-                    {
                         icon.Visibility = Visibility.Collapsed;
-                    }
-                    TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
-                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] == true)
-                    {
+                    TfAV.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomeFav"];
+                    if ((bool) ApplicationData.Current.LocalSettings.Values["HomeFav"])
                         FavouritesGridView.Visibility = Visibility.Visible;
-                    }
                     else
-                    {
                         FavouritesGridView.Visibility = Visibility.Collapsed;
-                    }
-                    TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
-                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] == true)
-                    {
+                    TqUI.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomePin"];
+                    if ((bool) ApplicationData.Current.LocalSettings.Values["HomePin"])
                         QuickPinnedGrid.Visibility = Visibility.Visible;
-                    }
                     else
-                    {
                         QuickPinnedGrid.Visibility = Visibility.Collapsed;
-                    }
-                    TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
-                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] == true)
-                    {
+                    TmOR.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomeMore"];
+                    if ((bool) ApplicationData.Current.LocalSettings.Values["HomeMore"])
                         loadcontentmore.Visibility = Visibility.Visible;
-                    }
                     else
-                    {
                         loadcontentmore.Visibility = Visibility.Collapsed;
-                    }
-                    TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
-                    if ((Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] == true)
-                    {
+                    TSea.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomeSearch"];
+                    if ((bool) ApplicationData.Current.LocalSettings.Values["HomeSearch"])
                         SearchBox.Visibility = Visibility.Visible;
-                    }
                     else
-                    {
                         SearchBox.Visibility = Visibility.Collapsed;
-                    }
                 }
                 catch
                 {
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"] = true;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"] = true;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"] = true;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"] = true;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"] = true;
-                    tICO.IsOn = (bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeIcon"];
+                    ApplicationData.Current.LocalSettings.Values["HomeIcon"] = true;
+                    ApplicationData.Current.LocalSettings.Values["HomeFav"] = true;
+                    ApplicationData.Current.LocalSettings.Values["HomeSearch"] = true;
+                    ApplicationData.Current.LocalSettings.Values["HomePin"] = true;
+                    ApplicationData.Current.LocalSettings.Values["HomeMore"] = true;
+                    tICO.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomeIcon"];
                     QuickPinnedGrid.Visibility = Visibility.Visible;
                     loadcontentmore.Visibility = Visibility.Visible;
                     FavouritesGridView.Visibility = Visibility.Visible;
                     icon.Visibility = Visibility.Visible;
-                    TfAV.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeFav"];
-                    TqUI.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomePin"];
-                    TmOR.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeMore"];
-                    TSea.IsOn = (Boolean)Windows.Storage.ApplicationData.Current.LocalSettings.Values["HomeSearch"];
+                    TfAV.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomeFav"];
+                    TqUI.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomePin"];
+                    TmOR.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomeMore"];
+                    TSea.IsOn = (bool) ApplicationData.Current.LocalSettings.Values["HomeSearch"];
                     SearchBox.Visibility = Visibility.Visible;
                 }
 
                 try
                 {
-                    if ((bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] == true)
+                    if ((bool) ApplicationData.Current.LocalSettings.Values["CustomUrlBool"])
                     {
                         FindName("WebViewHome");
-                        WebViewHome.Navigate(new Uri((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"]));
+                        WebViewHome.Navigate(
+                            new Uri((string) ApplicationData.Current.LocalSettings.Values["CustomUrl"]));
                         Option2RadioButton.IsChecked = true;
                         UnloadObject(Home);
                     }
@@ -495,21 +422,24 @@ namespace SwiftBrowser.Views
                 catch
                 {
                     Option1RadioButton.IsChecked = true;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = false;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomUrl"] = "";
+                    ApplicationData.Current.LocalSettings.Values["CustomUrlBool"] = false;
+                    ApplicationData.Current.LocalSettings.Values["CustomUrl"] = "";
                     LoadFavorites();
                     LoadQuickPinned();
                     UnloadObject(WebViewHome);
                 }
-               try
-               {
-                    if ((bool)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] == true)
+
+                try
+                {
+                    if ((bool) ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"])
                     {
                         f = true;
                         Imageoption.IsChecked = true;
                         BackGroundimage.Visibility = Visibility.Visible;
-                        BitmapImage bitmapImage = new BitmapImage();                                            // dimension, so long as one dimension measurement is provided
-                        bitmapImage.UriSource = new Uri((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"]);
+                        var bitmapImage =
+                            new BitmapImage(); // dimension, so long as one dimension measurement is provided
+                        bitmapImage.UriSource =
+                            new Uri((string) ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"]);
                         BackGroundimage.Source = bitmapImage;
                         f = false;
                     }
@@ -524,12 +454,12 @@ namespace SwiftBrowser.Views
                 {
                     DefaultacrylicOption.IsChecked = true;
                     BackGroundimage.Visibility = Visibility.Collapsed;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = false;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = "";
+                    ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = false;
+                    ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = "";
                 }
             }
         }
-        
+
 
         private async void SearchBox_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -541,16 +471,16 @@ namespace SwiftBrowser.Views
             }
             catch
             {
-               try
-               {
+                try
+                {
                     FindName("SearchBox");
                     await Task.Delay(300);
                     SearchBox.Width = Window.Current.Bounds.Width - 100;
                     BackGroundimage.Width = Window.Current.Bounds.Width;
                     BackGroundimage.Height = Window.Current.Bounds.Height - 100;
                 }
-               catch
-               {
+                catch
+                {
                     try
                     {
                         FindName("SearchBox");
@@ -601,7 +531,6 @@ namespace SwiftBrowser.Views
                                     }
                                     catch
                                     {
-                                        return;
                                     }
                                 }
                             }
@@ -613,8 +542,8 @@ namespace SwiftBrowser.Views
 
         private void DefaultacrylicOption_Checked(object sender, RoutedEventArgs e)
         {
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = Imageoption.IsChecked;
-            Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = "";
+            ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = Imageoption.IsChecked;
+            ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = "";
             BackGroundimage.Visibility = Visibility.Collapsed;
         }
 
@@ -622,29 +551,29 @@ namespace SwiftBrowser.Views
         {
             if (f == false)
             {
-                Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = Imageoption.IsChecked;
-                if ((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] == "")
+                ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = Imageoption.IsChecked;
+                if ((string) ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] == "")
                 {
                     try
                     {
-                    var picker = new Windows.Storage.Pickers.FileOpenPicker();
-                    picker.ViewMode = Windows.Storage.Pickers.PickerViewMode.Thumbnail;
-                    picker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary;
-                    picker.FileTypeFilter.Add(".jpg");
-                    picker.FileTypeFilter.Add(".jpeg");
-                    picker.FileTypeFilter.Add(".png");
+                        var picker = new FileOpenPicker();
+                        picker.ViewMode = PickerViewMode.Thumbnail;
+                        picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+                        picker.FileTypeFilter.Add(".jpg");
+                        picker.FileTypeFilter.Add(".jpeg");
+                        picker.FileTypeFilter.Add(".png");
 
-                    Windows.Storage.StorageFile file = await picker.PickSingleFileAsync();
-                    StorageFile File = await file.CopyAsync(localFolder);
-                    BackGroundimage.Visibility = Visibility.Visible;
-                    BitmapImage bitmapImage = new BitmapImage();                                            // dimension, so long as one dimension measurement is provided
-                    bitmapImage.UriSource = new Uri(File.Path);
-                    BackGroundimage.Source = bitmapImage;
-                    Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = File.Path;
-                        int duration = 3000;
+                        var file = await picker.PickSingleFileAsync();
+                        var File = await file.CopyAsync(localFolder);
+                        BackGroundimage.Visibility = Visibility.Visible;
+                        var bitmapImage =
+                            new BitmapImage(); // dimension, so long as one dimension measurement is provided
+                        bitmapImage.UriSource = new Uri(File.Path);
+                        BackGroundimage.Source = bitmapImage;
+                        ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"] = File.Path;
+                        var duration = 3000;
                         try
                         {
-
                             TabViewPage.InAppNotificationMain.Show("Saved", duration);
                         }
                         catch
@@ -653,12 +582,11 @@ namespace SwiftBrowser.Views
                         }
                     }
                     catch
-                      {
-                        Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = false;
-                        int duration = 3000;
+                    {
+                        ApplicationData.Current.LocalSettings.Values["CustomBackgroundBool"] = false;
+                        var duration = 3000;
                         try
                         {
-                            
                             TabViewPage.InAppNotificationMain.Show("Canceled", duration);
                         }
                         catch
@@ -670,12 +598,24 @@ namespace SwiftBrowser.Views
                 else
                 {
                     BackGroundimage.Visibility = Visibility.Collapsed;
-                    BitmapImage bitmapImage = new BitmapImage();                                            // dimension, so long as one dimension measurement is provided
-                    bitmapImage.UriSource = new Uri((string)Windows.Storage.ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"]);
+                    var bitmapImage = new BitmapImage(); // dimension, so long as one dimension measurement is provided
+                    bitmapImage.UriSource =
+                        new Uri((string) ApplicationData.Current.LocalSettings.Values["CustomBackgroundPath"]);
                     BackGroundimage.Source = bitmapImage;
                 }
             }
         }
-        bool f;
+
+        public class FavouritesJSON
+        {
+            public string HeaderJSON { get; set; }
+            public string UrlJSON { get; set; }
+            public string FavIconJSON { get; set; }
+        }
+
+        public class FavouritesClass
+        {
+            public List<FavouritesJSON> Websites { get; set; }
+        }
     }
 }

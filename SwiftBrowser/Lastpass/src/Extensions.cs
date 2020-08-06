@@ -7,7 +7,7 @@ using System.Text;
 
 namespace LastPass
 {
-    static class Extensions
+    internal static class Extensions
     {
         public static uint Reverse(this uint x)
         {
@@ -55,7 +55,7 @@ namespace LastPass
                         throw new ArgumentException("Input contains invalid characters");
                 }
 
-                bytes[i] = (byte)b;
+                bytes[i] = (byte) b;
             }
 
             return bytes;

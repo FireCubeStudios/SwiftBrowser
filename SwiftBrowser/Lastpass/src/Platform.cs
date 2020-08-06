@@ -6,6 +6,6 @@ namespace LastPass
     public enum Platform
     {
         Desktop,
-        Mobile,
+        Mobile
     }
 }

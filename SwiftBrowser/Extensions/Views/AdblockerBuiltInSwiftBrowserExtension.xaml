@@ -9,7 +9,8 @@
     Background="Transparent">
     <StackPanel>
         <TextBlock Margin="5" FontSize="15">Adblocker lite beta Extension:</TextBlock>
-        <ToggleSwitch x:Name="Tog" Margin="5" OffContent="Disabled" Header="Toggle ad blocker:" OnContent="Enabled" Toggled="ToggleSwitch_Toggled"></ToggleSwitch>
+        <ToggleSwitch x:Name="Tog" Margin="5" OffContent="Disabled" Header="Toggle ad blocker:" OnContent="Enabled"
+                      Toggled="ToggleSwitch_Toggled" />
         <TextBlock>Verison: 0.1.0, more features coming soon...</TextBlock>
     </StackPanel>
 </Page>

@@ -11,17 +11,41 @@ using System.Xml.XPath;
 
 namespace LastPass
 {
-    static class Fetcher
+    internal static class Fetcher
     {
+        private static readonly Dictionary<Platform, string> PlatformToUserAgent = new Dictionary<Platform, string>
+        {
+            {Platform.Desktop, "cli"},
+            {Platform.Mobile, "android"}
+        };
+
+        private static readonly Dictionary<string, Ui.SecondFactorMethod> KnownOtpMethods =
+            new Dictionary<string, Ui.SecondFactorMethod>
+            {
+                {"googleauthrequired", Ui.SecondFactorMethod.GoogleAuth},
+                {"otprequired", Ui.SecondFactorMethod.Yubikey}
+            };
+
+        private static readonly Dictionary<string, Ui.OutOfBandMethod> KnownOobMethods =
+            new Dictionary<string, Ui.OutOfBandMethod>
+            {
+                {"lastpassauth", Ui.OutOfBandMethod.LastPassAuth},
+                {"toopher", Ui.OutOfBandMethod.Toopher},
+                {"duo", Ui.OutOfBandMethod.Duo}
+            };
+
         public static Session Login(string username, string password, ClientInfo clientInfo, Ui ui)
         {
             using (var webClient = new WebClient())
+            {
                 return Login(username, password, clientInfo, ui, webClient);
+            }
         }
 
         // TODO: Write tests for this. Possibly the whole current concept of how it's tested
         //       should be rethought. Maybe should simply tests against a fake server.
-        public static Session Login(string username, string password, ClientInfo clientInfo, Ui ui, IWebClient webClient)
+        public static Session Login(string username, string password, ClientInfo clientInfo, Ui ui,
+            IWebClient webClient)
         {
             // 1. First we need to request PBKDF2 key iteration count.
             var keyIterationCount = RequestIterationCount(username, webClient);
@@ -29,11 +53,11 @@ namespace LastPass
             // 2. Knowing the iterations count we can hash the password and log in.
             //    One the first attempt simply with the username and password.
             var response = PerformSingleLoginRequest(username,
-                                                     password,
-                                                     keyIterationCount,
-                                                     new NameValueCollection(),
-                                                     clientInfo,
-                                                     webClient);
+                password,
+                keyIterationCount,
+                new NameValueCollection(),
+                clientInfo,
+                webClient);
             var session = ExtractSessionFromLoginResponse(response, keyIterationCount, clientInfo);
             if (session != null)
                 return session;
@@ -45,23 +69,23 @@ namespace LastPass
             // 3.1. One-time-password is required
             if (KnownOtpMethods.ContainsKey(cause))
                 session = LoginWithOtp(username,
-                                       password,
-                                       keyIterationCount,
-                                       KnownOtpMethods[cause],
-                                       clientInfo,
-                                       ui,
-                                       webClient);
+                    password,
+                    keyIterationCount,
+                    KnownOtpMethods[cause],
+                    clientInfo,
+                    ui,
+                    webClient);
 
             // 3.2. Some out-of-bound authentication is enabled. This does not require any
             //      additional input from the user.
             else if (cause == "outofbandrequired")
                 session = LoginWithOob(username,
-                                       password,
-                                       keyIterationCount,
-                                       ExtractOobMethodFromLoginResponse(response),
-                                       clientInfo,
-                                       ui,
-                                       webClient);
+                    password,
+                    keyIterationCount,
+                    ExtractOobMethodFromLoginResponse(response),
+                    clientInfo,
+                    ui,
+                    webClient);
 
             if (session == null)
                 throw CreateLoginException(response);
@@ -76,7 +100,9 @@ namespace LastPass
         public static void Logout(Session session)
         {
             using (var webClient = new WebClient())
+            {
                 Logout(session, webClient);
+            }
         }
 
         public static void Logout(Session session, IWebClient webClient)
@@ -85,24 +111,26 @@ namespace LastPass
             {
                 SetSessionCookies(webClient, session);
                 webClient.UploadValues("https://lastpass.com/logout.php",
-                                       new NameValueCollection
-                                       {
-                                           {"method", PlatformToUserAgent[session.Platform]},
-                                           {"noredirect", "1"}
-                                       });
+                    new NameValueCollection
+                    {
+                        {"method", PlatformToUserAgent[session.Platform]},
+                        {"noredirect", "1"}
+                    });
             }
             catch (WebException e)
             {
                 throw new LogoutException(LogoutException.FailureReason.WebException,
-                                          "WebException occurred",
-                                          e);
+                    "WebException occurred",
+                    e);
             }
         }
 
         public static Blob Fetch(Session session)
         {
             using (var webClient = new WebClient())
+            {
                 return Fetch(session, webClient);
+            }
         }
 
         public static Blob Fetch(Session session, IWebClient webClient)
@@ -121,8 +149,8 @@ namespace LastPass
             try
             {
                 return new Blob(response.ToUtf8().Decode64(),
-                                session.KeyIterationCount,
-                                session.EncryptedPrivateKey);
+                    session.KeyIterationCount,
+                    session.EncryptedPrivateKey);
             }
             catch (FormatException e)
             {
@@ -139,15 +167,16 @@ namespace LastPass
 
         private static int RequestIterationCount(string username, IWebClient webClient)
         {
-            Func<Exception, Exception> invalidInt = (e) => new LoginException(LoginException.FailureReason.InvalidResponse,
-                                                                              "Iteration count is invalid",
-                                                                              e);
+            Func<Exception, Exception> invalidInt = e => new LoginException(
+                LoginException.FailureReason.InvalidResponse,
+                "Iteration count is invalid",
+                e);
 
             try
             {
                 // LastPass server is supposed to return paint text int, nothing fancy.
                 return int.Parse(webClient.UploadValues("https://lastpass.com/iterations.php",
-                                                        new NameValueCollection {{"email", username}}).ToUtf8());
+                    new NameValueCollection {{"email", username}}).ToUtf8());
             }
             catch (WebException e)
             {
@@ -164,11 +193,11 @@ namespace LastPass
         }
 
         private static XDocument PerformSingleLoginRequest(string username,
-                                                           string password,
-                                                           int keyIterationCount,
-                                                           NameValueCollection extraParameters,
-                                                           ClientInfo clientInfo,
-                                                           IWebClient webClient)
+            string password,
+            int keyIterationCount,
+            NameValueCollection extraParameters,
+            ClientInfo clientInfo,
+            IWebClient webClient)
         {
             try
             {
@@ -189,38 +218,38 @@ namespace LastPass
                     parameters["trustlabel"] = clientInfo.Description;
 
                 return XDocument.Parse(webClient.UploadValues("https://lastpass.com/login.php",
-                                                              parameters).ToUtf8());
+                    parameters).ToUtf8());
             }
             catch (WebException e)
             {
                 throw new LoginException(LoginException.FailureReason.WebException,
-                                         "WebException occurred",
-                                         e);
+                    "WebException occurred",
+                    e);
             }
             catch (XmlException e)
             {
                 throw new LoginException(LoginException.FailureReason.InvalidResponse,
-                                         "Invalid XML in response",
-                                         e);
+                    "Invalid XML in response",
+                    e);
             }
         }
 
         // Returns a valid session or throws
         private static Session LoginWithOtp(string username,
-                                            string password,
-                                            int keyIterationCount,
-                                            Ui.SecondFactorMethod method,
-                                            ClientInfo clientInfo,
-                                            Ui ui,
-                                            IWebClient webClient)
+            string password,
+            int keyIterationCount,
+            Ui.SecondFactorMethod method,
+            ClientInfo clientInfo,
+            Ui ui,
+            IWebClient webClient)
         {
             var otp = ui.ProvideSecondFactorPassword(method);
             var response = PerformSingleLoginRequest(username,
-                                                     password,
-                                                     keyIterationCount,
-                                                     new NameValueCollection {{"otp", otp}},
-                                                     clientInfo,
-                                                     webClient);
+                password,
+                keyIterationCount,
+                new NameValueCollection {{"otp", otp}},
+                clientInfo,
+                webClient);
             var session = ExtractSessionFromLoginResponse(response, keyIterationCount, clientInfo);
             if (session != null)
                 return session;
@@ -230,12 +259,12 @@ namespace LastPass
 
         // Returns a valid session or throws
         private static Session LoginWithOob(string username,
-                                            string password,
-                                            int keyIterationCount,
-                                            Ui.OutOfBandMethod method,
-                                            ClientInfo clientInfo,
-                                            Ui ui,
-                                            IWebClient webClient)
+            string password,
+            int keyIterationCount,
+            Ui.OutOfBandMethod method,
+            ClientInfo clientInfo,
+            Ui ui,
+            IWebClient webClient)
         {
             var extraParameters = new NameValueCollection {{"outofbandrequest", "1"}};
 
@@ -243,11 +272,11 @@ namespace LastPass
             for (;;)
             {
                 var response = PerformSingleLoginRequest(username,
-                                                         password,
-                                                         keyIterationCount,
-                                                         extraParameters,
-                                                         clientInfo,
-                                                         webClient);
+                    password,
+                    keyIterationCount,
+                    extraParameters,
+                    clientInfo,
+                    webClient);
                 var session = ExtractSessionFromLoginResponse(response, keyIterationCount, clientInfo);
                 if (session != null)
                     return session;
@@ -267,18 +296,18 @@ namespace LastPass
             {
                 SetSessionCookies(webClient, session);
                 webClient.UploadValues("https://lastpass.com/trust.php",
-                                       new NameValueCollection
-                                       {
-                                           {"uuid", clientInfo.Id},
-                                           {"trustlabel", clientInfo.Description},
-                                           {"token", session.Token},
-                                       });
+                    new NameValueCollection
+                    {
+                        {"uuid", clientInfo.Id},
+                        {"trustlabel", clientInfo.Description},
+                        {"token", session.Token}
+                    });
             }
             catch (WebException e)
             {
                 throw new LoginException(LoginException.FailureReason.WebException,
-                                         "WebException occurred",
-                                         e);
+                    "WebException occurred",
+                    e);
             }
         }
 
@@ -289,7 +318,7 @@ namespace LastPass
                 return attr;
 
             throw new LoginException(LoginException.FailureReason.UnknownResponseSchema,
-                                     string.Format("Unknown response schema, attribute {0} is missing", name));
+                string.Format("Unknown response schema, attribute {0} is missing", name));
         }
 
         private static string GetOptionalErrorAttribute(XDocument response, string name)
@@ -298,8 +327,8 @@ namespace LastPass
         }
 
         private static Session ExtractSessionFromLoginResponse(XDocument response,
-                                                               int keyIterationCount,
-                                                               ClientInfo clientInfo)
+            int keyIterationCount,
+            ClientInfo clientInfo)
         {
             var ok = response.XPathSelectElement("response/ok");
             if (ok == null)
@@ -314,10 +343,10 @@ namespace LastPass
                 return null;
 
             return new Session(sessionId.Value,
-                               keyIterationCount,
-                               token.Value,
-                               GetEncryptedPrivateKey(ok),
-                               clientInfo.Platform);
+                keyIterationCount,
+                token.Value,
+                GetEncryptedPrivateKey(ok),
+                clientInfo.Platform);
         }
 
         private static Ui.OutOfBandMethod ExtractOobMethodFromLoginResponse(XDocument response)
@@ -328,7 +357,7 @@ namespace LastPass
 
             var name = GetOptionalErrorAttribute(response, "outofbandname");
             throw new LoginException(LoginException.FailureReason.UnsupportedFeature,
-                                     string.Format("Out-of-band method '{0}' is not supported", name ?? type));
+                string.Format("Out-of-band method '{0}' is not supported", name ?? type));
         }
 
         // Returned value could be missing or blank. In both of these cases we need null.
@@ -351,7 +380,7 @@ namespace LastPass
             var error = response.XPathSelectElement("response/error");
             if (error == null)
                 return new LoginException(LoginException.FailureReason.UnknownResponseSchema,
-                                          "Unknown response schema");
+                    "Unknown response schema");
 
             // Both of these are optional
             var cause = error.Attribute("cause");
@@ -363,27 +392,27 @@ namespace LastPass
                 var causeValue = cause.Value;
                 switch (causeValue)
                 {
-                case "unknownemail":
-                    return new LoginException(LoginException.FailureReason.LastPassInvalidUsername,
-                                              "Invalid username");
-                case "unknownpassword":
-                    return new LoginException(LoginException.FailureReason.LastPassInvalidPassword,
-                                              "Invalid password");
-                case "googleauthfailed":
-                    return new LoginException(LoginException.FailureReason.LastPassIncorrectGoogleAuthenticatorCode,
-                                              "Google Authenticator code is missing or incorrect");
-                case "otpfailed":
-                    return new LoginException(LoginException.FailureReason.LastPassIncorrectYubikeyPassword,
-                                              "Yubikey password is missing or incorrect");
-                case "outofbandrequired":
-                    return new LoginException(LoginException.FailureReason.LastPassOutOfBandAuthenticationRequired,
-                                              "Out of band authentication required");
-                case "multifactorresponsefailed":
-                    return new LoginException(LoginException.FailureReason.LastPassOutOfBandAuthenticationFailed,
-                                              "Out of band authentication failed");
-                default:
-                    return new LoginException(LoginException.FailureReason.LastPassOther,
-                                              message != null ? message.Value : causeValue);
+                    case "unknownemail":
+                        return new LoginException(LoginException.FailureReason.LastPassInvalidUsername,
+                            "Invalid username");
+                    case "unknownpassword":
+                        return new LoginException(LoginException.FailureReason.LastPassInvalidPassword,
+                            "Invalid password");
+                    case "googleauthfailed":
+                        return new LoginException(LoginException.FailureReason.LastPassIncorrectGoogleAuthenticatorCode,
+                            "Google Authenticator code is missing or incorrect");
+                    case "otpfailed":
+                        return new LoginException(LoginException.FailureReason.LastPassIncorrectYubikeyPassword,
+                            "Yubikey password is missing or incorrect");
+                    case "outofbandrequired":
+                        return new LoginException(LoginException.FailureReason.LastPassOutOfBandAuthenticationRequired,
+                            "Out of band authentication required");
+                    case "multifactorresponsefailed":
+                        return new LoginException(LoginException.FailureReason.LastPassOutOfBandAuthenticationFailed,
+                            "Out of band authentication failed");
+                    default:
+                        return new LoginException(LoginException.FailureReason.LastPassOther,
+                            message != null ? message.Value : causeValue);
                 }
             }
 
@@ -399,26 +428,5 @@ namespace LastPass
         {
             webClient.Headers.Add("Cookie", string.Format("PHPSESSID={0}", Uri.EscapeDataString(session.Id)));
         }
-
-        private static readonly Dictionary<Platform, string> PlatformToUserAgent = new Dictionary<Platform, string>
-        {
-            {Platform.Desktop, "cli"},
-            {Platform.Mobile, "android"},
-        };
-
-        private static readonly Dictionary<string, Ui.SecondFactorMethod> KnownOtpMethods =
-            new Dictionary<string, Ui.SecondFactorMethod>
-            {
-                {"googleauthrequired", Ui.SecondFactorMethod.GoogleAuth},
-                {"otprequired", Ui.SecondFactorMethod.Yubikey},
-            };
-
-        private static readonly Dictionary<string, Ui.OutOfBandMethod> KnownOobMethods =
-            new Dictionary<string, Ui.OutOfBandMethod>
-            {
-                {"lastpassauth", Ui.OutOfBandMethod.LastPassAuth},
-                {"toopher", Ui.OutOfBandMethod.Toopher},
-                {"duo", Ui.OutOfBandMethod.Duo},
-            };
     }
 }

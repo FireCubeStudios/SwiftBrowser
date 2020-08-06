@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-
-using SwiftBrowser.Services;
-
 using Windows.ApplicationModel.Activation;
+using SwiftBrowser.Services;
 
 namespace SwiftBrowser.Activation
 {
@@ -21,10 +19,7 @@ namespace SwiftBrowser.Activation
             // When the navigation stack isn't restored, navigate to the first page and configure
             // the new page by passing required information in the navigation parameter
             object arguments = null;
-            if (args is LaunchActivatedEventArgs launchArgs)
-            {
-                arguments = launchArgs.Arguments;
-            }
+            if (args is LaunchActivatedEventArgs launchArgs) arguments = launchArgs.Arguments;
 
             NavigationService.Navigate(_navElement, arguments);
             await Task.CompletedTask;

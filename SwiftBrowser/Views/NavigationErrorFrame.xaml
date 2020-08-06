@@ -9,6 +9,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <TextBlock x:Name="ErrorText"></TextBlock>
+        <TextBlock x:Name="ErrorText" />
     </Grid>
 </Page>

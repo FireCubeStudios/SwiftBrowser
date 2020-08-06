@@ -16,11 +16,11 @@ namespace LastPass
             Group = group;
         }
 
-        public string Id { get; private set; }
-        public string Name { get; private set; }
-        public string Username { get; private set; }
-        public string Password { get; private set; }
-        public string Url { get; private set; }
-        public string Group { get; private set; }
+        public string Id { get; }
+        public string Name { get; }
+        public string Username { get; }
+        public string Password { get; }
+        public string Url { get; }
+        public string Group { get; }
     }
 }

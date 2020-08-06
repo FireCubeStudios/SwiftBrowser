@@ -10,14 +10,14 @@ namespace LastPass
     // Very-very basic ASN.1 parser. Just enough to extract the RSA key
     // parameters stored in a vault. Supports only sequences, octet strings
     // and numbers. Error handling is minimal too.
-    static class Asn1
+    internal static class Asn1
     {
         public enum Kind
         {
             Integer,
             Bytes,
             Null,
-            Sequence,
+            Sequence
         }
 
         public static KeyValuePair<Kind, byte[]> ParseItem(byte[] bytes)
@@ -33,20 +33,20 @@ namespace LastPass
             Kind kind;
             switch (tag)
             {
-            case 2:
-                kind = Kind.Integer;
-                break;
-            case 4:
-                kind = Kind.Bytes;
-                break;
-            case 5:
-                kind = Kind.Null;
-                break;
-            case 16:
-                kind = Kind.Sequence;
-                break;
-            default:
-                throw new ArgumentException(string.Format("Unknown ASN.1 tag {0}", tag));
+                case 2:
+                    kind = Kind.Integer;
+                    break;
+                case 4:
+                    kind = Kind.Bytes;
+                    break;
+                case 5:
+                    kind = Kind.Null;
+                    break;
+                case 16:
+                    kind = Kind.Sequence;
+                    break;
+                default:
+                    throw new ArgumentException(string.Format("Unknown ASN.1 tag {0}", tag));
             }
 
             int size = reader.ReadByte();

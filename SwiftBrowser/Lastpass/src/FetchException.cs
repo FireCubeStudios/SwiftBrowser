@@ -5,7 +5,7 @@ using System;
 
 namespace LastPass
 {
-    public class FetchException: BaseException
+    public class FetchException : BaseException
     {
         public enum FailureReason
         {
@@ -13,17 +13,17 @@ namespace LastPass
             WebException
         }
 
-        public FetchException(FailureReason reason, string message): base(message)
+        public FetchException(FailureReason reason, string message) : base(message)
         {
             Reason = reason;
         }
 
-        public FetchException(FailureReason reason, string message, Exception innerException):
+        public FetchException(FailureReason reason, string message, Exception innerException) :
             base(message, innerException)
         {
             Reason = reason;
         }
 
-        public FailureReason Reason { get; private set; }
+        public FailureReason Reason { get; }
     }
 }

@@ -5,14 +5,14 @@ using System;
 
 namespace LastPass
 {
-    public class ParseException: BaseException
+    public class ParseException : BaseException
     {
         public enum FailureReason
         {
             CorruptedBlob
         }
 
-        public ParseException(FailureReason reason, string message): base(message)
+        public ParseException(FailureReason reason, string message) : base(message)
         {
             Reason = reason;
         }
@@ -23,6 +23,6 @@ namespace LastPass
             Reason = reason;
         }
 
-        public FailureReason Reason { get; private set; }
+        public FailureReason Reason { get; }
     }
 }

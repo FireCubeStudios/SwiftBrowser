@@ -10,21 +10,23 @@
     Background="Transparent">
 
     <Grid Background="Transparent" x:Name="gRID">
-        <CommandBar Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Loaded="CommandBar_Loaded" DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
-                <AppBarButton Icon="Delete" Label="Clear all History" Click="clear_click">
-                </AppBarButton>
-            </CommandBar>
-        <ListView IsItemClickEnabled="True" x:Load="False" ItemClick="Output_ItemClick" Margin="5, 40, 5, 5" Name="Output">
+        <CommandBar Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" Loaded="CommandBar_Loaded"
+                    DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
+            <AppBarButton Icon="Delete" Label="Clear all History" Click="clear_click" />
+        </CommandBar>
+        <ListView IsItemClickEnabled="True" x:Load="False" ItemClick="Output_ItemClick" Margin="5, 40, 5, 5"
+                  Name="Output">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="5" Width="500" Orientation="Horizontal" Background="Transparent">
-                        <Image Height="30" Width="30" Margin="5" Source="{Binding FavIconSQL}"></Image>
+                        <Image Height="30" Width="30" Margin="5" Source="{Binding FavIconSQL}" />
                         <StackPanel Width="300">
-                            <TextBlock FontSize="15" Width="300"  Text="{Binding HeaderSQL}"/>
-                            <TextBlock  FontSize="10" Text="{Binding UrlSQL}"/>
+                            <TextBlock FontSize="15" Width="300" Text="{Binding HeaderSQL}" />
+                            <TextBlock FontSize="10" Text="{Binding UrlSQL}" />
                         </StackPanel>
-                        <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed" Background="Transparent">
-                            <AppBarButton Click="RemoveDataButton_Click" Icon="Delete" Background="Transparent"></AppBarButton>
+                        <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"
+                                    Background="Transparent">
+                            <AppBarButton Click="RemoveDataButton_Click" Icon="Delete" Background="Transparent" />
                         </CommandBar>
                     </StackPanel>
                 </DataTemplate>

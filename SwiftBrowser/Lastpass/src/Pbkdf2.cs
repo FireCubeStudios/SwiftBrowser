@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace LastPass
 {
-    static class Pbkdf2
+    internal static class Pbkdf2
     {
         public static byte[] Generate(string password, string salt, int iterationCount, int byteCount)
         {
@@ -61,10 +61,7 @@ namespace LastPass
                     for (var j = 1; j < iterationCount; ++j)
                     {
                         hashed = hmac.ComputeHash(hashed);
-                        for (var k = 0; k < hashed.Length; ++k)
-                        {
-                            block[k] ^= hashed[k];
-                        }
+                        for (var k = 0; k < hashed.Length; ++k) block[k] ^= hashed[k];
                     }
 
                     var offset = i * hashSize;

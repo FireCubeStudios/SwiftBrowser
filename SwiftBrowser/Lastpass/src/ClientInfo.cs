@@ -5,9 +5,9 @@ namespace LastPass
 {
     public class ClientInfo
     {
-        public readonly Platform Platform;
-        public readonly string Id;
         public readonly string Description;
+        public readonly string Id;
+        public readonly Platform Platform;
         public readonly bool TrustThisDevice;
 
         public ClientInfo(Platform platform, string id, string description, bool trustThisDevice)

@@ -5,7 +5,7 @@ using System;
 
 namespace LastPass
 {
-    public class LoginException: BaseException
+    public class LoginException : BaseException
     {
         public enum FailureReason
         {
@@ -23,20 +23,20 @@ namespace LastPass
             UnsupportedFeature,
             UnknownResponseSchema,
             InvalidResponse,
-            WebException,
+            WebException
         }
 
-        public LoginException(FailureReason reason, string message): base(message)
+        public LoginException(FailureReason reason, string message) : base(message)
         {
             Reason = reason;
         }
 
-        public LoginException(FailureReason reason, string message, Exception innerException):
+        public LoginException(FailureReason reason, string message, Exception innerException) :
             base(message, innerException)
         {
             Reason = reason;
         }
 
-        public FailureReason Reason { get; private set; }
+        public FailureReason Reason { get; }
     }
 }

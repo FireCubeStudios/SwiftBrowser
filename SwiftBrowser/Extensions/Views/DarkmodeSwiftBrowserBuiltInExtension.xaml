@@ -11,7 +11,8 @@
     <StackPanel>
         <TextBlock Margin="5" FontSize="15">Dark mode Extension:</TextBlock>
         <Button Margin="5" Click="Button_Click">Quick dark mode</Button>
-        <ToggleSwitch x:Name="Tog" Margin="5" OffContent="Disabled" Header="Toggle auto dark mode:" OnContent="Enabled" Toggled="ToggleSwitch_Toggled"></ToggleSwitch>
+        <ToggleSwitch x:Name="Tog" Margin="5" OffContent="Disabled" Header="Toggle auto dark mode:" OnContent="Enabled"
+                      Toggled="ToggleSwitch_Toggled" />
         <TextBlock>Version: 0.1.0, more features coming soon...</TextBlock>
     </StackPanel>
 </Page>

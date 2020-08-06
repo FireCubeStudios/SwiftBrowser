@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using flowpad.EventHandlers.Ink;
-
 using Windows.Foundation;
 using Windows.UI.Input.Inking;
 using Windows.UI.Input.Inking.Analysis;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using flowpad.EventHandlers.Ink;
 
 namespace flowpad.Services.Ink
 {
@@ -42,7 +40,7 @@ namespace flowpad.Services.Ink
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(IdleWaitingTime);
         }
 
-        public InkAnalyzer InkAnalyzer { get; private set; } = new InkAnalyzer();
+        public InkAnalyzer InkAnalyzer { get; } = new InkAnalyzer();
 
         public bool IsAnalyzing => InkAnalyzer.IsAnalyzing;
 
@@ -57,7 +55,7 @@ namespace flowpad.Services.Ink
                 return false;
             }
 
-            if (clean == true)
+            if (clean)
             {
                 InkAnalyzer.ClearDataForAllStrokes();
                 InkAnalyzer.AddDataForStrokes(_strokesService.GetStrokes());
@@ -74,10 +72,7 @@ namespace flowpad.Services.Ink
             if (node == null)
             {
                 node = FindHitNodeByKind(position, InkAnalysisNodeKind.InkBullet);
-                if (node == null)
-                {
-                    node = FindHitNodeByKind(position, InkAnalysisNodeKind.InkDrawing);
-                }
+                if (node == null) node = FindHitNodeByKind(position, InkAnalysisNodeKind.InkDrawing);
             }
 
             return node;
@@ -109,10 +104,8 @@ namespace flowpad.Services.Ink
             StopTimer();
 
             foreach (var stroke in strokes)
-            {
                 // Remove strokes from InkAnalyzer
                 InkAnalyzer.RemoveDataForStroke(stroke.Id);
-            }
 
             StartTimer();
         }
@@ -128,36 +121,44 @@ namespace flowpad.Services.Ink
             InkAnalyzer.ClearDataForAllStrokes();
         }
 
-        public void StartTimer() => dispatcherTimer.Start();
+        public void StartTimer()
+        {
+            dispatcherTimer.Start();
+        }
 
-        public void StopTimer() => dispatcherTimer.Stop();
+        public void StopTimer()
+        {
+            dispatcherTimer.Stop();
+        }
 
         private IInkAnalysisNode FindHitNodeByKind(Point position, InkAnalysisNodeKind kind)
         {
             var nodes = InkAnalyzer.AnalysisRoot.FindNodes(kind);
             foreach (var node in nodes)
-            {
                 if (RectHelper.Contains(node.BoundingRect, position))
-                {
                     return node;
-                }
-            }
 
             return null;
         }
 
-        private void StrokesService_AddStrokeEvent(object sender, AddStrokeEventArgs e) => AddStroke(e.NewStroke);
+        private void StrokesService_AddStrokeEvent(object sender, AddStrokeEventArgs e)
+        {
+            AddStroke(e.NewStroke);
+        }
 
-        private void StrokesService_RemoveStrokeEvent(object sender, RemoveEventArgs e) => RemoveStroke(e.RemovedStroke);
+        private void StrokesService_RemoveStrokeEvent(object sender, RemoveEventArgs e)
+        {
+            RemoveStroke(e.RemovedStroke);
+        }
 
-        private void StrokesService_ClearStrokesEvent(object sender, EventArgs e) => ClearAnalysis();
+        private void StrokesService_ClearStrokesEvent(object sender, EventArgs e)
+        {
+            ClearAnalysis();
+        }
 
         private async void StrokesService_MoveStrokesEvent(object sender, MoveStrokesEventArgs e)
         {
-            foreach (var stroke in e.Strokes)
-            {
-                ReplaceStroke(stroke);
-            }
+            foreach (var stroke in e.Strokes) ReplaceStroke(stroke);
 
             // Strokes are moved and the analysis result is not valid anymore.
             await AnalyzeAsync(true);
@@ -165,22 +166,22 @@ namespace flowpad.Services.Ink
 
         private void StrokesService_PasteStrokesEvent(object sender, CopyPasteStrokesEventArgs e)
         {
-            foreach (var stroke in e.Strokes)
-            {
-                AddStroke(stroke);
-            }
+            foreach (var stroke in e.Strokes) AddStroke(stroke);
         }
 
         private void StrokesService_CutStrokesEvent(object sender, CopyPasteStrokesEventArgs e)
         {
-            foreach (var stroke in e.Strokes)
-            {
-                RemoveStroke(stroke);
-            }
+            foreach (var stroke in e.Strokes) RemoveStroke(stroke);
         }
 
-        private async void StrokesService_LoadInkFileEvent(object sender, EventArgs e) => await AnalyzeAsync(true);
+        private async void StrokesService_LoadInkFileEvent(object sender, EventArgs e)
+        {
+            await AnalyzeAsync(true);
+        }
 
-        private async void DispatcherTimer_Tick(object sender, object e) => await AnalyzeAsync();
+        private async void DispatcherTimer_Tick(object sender, object e)
+        {
+            await AnalyzeAsync();
+        }
     }
 }

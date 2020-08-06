@@ -9,21 +9,24 @@
     Background="Transparent">
     <Grid Background="Transparent">
         <StackPanel>
-            <CommandBar Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="False" OverflowButtonVisibility="Collapsed">
-                <AppBarButton x:Name="Ortb" Icon="Add" Label="Save current site offline" Click="AddOffline"></AppBarButton>
+            <CommandBar Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}"
+                        DefaultLabelPosition="Right" IsDynamicOverflowEnabled="False"
+                        OverflowButtonVisibility="Collapsed">
+                <AppBarButton x:Name="Ortb" Icon="Add" Label="Save current site offline" Click="AddOffline" />
             </CommandBar>
             <ListView
-                   Background="Transparent"
-  SelectionMode="None"
-    x:Name="Offlines"
-    HorizontalAlignment="Left">
+                Background="Transparent"
+                SelectionMode="None"
+                x:Name="Offlines"
+                HorizontalAlignment="Left">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="5"  Background="Transparent">
-                            <Image Height="15" Width="15" Source="{Binding FavIconJSON}" Margin="5"/>
-                            <TextBlock Text="{Binding HeaderJSON}" Margin="0,5,0,5"/>
-                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="Transparent">
-                                <AppBarButton Icon="Delete" Click="DeleteOffline" Background="Transparent"></AppBarButton>
+                        <StackPanel Orientation="Horizontal" Margin="5" Background="Transparent">
+                            <Image Height="15" Width="15" Source="{Binding FavIconJSON}" Margin="5" />
+                            <TextBlock Text="{Binding HeaderJSON}" Margin="0,5,0,5" />
+                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"
+                                        Background="Transparent">
+                                <AppBarButton Icon="Delete" Click="DeleteOffline" Background="Transparent" />
                             </CommandBar>
                         </StackPanel>
                     </DataTemplate>

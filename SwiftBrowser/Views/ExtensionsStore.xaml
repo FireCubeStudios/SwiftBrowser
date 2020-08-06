@@ -11,31 +11,36 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
         <Grid>
-           
+
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                <Image Source="/Assets/2073122.png" x:Name="icon" Margin="10" Width="50" Height="50"></Image>
+                <Image Source="/Assets/2073122.png" x:Name="icon" Margin="10" Width="50" Height="50" />
                 <Button IsEnabled="False">submit extension</Button>
             </StackPanel>
-            <ListView x:Name="ExtensionsList" Margin="5" VerticalAlignment="Bottom" ScrollViewer.VerticalScrollBarVisibility="Visible" Height="800" ScrollViewer.VerticalScrollMode="Enabled">
+            <ListView x:Name="ExtensionsList" Margin="5" VerticalAlignment="Bottom"
+                      ScrollViewer.VerticalScrollBarVisibility="Visible" Height="800"
+                      ScrollViewer.VerticalScrollMode="Enabled">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
-                            <StackPanel>
-                                <Image Height="50" Width="50" Source="{Binding IconJSON}" Margin="2"></Image>
-                            </StackPanel>
                                 <StackPanel>
-                                    <TextBlock Text="{Binding NameJSON}" Margin="2" FontSize="25"></TextBlock>
-                                    <TextBlock Text="{Binding DescriptionJSON}" Margin="2"></TextBlock>
+                                    <Image Height="50" Width="50" Source="{Binding IconJSON}" Margin="2" />
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding NameJSON}" Margin="2" FontSize="25" />
+                                    <TextBlock Text="{Binding DescriptionJSON}" Margin="2" />
                                 </StackPanel>
                             </StackPanel>
-                            <ToggleSwitch x:Name="Toggle" IsOn="{Binding IsEnabledJSON}" Margin="5" Header="Enable:" Toggled="Toggle_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
-                            <ToggleSwitch x:Name="ToggleToolbar" IsOn="{Binding IsToolbar}" Margin="5" Header="Show in toolbar:" Toggled="ToggleToolbar_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
+                            <ToggleSwitch x:Name="Toggle" IsOn="{Binding IsEnabledJSON}" Margin="5" Header="Enable:"
+                                          Toggled="Toggle_Toggled" OnContent="Enabled" OffContent="Disabled" />
+                            <ToggleSwitch x:Name="ToggleToolbar" IsOn="{Binding IsToolbar}" Margin="5"
+                                          Header="Show in toolbar:" Toggled="ToggleToolbar_Toggled" OnContent="Enabled"
+                                          OffContent="Disabled" />
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-           <!-- <controls:Loading x:Name="LoadingControl" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <!-- <controls:Loading x:Name="LoadingControl" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <controls:Loading.Background>
                     <SolidColorBrush Color="Black" Opacity="0.7" />
                 </controls:Loading.Background>
@@ -44,7 +49,7 @@
                     <TextBlock Margin="5">Saving changes</TextBlock>
                 </StackPanel>
             </controls:Loading>-->
-    </Grid>
+        </Grid>
     </ScrollViewer>
-   
+
 </Page>

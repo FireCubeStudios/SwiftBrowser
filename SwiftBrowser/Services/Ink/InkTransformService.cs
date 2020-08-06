@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Input.Inking;
@@ -16,8 +15,8 @@ namespace flowpad.Services.Ink
 {
     public class InkTransformService
     {
-        private readonly InkAnalyzer _inkAnalyzer;
         private readonly Canvas _drawingCanvas;
+        private readonly InkAnalyzer _inkAnalyzer;
         private readonly InkStrokesService _strokeService;
 
         public InkTransformService(Canvas drawingCanvas, InkStrokesService strokeService)
@@ -27,16 +26,19 @@ namespace flowpad.Services.Ink
             _inkAnalyzer = new InkAnalyzer();
         }
 
-        public IEnumerable<UIElement> GetTextAndShapes() => _drawingCanvas.Children;
+        public IEnumerable<UIElement> GetTextAndShapes()
+        {
+            return _drawingCanvas.Children;
+        }
 
-        public void AddUIElement(UIElement element) => _drawingCanvas.Children.Add(element);
+        public void AddUIElement(UIElement element)
+        {
+            _drawingCanvas.Children.Add(element);
+        }
 
         public void RemoveUIElement(UIElement element)
         {
-            if (_drawingCanvas.Children.Contains(element))
-            {
-                _drawingCanvas.Children.Remove(element);
-            }
+            if (_drawingCanvas.Children.Contains(element)) _drawingCanvas.Children.Remove(element);
         }
 
         public async Task<InkTransformResult> TransformTextAndShapesAsync()
@@ -65,7 +67,10 @@ namespace flowpad.Services.Ink
             return result;
         }
 
-        public bool HasTextAndShapes() => _drawingCanvas.Children.Any();
+        public bool HasTextAndShapes()
+        {
+            return _drawingCanvas.Children.Any();
+        }
 
         public void ClearTextAndShapes()
         {
@@ -101,14 +106,11 @@ namespace flowpad.Services.Ink
                 }
                 else
                 {
-                    if (node.DrawingKind == InkAnalysisDrawingKind.Circle || node.DrawingKind == InkAnalysisDrawingKind.Ellipse)
-                    {
+                    if (node.DrawingKind == InkAnalysisDrawingKind.Circle ||
+                        node.DrawingKind == InkAnalysisDrawingKind.Ellipse)
                         yield return DrawEllipse(node);
-                    }
                     else
-                    {
                         yield return DrawPolygon(node);
-                    }
 
                     _strokeService.RemoveStrokesByIds(strokesIds);
                 }
@@ -119,7 +121,7 @@ namespace flowpad.Services.Ink
 
         private UIElement DrawText(string recognizedText, Rect boundingRect)
         {
-            TextBlock text = new TextBlock();
+            var text = new TextBlock();
             Canvas.SetTop(text, boundingRect.Top);
             Canvas.SetLeft(text, boundingRect.Left);
 
@@ -134,23 +136,23 @@ namespace flowpad.Services.Ink
         private UIElement DrawEllipse(InkAnalysisInkDrawing shape)
         {
             var points = shape.Points;
-            Ellipse ellipse = new Ellipse();
-            ellipse.Width = Math.Sqrt(((points[0].X - points[2].X) * (points[0].X - points[2].X)) +
-                 ((points[0].Y - points[2].Y) * (points[0].Y - points[2].Y)));
-            ellipse.Height = Math.Sqrt(((points[1].X - points[3].X) * (points[1].X - points[3].X)) +
-                 ((points[1].Y - points[3].Y) * (points[1].Y - points[3].Y)));
+            var ellipse = new Ellipse();
+            ellipse.Width = Math.Sqrt((points[0].X - points[2].X) * (points[0].X - points[2].X) +
+                                      (points[0].Y - points[2].Y) * (points[0].Y - points[2].Y));
+            ellipse.Height = Math.Sqrt((points[1].X - points[3].X) * (points[1].X - points[3].X) +
+                                       (points[1].Y - points[3].Y) * (points[1].Y - points[3].Y));
 
             var rotAngle = Math.Atan2(points[2].Y - points[0].Y, points[2].X - points[0].X);
-            RotateTransform rotateTransform = new RotateTransform();
+            var rotateTransform = new RotateTransform();
             rotateTransform.Angle = rotAngle * 180 / Math.PI;
             rotateTransform.CenterX = ellipse.Width / 2.0;
             rotateTransform.CenterY = ellipse.Height / 2.0;
 
-            TranslateTransform translateTransform = new TranslateTransform();
-            translateTransform.X = shape.Center.X - (ellipse.Width / 2.0);
-            translateTransform.Y = shape.Center.Y - (ellipse.Height / 2.0);
+            var translateTransform = new TranslateTransform();
+            translateTransform.X = shape.Center.X - ellipse.Width / 2.0;
+            translateTransform.Y = shape.Center.Y - ellipse.Height / 2.0;
 
-            TransformGroup transformGroup = new TransformGroup();
+            var transformGroup = new TransformGroup();
             transformGroup.Children.Add(rotateTransform);
             transformGroup.Children.Add(translateTransform);
             ellipse.RenderTransform = transformGroup;
@@ -166,14 +168,11 @@ namespace flowpad.Services.Ink
         private UIElement DrawPolygon(InkAnalysisInkDrawing shape)
         {
             var points = shape.Points;
-            Polygon polygon = new Polygon();
+            var polygon = new Polygon();
 
-            foreach (var point in points)
-            {
-                polygon.Points.Add(point);
-            }
+            foreach (var point in points) polygon.Points.Add(point);
 
-            var brush = new SolidColorBrush(Windows.UI.ColorHelper.FromArgb(255, 0, 0, 255));
+            var brush = new SolidColorBrush(ColorHelper.FromArgb(255, 0, 0, 255));
             polygon.Stroke = brush;
             polygon.StrokeThickness = 2;
             _drawingCanvas.Children.Add(polygon);
@@ -185,10 +184,7 @@ namespace flowpad.Services.Ink
         {
             var selectedStrokes = _strokeService.GetSelectedStrokes();
 
-            if (selectedStrokes.Any())
-            {
-                return selectedStrokes;
-            }
+            if (selectedStrokes.Any()) return selectedStrokes;
 
             return _strokeService.GetStrokes();
         }

@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Windows.Devices.Input;
 using Windows.UI.Core;
 using Windows.UI.Input.Inking;
@@ -19,13 +18,11 @@ namespace flowpad.Services.Ink
         {
             _inkCanvas = inkCanvas;
             _inkCanvas.InkPresenter.InputDeviceTypes = CoreInputDeviceTypes.Mouse |
-                                                      CoreInputDeviceTypes.Pen |
-                                                      CoreInputDeviceTypes.Touch;
+                                                       CoreInputDeviceTypes.Pen |
+                                                       CoreInputDeviceTypes.Touch;
 
             _inkCanvas.InkPresenter.UnprocessedInput.PointerEntered += UnprocessedInput_PointerEntered;
         }
-
-        public event EventHandler<EventArgs> DetectPenEvent;
 
         public bool EnableMouse
         {
@@ -57,12 +54,12 @@ namespace flowpad.Services.Ink
             }
         }
 
+        public event EventHandler<EventArgs> DetectPenEvent;
+
         private void UnprocessedInput_PointerEntered(InkUnprocessedInput sender, PointerEventArgs e)
         {
             if (e.CurrentPoint.PointerDevice.PointerDeviceType == PointerDeviceType.Pen)
-            {
                 DetectPenEvent?.Invoke(this, EventArgs.Empty);
-            }
         }
 
         private void UpdateInputDevice(CoreInputDeviceTypes inputDevice, bool isEnabled)

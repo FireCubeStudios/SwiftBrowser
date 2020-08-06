@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
         <Grid>
-            <Image x:Name="OfflineImage" Stretch="Fill"></Image>
+            <Image x:Name="OfflineImage" Stretch="Fill" />
         </Grid>
     </ScrollViewer>
 </Page>

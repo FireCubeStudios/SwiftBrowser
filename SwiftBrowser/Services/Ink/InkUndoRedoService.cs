@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using flowpad.EventHandlers.Ink;
-using Flowpad.Services.Ink.UndoRedo;
 using Windows.UI.Input.Inking;
 using Windows.UI.Xaml.Controls;
+using flowpad.EventHandlers.Ink;
+using Flowpad.Services.Ink.UndoRedo;
 
 namespace flowpad.Services.Ink
 {
     public class InkUndoRedoService
     {
         private readonly InkStrokesService _strokeService;
+        private readonly Stack<IUndoRedoOperation> redoStack = new Stack<IUndoRedoOperation>();
 
-        private Stack<IUndoRedoOperation> undoStack = new Stack<IUndoRedoOperation>();
-        private Stack<IUndoRedoOperation> redoStack = new Stack<IUndoRedoOperation>();
+        private readonly Stack<IUndoRedoOperation> undoStack = new Stack<IUndoRedoOperation>();
 
         public InkUndoRedoService(InkCanvas inkCanvas, InkStrokesService strokeService)
         {
@@ -24,6 +24,10 @@ namespace flowpad.Services.Ink
             _strokeService.CutStrokesEvent += StrokeService_CutStrokesEvent;
             _strokeService.PasteStrokesEvent += StrokeService_PasteStrokesEvent;
         }
+
+        public bool CanUndo => undoStack.Any();
+
+        public bool CanRedo => redoStack.Any();
 
         public event EventHandler<EventArgs> UndoEvent;
 
@@ -38,16 +42,9 @@ namespace flowpad.Services.Ink
             AddUndoOperationEvent?.Invoke(this, EventArgs.Empty);
         }
 
-        public bool CanUndo => undoStack.Any();
-
-        public bool CanRedo => redoStack.Any();
-
         public void Undo()
         {
-            if (!CanUndo)
-            {
-                return;
-            }
+            if (!CanUndo) return;
 
             _strokeService.MoveStrokesEvent -= StrokeService_MoveStrokesEvent;
 
@@ -61,10 +58,7 @@ namespace flowpad.Services.Ink
 
         public void Redo()
         {
-            if (!CanRedo)
-            {
-                return;
-            }
+            if (!CanRedo) return;
 
             _strokeService.MoveStrokesEvent -= StrokeService_MoveStrokesEvent;
 
@@ -78,23 +72,32 @@ namespace flowpad.Services.Ink
 
         public void AddOperation(IUndoRedoOperation operation)
         {
-            if (operation == null)
-            {
-                return;
-            }
+            if (operation == null) return;
 
             undoStack.Push(operation);
             redoStack.Clear();
             AddUndoOperationEvent?.Invoke(this, EventArgs.Empty);
         }
 
-        private void StrokeService_StrokesCollected(object sender, InkStrokesCollectedEventArgs e) => AddStrokesOperation(e.Strokes);
+        private void StrokeService_StrokesCollected(object sender, InkStrokesCollectedEventArgs e)
+        {
+            AddStrokesOperation(e.Strokes);
+        }
 
-        private void StrokeService_StrokesErased(object sender, InkStrokesErasedEventArgs e) => RemoveStrokesOperation(e.Strokes);
+        private void StrokeService_StrokesErased(object sender, InkStrokesErasedEventArgs e)
+        {
+            RemoveStrokesOperation(e.Strokes);
+        }
 
-        private void StrokeService_CutStrokesEvent(object sender, CopyPasteStrokesEventArgs e) => RemoveStrokesOperation(e.Strokes);
+        private void StrokeService_CutStrokesEvent(object sender, CopyPasteStrokesEventArgs e)
+        {
+            RemoveStrokesOperation(e.Strokes);
+        }
 
-        private void StrokeService_PasteStrokesEvent(object sender, CopyPasteStrokesEventArgs e) => AddStrokesOperation(e.Strokes);
+        private void StrokeService_PasteStrokesEvent(object sender, CopyPasteStrokesEventArgs e)
+        {
+            AddStrokesOperation(e.Strokes);
+        }
 
         private void StrokeService_MoveStrokesEvent(object sender, MoveStrokesEventArgs e)
         {

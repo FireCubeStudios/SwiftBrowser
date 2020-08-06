@@ -12,8 +12,8 @@ namespace LastPass
             EncryptionKey = encryptionKey;
         }
 
-        public string Id { get; private set; }
-        public string Name { get; private set; }
-        public byte[] EncryptionKey { get; private set; }
+        public string Id { get; }
+        public string Name { get; }
+        public byte[] EncryptionKey { get; }
     }
 }

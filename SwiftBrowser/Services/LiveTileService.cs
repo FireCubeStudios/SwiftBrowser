@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-
-using SwiftBrowser.Activation;
-using SwiftBrowser.Helpers;
-
 using Windows.ApplicationModel.Activation;
 using Windows.Storage;
 using Windows.UI.Notifications;
 using Windows.UI.StartScreen;
+using SwiftBrowser.Activation;
+using SwiftBrowser.Helpers;
 
 namespace SwiftBrowser.Services
 {
-    internal partial class LiveTileService : ActivationHandler<LaunchActivatedEventArgs>
+    internal class LiveTileService : ActivationHandler<LaunchActivatedEventArgs>
     {
         private const string QueueEnabledKey = "LiveTileNotificationQueueEnabled";
 
@@ -42,10 +40,7 @@ namespace SwiftBrowser.Services
         {
             try
             {
-                if (!await IsAlreadyPinnedAsync(tile) || allowDuplicity)
-                {
-                    return await tile.RequestCreateAsync();
-                }
+                if (!await IsAlreadyPinnedAsync(tile) || allowDuplicity) return await tile.RequestCreateAsync();
 
                 return false;
             }

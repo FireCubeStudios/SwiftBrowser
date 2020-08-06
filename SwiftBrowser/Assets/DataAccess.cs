@@ -1,88 +1,85 @@
-﻿using Microsoft.Data.Sqlite;
-using Newtonsoft.Json;
-using SwiftBrowser.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.Storage;
-using Windows.UI.Popups;
+using Microsoft.Data.Sqlite;
+using Newtonsoft.Json;
+using SwiftBrowser.Models;
 
 namespace SwiftBrowser.Assets
 {
     public static class DataAccess
     {
-        public async static void InitializeDatabase()
+        public static async void InitializeDatabase()
         {
-            await ApplicationData.Current.LocalFolder.CreateFileAsync("sqliteHistory.db", CreationCollisionOption.OpenIfExists);
-            string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
-            using (SqliteConnection db =
-               new SqliteConnection($"Filename={dbpath}"))
+            await ApplicationData.Current.LocalFolder.CreateFileAsync("sqliteHistory.db",
+                CreationCollisionOption.OpenIfExists);
+            var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
+            using (var db =
+                new SqliteConnection($"Filename={dbpath}"))
             {
                 db.Open();
 
-                String tableCommand = "CREATE TABLE IF NOT " +
-                    "EXISTS MyTable (Primary_Key INTEGER PRIMARY KEY, " +
-                    "Site VARCHAR(20), Header VARCHAR(20), ID VARCHAR(20))";
+                var tableCommand = "CREATE TABLE IF NOT " +
+                                   "EXISTS MyTable (Primary_Key INTEGER PRIMARY KEY, " +
+                                   "Site VARCHAR(20), Header VARCHAR(20), ID VARCHAR(20))";
 
-                SqliteCommand createTable = new SqliteCommand(tableCommand, db);
+                var createTable = new SqliteCommand(tableCommand, db);
 
                 createTable.ExecuteReader();
             }
         }
-        public class HistoryClassList
-        {
-            public List<HistoryClass> Websites { get; set; }
-        }
 
-        public async static Task<Stack<HistoryClass>> GetData()
+        public static async Task<Stack<HistoryClass>> GetData()
         {
-            Stack<HistoryClass> entries = new Stack<HistoryClass>();
+            var entries = new Stack<HistoryClass>();
             await Task.Run(() =>
             {
-                string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
-                using (SqliteConnection db =
-                  new SqliteConnection($"Filename={dbpath}"))
+                var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
+                using (var db =
+                    new SqliteConnection($"Filename={dbpath}"))
                 {
                     db.Open();
 
-                    SqliteCommand selectCommand = new SqliteCommand
-                       ("SELECT * FROM MyTable", db);
+                    var selectCommand = new SqliteCommand
+                        ("SELECT * FROM MyTable", db);
 
-                    SqliteDataReader query = selectCommand.ExecuteReader();
+                    var query = selectCommand.ExecuteReader();
 
                     while (query.Read())
                     {
-                        Uri ArgsUri = new Uri(query.GetString(1));
-                        string host = ArgsUri.Host;
-                        entries.Push(new HistoryClass()
+                        var ArgsUri = new Uri(query.GetString(1));
+                        var host = ArgsUri.Host;
+                        entries.Push(new HistoryClass
                         {
                             HeaderSQL = query.GetString(2),
                             UrlSQL = query.GetString(1),
                             IdSQL = query.GetString(3),
-                            FavIconSQL = "http://icons.duckduckgo.com/ip2/" + host + ".ico",
+                            FavIconSQL = "http://icons.duckduckgo.com/ip2/" + host + ".ico"
                         });
                     }
 
                     db.Close();
                 }
+
                 return entries;
             });
             return entries;
         }
-        public async static void AddDataS(string inputText, string inputHeaderText)
+
+        public static async void AddDataS(string inputText, string inputHeaderText)
         {
             await Task.Run(() =>
             {
-                string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
-                using (SqliteConnection db =
-                  new SqliteConnection($"Filename={dbpath}"))
+                var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
+                using (var db =
+                    new SqliteConnection($"Filename={dbpath}"))
                 {
                     db.Open();
 
-                    SqliteCommand insertCommand = new SqliteCommand();
+                    var insertCommand = new SqliteCommand();
                     insertCommand.Connection = db;
 
                     // Use parameterized query to prevent SQL injection attacks
@@ -91,25 +88,26 @@ namespace SwiftBrowser.Assets
                     //   insertCommand.CommandText = "INSERT INTO MyTable VALUES (NULL, @Entry);";
                     insertCommand.Parameters.AddWithValue("@Entry", inputText);
                     insertCommand.Parameters.AddWithValue("@Header", inputHeaderText);
-                    Random r = new Random();
+                    var r = new Random();
                     insertCommand.Parameters.AddWithValue("@ID", r.Next().ToString());
                     insertCommand.ExecuteReader();
 
                     db.Close();
                 }
             });
-            }
-            public async static void AddData(string inputText, string inputHeaderText)
+        }
+
+        public static async void AddData(string inputText, string inputHeaderText)
         {
             await Task.Run(() =>
             {
-                string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
-                using (SqliteConnection db =
-                  new SqliteConnection($"Filename={dbpath}"))
+                var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
+                using (var db =
+                    new SqliteConnection($"Filename={dbpath}"))
                 {
                     db.Open();
 
-                    SqliteCommand insertCommand = new SqliteCommand();
+                    var insertCommand = new SqliteCommand();
                     insertCommand.Connection = db;
 
                     // Use parameterized query to prevent SQL injection attacks
@@ -118,7 +116,7 @@ namespace SwiftBrowser.Assets
                     //   insertCommand.CommandText = "INSERT INTO MyTable VALUES (NULL, @Entry);";
                     insertCommand.Parameters.AddWithValue("@Entry", inputText);
                     insertCommand.Parameters.AddWithValue("@Header", inputHeaderText);
-                    Random r = new Random();
+                    var r = new Random();
                     insertCommand.Parameters.AddWithValue("@ID", r.Next().ToString());
                     insertCommand.ExecuteReader();
 
@@ -127,93 +125,93 @@ namespace SwiftBrowser.Assets
             });
             try
             {
-
-
-                if ((bool)Windows.Storage.ApplicationData.Current.RoamingSettings.Values["Syncing"] == true)
+                if ((bool) ApplicationData.Current.RoamingSettings.Values["Syncing"])
                 {
                     //  try
                     // {
-                    if ((bool)Windows.Storage.ApplicationData.Current.RoamingSettings.Values["NewData"] == false)
+                    if ((bool) ApplicationData.Current.RoamingSettings.Values["NewData"] == false)
                     {
-                        Windows.Storage.ApplicationData.Current.RoamingSettings.Values["SyncId"] = Windows.Storage.ApplicationData.Current.LocalSettings.Values["SyncId"];
-                        StorageFolder roaming = Windows.Storage.ApplicationData.Current.RoamingFolder;
-                        StorageFile SyncFile = await roaming.CreateFileAsync("SyncFile.json", CreationCollisionOption.OpenIfExists);
-                        string Data = await FileIO.ReadTextAsync(SyncFile);
+                        ApplicationData.Current.RoamingSettings.Values["SyncId"] =
+                            ApplicationData.Current.LocalSettings.Values["SyncId"];
+                        var roaming = ApplicationData.Current.RoamingFolder;
+                        var SyncFile =
+                            await roaming.CreateFileAsync("SyncFile.json", CreationCollisionOption.OpenIfExists);
+                        var Data = await FileIO.ReadTextAsync(SyncFile);
                         try
                         {
-                            SyncClass SyncListJSON = JsonConvert.DeserializeObject<SyncClass>(Data);
-                            Uri ArgsUri = new Uri(inputText);
-                            string host = ArgsUri.Host;
-                            SyncListJSON.Sync.Add(new SyncJSON()
+                            var SyncListJSON = JsonConvert.DeserializeObject<SyncClass>(Data);
+                            var ArgsUri = new Uri(inputText);
+                            var host = ArgsUri.Host;
+                            SyncListJSON.Sync.Add(new SyncJSON
                             {
                                 HeaderJSON = inputHeaderText,
                                 UrlJSON = inputText,
-                                FavIconJSON = "http://icons.duckduckgo.com/ip2/" + host + ".ico",
+                                FavIconJSON = "http://icons.duckduckgo.com/ip2/" + host + ".ico"
                             });
-                            Windows.Storage.ApplicationData.Current.RoamingSettings.Values["NewData"] = true;
+                            ApplicationData.Current.RoamingSettings.Values["NewData"] = true;
                             var SerializedObject = JsonConvert.SerializeObject(SyncListJSON, Formatting.Indented);
-                            await Windows.Storage.FileIO.WriteTextAsync(SyncFile, SerializedObject);
+                            await FileIO.WriteTextAsync(SyncFile, SerializedObject);
                         }
                         catch
                         {
-                            Windows.Storage.ApplicationData.Current.RoamingSettings.Values["SyncId"] = Windows.Storage.ApplicationData.Current.LocalSettings.Values["SyncId"];
-                            string filepath = @"Assets\SyncFile.json";
-                            StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-                            StorageFile file = await folder.GetFileAsync(filepath);
-                            SyncClass SyncListJSON = JsonConvert.DeserializeObject<SyncClass>(await FileIO.ReadTextAsync(file));
-                            Uri ArgsUri = new Uri(inputText);
-                            string host = ArgsUri.Host;
-                            SyncListJSON.Sync.Add(new SyncJSON()
+                            ApplicationData.Current.RoamingSettings.Values["SyncId"] =
+                                ApplicationData.Current.LocalSettings.Values["SyncId"];
+                            var filepath = @"Assets\SyncFile.json";
+                            var folder = Package.Current.InstalledLocation;
+                            var file = await folder.GetFileAsync(filepath);
+                            var SyncListJSON =
+                                JsonConvert.DeserializeObject<SyncClass>(await FileIO.ReadTextAsync(file));
+                            var ArgsUri = new Uri(inputText);
+                            var host = ArgsUri.Host;
+                            SyncListJSON.Sync.Add(new SyncJSON
                             {
                                 HeaderJSON = inputHeaderText,
                                 UrlJSON = inputText,
-                                FavIconJSON = "http://icons.duckduckgo.com/ip2/" + host + ".ico",
+                                FavIconJSON = "http://icons.duckduckgo.com/ip2/" + host + ".ico"
                             });
                             var SerializedObject = JsonConvert.SerializeObject(SyncListJSON, Formatting.Indented);
-                            StorageFolder roamingX = Windows.Storage.ApplicationData.Current.RoamingFolder;
-                            StorageFile SyncFileX = await roamingX.GetFileAsync("SyncFile.json");
+                            var roamingX = ApplicationData.Current.RoamingFolder;
+                            var SyncFileX = await roamingX.GetFileAsync("SyncFile.json");
                             await FileIO.WriteTextAsync(SyncFileX, SerializedObject);
-                            Windows.Storage.ApplicationData.Current.RoamingSettings.Values["NewData"] = true;
+                            ApplicationData.Current.RoamingSettings.Values["NewData"] = true;
                         }
 
                         //ApplicationData.Current.RoamingSettings.Values["NewData"] = true;
                     }
                     else
                     {
-
                         //  try
                         // {
-                        if ((bool)Windows.Storage.ApplicationData.Current.RoamingSettings.Values["Syncing"] == true)
+                        if ((bool) ApplicationData.Current.RoamingSettings.Values["Syncing"])
                         {
                             // try
                             // {
-                            if ((bool)Windows.Storage.ApplicationData.Current.RoamingSettings.Values["NewData"] == true)
+                            if ((bool) ApplicationData.Current.RoamingSettings.Values["NewData"])
                             {
-                                Windows.Storage.ApplicationData.Current.RoamingSettings.Values["SyncId"] = Windows.Storage.ApplicationData.Current.LocalSettings.Values["SyncId"];
-                                Windows.Storage.ApplicationData.Current.RoamingSettings.Values["NewData"] = false;
-                                StorageFolder roaming = Windows.Storage.ApplicationData.Current.RoamingFolder;
-                                StorageFile SyncFile = await roaming.GetFileAsync("SyncFile.json");
-                                string Data = await FileIO.ReadTextAsync(SyncFile);
-                                SyncClass SyncListJSON = JsonConvert.DeserializeObject<SyncClass>(Data);
-                                foreach (var item in SyncListJSON.Sync)
-                                {
-                                    DataAccess.AddDataS(item.UrlJSON, item.HeaderJSON);
-                                }
+                                ApplicationData.Current.RoamingSettings.Values["SyncId"] =
+                                    ApplicationData.Current.LocalSettings.Values["SyncId"];
+                                ApplicationData.Current.RoamingSettings.Values["NewData"] = false;
+                                var roaming = ApplicationData.Current.RoamingFolder;
+                                var SyncFile = await roaming.GetFileAsync("SyncFile.json");
+                                var Data = await FileIO.ReadTextAsync(SyncFile);
+                                var SyncListJSON = JsonConvert.DeserializeObject<SyncClass>(Data);
+                                foreach (var item in SyncListJSON.Sync) AddDataS(item.UrlJSON, item.HeaderJSON);
                                 ApplicationData.Current.RoamingSettings.Values["NewData"] = false;
                                 await SyncFile.DeleteAsync();
                             }
                             else
                             {
-                                StorageFolder roaming = Windows.Storage.ApplicationData.Current.RoamingFolder;
+                                var roaming = ApplicationData.Current.RoamingFolder;
                                 try
                                 {
-                                    StorageFile SyncFile = await roaming.CreateFileAsync("SyncFile.json", CreationCollisionOption.FailIfExists);
+                                    var SyncFile = await roaming.CreateFileAsync("SyncFile.json",
+                                        CreationCollisionOption.FailIfExists);
                                 }
                                 catch
                                 {
-
                                 }
                             }
+
                             // }
                             /*   catch
                                {
@@ -229,21 +227,52 @@ namespace SwiftBrowser.Assets
                                    }
                                }*/
                         }
+
                         // }
                         /*  catch
                           {
                               Windows.Storage.ApplicationData.Current.RoamingSettings.Values["Syncing"] = false;
                           }*/
-
                     }
                 }
             }
             catch
             {
-                Windows.Storage.ApplicationData.Current.RoamingSettings.Values["Syncing"] = false;
+                ApplicationData.Current.RoamingSettings.Values["Syncing"] = false;
             }
-            
         }
+
+        public static async void RemoveData(HistoryClass id)
+        {
+            await Task.Run(() =>
+            {
+                var dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
+                using (var db =
+                    new SqliteConnection($"Filename={dbpath}"))
+                {
+                    db.Open();
+
+                    var DeleteCommand = new SqliteCommand();
+                    DeleteCommand.Connection = db;
+
+                    // Use parameterized query to prevent SQL injection attacks
+                    DeleteCommand.CommandText = "DELETE FROM MyTable WHERE ID = '" + id.IdSQL + "'";
+                    DeleteCommand.ExecuteNonQuery();
+                    // = "INSERT INTO MyTable(Col1, Col2) VALUES('Test Text ', 1); ";
+
+                    //  DeleteCommand.Parameters.Remove(id.HeaderSQL);
+                    //     DeleteCommand.ExecuteReader();
+
+                    db.Close();
+                }
+            });
+        }
+
+        public class HistoryClassList
+        {
+            public List<HistoryClass> Websites { get; set; }
+        }
+
         public class SyncClass
         {
             public List<SyncJSON> Sync { get; set; }
@@ -260,31 +289,6 @@ namespace SwiftBrowser.Assets
             public string HeaderJSON { get; set; }
             public string UrlJSON { get; set; }
             public string FavIconJSON { get; set; }
-        }
-        public async static void RemoveData(HistoryClass id)
-        {
-            await Task.Run(() =>
-            {
-                string dbpath = Path.Combine(ApplicationData.Current.LocalFolder.Path, "sqliteHistory.db");
-                using (SqliteConnection db =
-                  new SqliteConnection($"Filename={dbpath}"))
-                {
-                    db.Open();
-
-                    SqliteCommand DeleteCommand = new SqliteCommand();
-                    DeleteCommand.Connection = db;
-
-                    // Use parameterized query to prevent SQL injection attacks
-                    DeleteCommand.CommandText = "DELETE FROM MyTable WHERE ID = '" + id.IdSQL + "'";
-                    DeleteCommand.ExecuteNonQuery();
-                    // = "INSERT INTO MyTable(Col1, Col2) VALUES('Test Text ', 1); ";
-
-                    //  DeleteCommand.Parameters.Remove(id.HeaderSQL);
-                    //     DeleteCommand.ExecuteReader();
-
-                    db.Close();
-                }
-            });
         }
     }
 }

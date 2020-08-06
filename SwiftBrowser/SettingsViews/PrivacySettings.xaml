@@ -9,11 +9,13 @@
     Background="Transparent">
 
     <Grid>
-        <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="50,80,170,0" >
+        <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="50,80,170,0">
 
-            <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100"/>
+            <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100" />
 
         </Canvas>
-        <ToggleSwitch Header="Store timeline and history" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left" OffContent="Disabled" OnContent="Enabled" x:Name="privacyToggleHistory" Toggled="PrivacyToggleHistory_Toggled"></ToggleSwitch>
+        <ToggleSwitch Header="Store timeline and history" Margin="10" VerticalAlignment="Top"
+                      HorizontalAlignment="Left" OffContent="Disabled" OnContent="Enabled"
+                      x:Name="privacyToggleHistory" Toggled="PrivacyToggleHistory_Toggled" />
     </Grid>
 </Page>

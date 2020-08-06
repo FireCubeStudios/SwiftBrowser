@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using flowpad.EventHandlers.Ink;
-using flowpad.Services.Ink;
 using Windows.Foundation;
 using Windows.UI.Input.Inking;
+using flowpad.EventHandlers.Ink;
+using flowpad.Services.Ink;
 
 namespace Flowpad.Services.Ink.UndoRedo
 {
@@ -41,16 +41,10 @@ namespace Flowpad.Services.Ink.UndoRedo
 
         private void StrokeService_AddStrokeEvent(object sender, AddStrokeEventArgs e)
         {
-            if (e.NewStroke == null)
-            {
-                return;
-            }
+            if (e.NewStroke == null) return;
 
             var removedStrokes = _strokes.RemoveAll(s => s.Id == e.OldStroke?.Id);
-            if (removedStrokes > 0)
-            {
-                _strokes.Add(e.NewStroke);
-            }
+            if (removedStrokes > 0) _strokes.Add(e.NewStroke);
         }
     }
 }

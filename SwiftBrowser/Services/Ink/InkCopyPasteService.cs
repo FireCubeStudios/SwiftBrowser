@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Windows.Foundation;
 
 namespace flowpad.Services.Ink
@@ -18,12 +14,15 @@ namespace flowpad.Services.Ink
             _strokesService = strokesService;
         }
 
+        public bool CanCopy => _strokesService.GetSelectedStrokes().Any();
+
+        public bool CanCut => _strokesService.GetSelectedStrokes().Any();
+
+        public bool CanPaste => _strokesService.CanPaste;
+
         public Point Copy()
         {
-            if (!CanCopy)
-            {
-                return default(Point);
-            }
+            if (!CanCopy) return default;
 
             var rect = _strokesService.CopySelectedStrokes();
 
@@ -33,10 +32,7 @@ namespace flowpad.Services.Ink
 
         public Point Cut()
         {
-            if (!CanCut)
-            {
-                return default(Point);
-            }
+            if (!CanCut) return default;
 
             var rect = _strokesService.CutSelectedStrokes();
 
@@ -52,12 +48,9 @@ namespace flowpad.Services.Ink
             return Paste(pastePosition);
         }
 
-        public Rect Paste(Point position) => _strokesService.PasteSelectedStrokes(position);
-
-        public bool CanCopy => _strokesService.GetSelectedStrokes().Any();
-
-        public bool CanCut => _strokesService.GetSelectedStrokes().Any();
-
-        public bool CanPaste => _strokesService.CanPaste;
+        public Rect Paste(Point position)
+        {
+            return _strokesService.PasteSelectedStrokes(position);
+        }
     }
 }

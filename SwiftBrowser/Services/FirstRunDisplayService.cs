@@ -1,20 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using Microsoft.Toolkit.Uwp.Helpers;
-using Newtonsoft.Json;
-using SwiftBrowser.Assets;
-using SwiftBrowser.Views;
-
 using Windows.ApplicationModel.Core;
-using Windows.Storage;
 using Windows.UI.Core;
+using Microsoft.Toolkit.Uwp.Helpers;
+using SwiftBrowser.Views;
 
 namespace SwiftBrowser.Services
 {
     public static class FirstRunDisplayService
     {
+        private static bool shown;
+
+        internal static async Task ShowIfAppropriateAsync()
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
+                CoreDispatcherPriority.Normal, async () =>
+                {
+                    if (SystemInformation.Instance.IsFirstRun && !shown)
+                    {
+                        shown = true;
+
+
+                        var dialog = new FirstRunDialog();
+                        await dialog.ShowAsync();
+                    }
+                });
+        }
+
         public class SyncClass
         {
             public List<SyncJSON> Sync { get; set; }
@@ -31,22 +44,6 @@ namespace SwiftBrowser.Services
             public string HeaderJSON { get; set; }
             public string UrlJSON { get; set; }
             public string FavIconJSON { get; set; }
-        }
-        private static bool shown = false;
-        internal static async Task ShowIfAppropriateAsync()
-        {
-            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(
-                CoreDispatcherPriority.Normal, async () =>
-                {
-                    if (SystemInformation.IsFirstRun && !shown)
-                    {
-                        shown = true;
-
-                     
-                        var dialog = new FirstRunDialog();
-                        await dialog.ShowAsync();
-                    }
-                });
         }
     }
 }

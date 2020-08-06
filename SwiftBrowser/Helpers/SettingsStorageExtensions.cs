@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-
-using SwiftBrowser.Core.Helpers;
-
 using Windows.Storage;
 using Windows.Storage.Streams;
+using SwiftBrowser.Core.Helpers;
 
 namespace SwiftBrowser.Helpers
 {
@@ -30,10 +28,7 @@ namespace SwiftBrowser.Helpers
 
         public static async Task<T> ReadAsync<T>(this StorageFolder folder, string name)
         {
-            if (!File.Exists(Path.Combine(folder.Path, GetFileName(name))))
-            {
-                return default(T);
-            }
+            if (!File.Exists(Path.Combine(folder.Path, GetFileName(name)))) return default;
 
             var file = await folder.GetFileAsync($"{name}.json");
             var fileContent = await FileIO.ReadTextAsync(file);
@@ -55,25 +50,19 @@ namespace SwiftBrowser.Helpers
         {
             object obj = null;
 
-            if (settings.Values.TryGetValue(key, out obj))
-            {
-                return await Json.ToObjectAsync<T>((string)obj);
-            }
+            if (settings.Values.TryGetValue(key, out obj)) return await Json.ToObjectAsync<T>((string) obj);
 
-            return default(T);
+            return default;
         }
 
-        public static async Task<StorageFile> SaveFileAsync(this StorageFolder folder, byte[] content, string fileName, CreationCollisionOption options = CreationCollisionOption.ReplaceExisting)
+        public static async Task<StorageFile> SaveFileAsync(this StorageFolder folder, byte[] content, string fileName,
+            CreationCollisionOption options = CreationCollisionOption.ReplaceExisting)
         {
-            if (content == null)
-            {
-                throw new ArgumentNullException(nameof(content));
-            }
+            if (content == null) throw new ArgumentNullException(nameof(content));
 
             if (string.IsNullOrEmpty(fileName))
-            {
-                throw new ArgumentException("ExceptionSettingsStorageExtensionsFileNameIsNullOrEmpty".GetLocalized(), nameof(fileName));
-            }
+                throw new ArgumentException(
+                    "ExceptionSettingsStorageExtensionsFileNameIsNullOrEmpty".GetLocalizedSwift(), nameof(fileName));
 
             var storageFile = await folder.CreateFileAsync(fileName, options);
             await FileIO.WriteBytesAsync(storageFile, content);
@@ -84,10 +73,10 @@ namespace SwiftBrowser.Helpers
         {
             var item = await folder.TryGetItemAsync(fileName).AsTask().ConfigureAwait(false);
 
-            if ((item != null) && item.IsOfType(StorageItemTypes.File))
+            if (item != null && item.IsOfType(StorageItemTypes.File))
             {
                 var storageFile = await folder.GetFileAsync(fileName);
-                byte[] content = await storageFile.ReadBytesAsync();
+                var content = await storageFile.ReadBytesAsync();
                 return content;
             }
 
@@ -97,18 +86,16 @@ namespace SwiftBrowser.Helpers
         public static async Task<byte[]> ReadBytesAsync(this StorageFile file)
         {
             if (file != null)
-            {
                 using (IRandomAccessStream stream = await file.OpenReadAsync())
                 {
                     using (var reader = new DataReader(stream.GetInputStreamAt(0)))
                     {
-                        await reader.LoadAsync((uint)stream.Size);
+                        await reader.LoadAsync((uint) stream.Size);
                         var bytes = new byte[stream.Size];
                         reader.ReadBytes(bytes);
                         return bytes;
                     }
                 }
-            }
 
             return null;
         }

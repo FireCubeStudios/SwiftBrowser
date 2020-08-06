@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using SwiftBrowser.Activation;
-using SwiftBrowser.Core.Helpers;
-
 using Windows.ApplicationModel.Activation;
 using Windows.System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using SwiftBrowser.Activation;
+using SwiftBrowser.Core.Helpers;
 
 namespace SwiftBrowser.Services
 {
@@ -18,15 +16,17 @@ namespace SwiftBrowser.Services
     // https://github.com/Microsoft/WindowsTemplateStudio/blob/master/docs/activation.md
     internal class ActivationService
     {
+        public static readonly KeyboardAccelerator AltLeftKeyboardAccelerator =
+            BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu);
+
+        public static readonly KeyboardAccelerator
+            BackKeyboardAccelerator = BuildKeyboardAccelerator(VirtualKey.GoBack);
+
         private readonly App _app;
         private readonly Type _defaultNavItem;
-        private Lazy<UIElement> _shell;
 
         private object _lastActivationArgs;
-
-        public static readonly KeyboardAccelerator AltLeftKeyboardAccelerator = BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu);
-
-        public static readonly KeyboardAccelerator BackKeyboardAccelerator = BuildKeyboardAccelerator(VirtualKey.GoBack);
+        private readonly Lazy<UIElement> _shell;
 
         public ActivationService(App app, Type defaultNavItem, Lazy<UIElement> shell = null)
         {
@@ -49,10 +49,7 @@ namespace SwiftBrowser.Services
                 {
                     // Create a Shell or Frame to act as the navigation context
                     Window.Current.Content = _shell?.Value ?? new Frame();
-                    NavigationService.NavigationFailed += (sender, e) =>
-                    {
-                        throw e.Exception;
-                    };
+                    NavigationService.NavigationFailed += (sender, e) => { throw e.Exception; };
                 }
             }
 
@@ -71,19 +68,18 @@ namespace SwiftBrowser.Services
             }
         }
 
-        private static KeyboardAccelerator BuildKeyboardAccelerator(VirtualKey key, VirtualKeyModifiers? modifiers = null)
+        private static KeyboardAccelerator BuildKeyboardAccelerator(VirtualKey key,
+            VirtualKeyModifiers? modifiers = null)
         {
-            var keyboardAccelerator = new KeyboardAccelerator() { Key = key };
-            if (modifiers.HasValue)
-            {
-                keyboardAccelerator.Modifiers = modifiers.Value;
-            }
+            var keyboardAccelerator = new KeyboardAccelerator {Key = key};
+            if (modifiers.HasValue) keyboardAccelerator.Modifiers = modifiers.Value;
 
             keyboardAccelerator.Invoked += OnKeyboardAcceleratorInvoked;
             return keyboardAccelerator;
         }
 
-        private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender,
+            KeyboardAcceleratorInvokedEventArgs args)
         {
             var result = NavigationService.GoBack();
             args.Handled = result;
@@ -99,20 +95,14 @@ namespace SwiftBrowser.Services
         private async Task HandleActivationAsync(object activationArgs)
         {
             var activationHandler = GetActivationHandlers()
-                                                .FirstOrDefault(h => h.CanHandle(activationArgs));
+                .FirstOrDefault(h => h.CanHandle(activationArgs));
 
-            if (activationHandler != null)
-            {
-                await activationHandler.HandleAsync(activationArgs);
-            }
+            if (activationHandler != null) await activationHandler.HandleAsync(activationArgs);
 
             if (IsInteractive(activationArgs))
             {
                 var defaultHandler = new DefaultActivationHandler(_defaultNavItem);
-                if (defaultHandler.CanHandle(activationArgs))
-                {
-                    await defaultHandler.HandleAsync(activationArgs);
-                }
+                if (defaultHandler.CanHandle(activationArgs)) await defaultHandler.HandleAsync(activationArgs);
             }
         }
 

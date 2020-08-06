@@ -10,14 +10,16 @@
     Background="{ThemeResource SystemControlAcrylicWindowBrush}">
 
     <Grid>
-        <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
-            <AppBarButton Click="Button_Click" Icon="Save" Label="Save as PNG"></AppBarButton>
+        <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" VerticalAlignment="Top"
+                    OverflowButtonVisibility="Collapsed">
+            <AppBarButton Click="Button_Click" Icon="Save" Label="Save as PNG" />
         </CommandBar>
         <Grid Margin="0, 40, 0, 0">
             <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
                 <Grid x:Name="Gridx" Background="{ThemeResource SystemControlAcrylicWindowBrush}">
-                    <controls:ImageCropper Background="{ThemeResource SystemControlAcrylicWindowBrush}" x:Name="SnipCropper" Canvas.ZIndex="1"/>
-                    <Rectangle x:Name="Painter" Fill="White"/>
+                    <controls:ImageCropper Background="{ThemeResource SystemControlAcrylicWindowBrush}"
+                                           x:Name="SnipCropper" Canvas.ZIndex="1" />
+                    <Rectangle x:Name="Painter" Fill="White" />
                 </Grid>
             </ScrollViewer>
         </Grid>

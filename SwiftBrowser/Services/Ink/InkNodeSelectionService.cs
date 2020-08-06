@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Windows.UI.Input.Inking;
 using Windows.UI.Input.Inking.Analysis;
 using Windows.UI.Xaml;
@@ -14,16 +13,16 @@ namespace flowpad.Services.Ink
     {
         private const double BusyWaitingTime = 200;
         private const double TripleTapTime = 400;
+        private readonly InkAsyncAnalyzer _analyzer;
 
         private readonly InkCanvas _inkCanvas;
         private readonly InkPresenter _inkPresenter;
-        private readonly InkAsyncAnalyzer _analyzer;
-        private readonly InkStrokesService _strokeService;
-        private readonly InkSelectionRectangleService _selectionRectangleService;
         private readonly Canvas _selectionCanvas;
+        private readonly InkSelectionRectangleService _selectionRectangleService;
+        private readonly InkStrokesService _strokeService;
+        private DateTime lastDoubleTapTime;
 
         private IInkAnalysisNode selectedNode;
-        private DateTime lastDoubleTapTime;
 
         public InkNodeSelectionService(
             InkCanvas inkCanvas,
@@ -58,10 +57,7 @@ namespace flowpad.Services.Ink
 
             if (selectedNode != null && RectHelper.Contains(selectedNode.BoundingRect, position))
             {
-                if (DateTime.Now.Subtract(lastDoubleTapTime).TotalMilliseconds < TripleTapTime)
-                {
-                    ExpandSelection();
-                }
+                if (DateTime.Now.Subtract(lastDoubleTapTime).TotalMilliseconds < TripleTapTime) ExpandSelection();
             }
             else
             {
@@ -85,16 +81,11 @@ namespace flowpad.Services.Ink
         {
             var position = e.GetCurrentPoint(_inkCanvas).Position;
 
-            while (_analyzer.IsAnalyzing)
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(BusyWaitingTime));
-            }
+            while (_analyzer.IsAnalyzing) await Task.Delay(TimeSpan.FromMilliseconds(BusyWaitingTime));
 
-                if (_selectionRectangleService.ContainsPosition(position))
-                {
-                    // Pressed on the selected rect, do nothing
-                    return;
-                }
+            if (_selectionRectangleService.ContainsPosition(position))
+                // Pressed on the selected rect, do nothing
+                return;
 
             selectedNode = _analyzer.FindHitNode(position);
             ShowOrHideSelection(selectedNode);
@@ -102,10 +93,7 @@ namespace flowpad.Services.Ink
 
         private void InkPresenter_StrokesErased(InkPresenter sender, InkStrokesErasedEventArgs e)
         {
-            if (e.Strokes.Any(s => s.Selected))
-            {
-                ClearSelection();
-            }
+            if (e.Strokes.Any(s => s.Selected)) ClearSelection();
         }
 
         private void ExpandSelection()
@@ -117,12 +105,10 @@ namespace flowpad.Services.Ink
             {
                 selectedNode = selectedNode.Parent;
                 if (selectedNode.Kind == InkAnalysisNodeKind.ListItem && selectedNode.Children.Count == 1)
-                {
                     // Hierarchy: WritingRegion->Paragraph->ListItem->Line->{Bullet, Word1, Word2...}
                     // When a ListItem has only one Line, the bounding rect is same with its child Line,
                     // in this case, we skip one level to avoid confusion.
                     selectedNode = selectedNode.Parent;
-                }
 
                 ShowOrHideSelection(selectedNode);
             }

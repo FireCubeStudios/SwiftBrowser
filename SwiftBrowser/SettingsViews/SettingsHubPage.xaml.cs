@@ -1,26 +1,17 @@
-﻿using SwiftBrowser.HubViews;
+﻿using Windows.UI.Xaml.Controls;
+using SwiftBrowser.HubViews;
 using SwiftBrowser.Views;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using MUXC = Microsoft.UI.Xaml;
+using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
+using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
+using NavigationViewItemInvokedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs;
+
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SwiftBrowser.SettingsViews
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    ///     An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class SettingsHubPage : Page
     {
@@ -28,13 +19,13 @@ namespace SwiftBrowser.SettingsViews
         {
             InitializeComponent();
             SetHubNav.SelectedItem = Main;
-           contentFrame.Navigate(typeof(SettingsPage));
+            contentFrame.Navigate(typeof(SettingsPage));
         }
 
-        private void SetHubNav_ItemInvoked(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs args)
+        private void SetHubNav_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            MUXC.Controls.NavigationViewItem NavItem = SetHubNav.SelectedItem as MUXC.Controls.NavigationViewItem;
-            switch(NavItem.Content.ToString())
+            var NavItem = SetHubNav.SelectedItem as NavigationViewItem;
+            switch (NavItem.Content.ToString())
             {
                 case "About":
                     contentFrame.Navigate(typeof(AboutPage));
@@ -67,7 +58,6 @@ namespace SwiftBrowser.SettingsViews
                     contentFrame.Navigate(typeof(PrivacySettings));
                     break;
             }
-
         }
     }
 }

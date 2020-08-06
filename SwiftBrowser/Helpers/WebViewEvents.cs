@@ -1,56 +1,51 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using SwiftBrowser.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Windows.Storage;
+using Windows.System;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
-using Windows.Web.Http;
+using Microsoft.UI.Xaml.Controls;
+using SwiftBrowser.Views;
+using SymbolIconSource = Microsoft.UI.Xaml.Controls.SymbolIconSource;
 
 namespace SwiftBrowser.Helpers
 {
     public class WebViewEvents
     {
-        public Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+        public ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+
         private void webView_NewWindowRequested(WebView sender, WebViewNewWindowRequestedEventArgs args)
         {
-          //  TabView er = TabViewPage.TabviewPageControl;
+            //  TabView er = TabViewPage.TabviewPageControl;
             var newTab = new TabViewItem();
-            newTab.IconSource = new Microsoft.UI.Xaml.Controls.SymbolIconSource() { Symbol = Symbol.World };
+            newTab.IconSource = new SymbolIconSource {Symbol = Symbol.World};
             newTab.Header = args.Uri.ToString();
 
             // The Content of a TabViewItem is often a frame which hosts a page.
-            Frame frame = new Frame();
+            var frame = new Frame();
             newTab.Content = frame;
             localSettings.Values["SourceToGo"] = args.Uri.ToString();
             frame.Navigate(typeof(WebViewPage));
-          //  er.TabItems.Add(newTab);
+            //  er.TabItems.Add(newTab);
             args.Handled = true;
         }
 
         public void webView_LongRunningScriptDetected(WebView sender, WebViewLongRunningScriptDetectedEventArgs args)
         {
-           /* WebViewPage.InfoDialog.IsOpen = true;
-            WebViewPage.InfoDialog.Title = "Long running script";
-            WebViewPage.InfoDialog.IsLightDismissEnabled = false;*/
+            /* WebViewPage.InfoDialog.IsOpen = true;
+             WebViewPage.InfoDialog.Title = "Long running script";
+             WebViewPage.InfoDialog.IsLightDismissEnabled = false;*/
         }
+
         public void webView_ContainsFullScreenElementChanged(WebView sender, object args)
         {
             var applicationView = ApplicationView.GetForCurrentView();
 
             if (sender.ContainsFullScreenElement)
-            {
                 applicationView.TryEnterFullScreenMode();
-            }
-            else if (applicationView.IsFullScreenMode)
-            {
-                applicationView.ExitFullScreenMode();
-            }
+            else if (applicationView.IsFullScreenMode) applicationView.ExitFullScreenMode();
         }
 
-        public void webView_UnsupportedUriSchemeIdentified(WebView sender, WebViewUnsupportedUriSchemeIdentifiedEventArgs args)
+        public void webView_UnsupportedUriSchemeIdentified(WebView sender,
+            WebViewUnsupportedUriSchemeIdentifiedEventArgs args)
         {
             /*WebViewPage.InfoDialog.IsOpen = true;
             WebViewPage.InfoDialog.Title = "Unsupported uri scheme detected";
@@ -66,18 +61,20 @@ namespace SwiftBrowser.Helpers
             WebViewPage.InfoDialog.ActionButtonContent = "Go anyway";
         }
 
-        public void webView_UnviewableContentIdentified(WebView sender, WebViewUnviewableContentIdentifiedEventArgs args)
+        public void webView_UnviewableContentIdentified(WebView sender,
+            WebViewUnviewableContentIdentifiedEventArgs args)
         {
-          /*  WebViewPage.InfoDialog.IsOpen = true;
-            WebViewPage.InfoDialog.Title = "Unviewable content";
-            WebViewPage.InfoDialog.IsLightDismissEnabled = false;
-            WebViewPage.InfoDialog.ActionButtonContent = "Launch content";
-            WebViewPage.InfoDialog.ActionButtonClick += LaunchUnviewable;*/
+            /*  WebViewPage.InfoDialog.IsOpen = true;
+              WebViewPage.InfoDialog.Title = "Unviewable content";
+              WebViewPage.InfoDialog.IsLightDismissEnabled = false;
+              WebViewPage.InfoDialog.ActionButtonContent = "Launch content";
+              WebViewPage.InfoDialog.ActionButtonClick += LaunchUnviewable;*/
         }
-        public void LaunchUnviewable(Microsoft.UI.Xaml.Controls.TeachingTip sender, object args)
+
+        public void LaunchUnviewable(TeachingTip sender, object args)
         {
-            Windows.Foundation.IAsyncOperation<bool> b =
-            Windows.System.Launcher.LaunchUriAsync(WebViewPage.WebviewControl.Source);
+            var b =
+                Launcher.LaunchUriAsync(WebViewPage.WebviewControl.Source);
         }
     }
 }

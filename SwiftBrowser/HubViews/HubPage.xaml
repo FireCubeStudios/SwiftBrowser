@@ -10,20 +10,21 @@
     Background="Transparent">
 
     <Grid Background="Transparent">
-        <muxc:NavigationView x:Name="HubNav" ItemInvoked="HubNav_ItemInvoked" PaneDisplayMode="LeftCompact" IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
+        <muxc:NavigationView x:Name="HubNav" ItemInvoked="HubNav_ItemInvoked" PaneDisplayMode="LeftCompact"
+                             IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
             <muxc:NavigationView.MenuItems>
-                <muxc:NavigationViewItem  x:Name="Fav" Icon="SolidStar" Content="Favorites" />
-                <muxc:NavigationViewItem x:Name="Hav" Icon="Clock" Content="History"/>
-                <muxc:NavigationViewItem x:Name="Dav" Icon="Download" Content="Downloads"/>
-                <muxc:NavigationViewItem x:Name="Oav" Icon="Save" Content="Offline"/>
-                <muxc:NavigationViewItem x:Name="Pav"  Content="Passwords">
+                <muxc:NavigationViewItem x:Name="Fav" Icon="SolidStar" Content="Favorites" />
+                <muxc:NavigationViewItem x:Name="Hav" Icon="Clock" Content="History" />
+                <muxc:NavigationViewItem x:Name="Dav" Icon="Download" Content="Downloads" />
+                <muxc:NavigationViewItem x:Name="Oav" Icon="Save" Content="Offline" />
+                <muxc:NavigationViewItem x:Name="Pav" Content="Passwords">
                     <muxc:NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF439;"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF439;" />
                     </muxc:NavigationViewItem.Icon>
                 </muxc:NavigationViewItem>
-                <muxc:NavigationViewItem x:Name="Sav" Icon="sync" Content="Sync"/>
+                <muxc:NavigationViewItem x:Name="Sav" Icon="sync" Content="Sync" />
             </muxc:NavigationView.MenuItems>
-            <Frame x:Name="contentFrame"/>
+            <Frame x:Name="contentFrame" />
         </muxc:NavigationView>
     </Grid>
 </Page>

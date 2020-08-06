@@ -12,7 +12,8 @@
     <Grid>
         <Grid>
             <TextBlock>Viewing offline page</TextBlock>
-            <controls:InAppNotification x:Name="SaveConfirm" VerticalAlignment="Bottom" Canvas.ZIndex="100" ShowDismissButton="False">
+            <controls:InAppNotification x:Name="SaveConfirm" VerticalAlignment="Bottom" Canvas.ZIndex="100"
+                                        ShowDismissButton="False">
                 <StackPanel>
                     <TextBlock Margin="5">Confirm offline save?</TextBlock>
                     <Button Margin="5" Click="SaveRTB">Save offline</Button>
@@ -22,7 +23,7 @@
             <Grid Margin="0, 40, 0, 0">
                 <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalScrollMode="Enabled">
                     <Grid x:Name="Gridx">
-                        <WebView x:Name="OfflinePainter"/>
+                        <WebView x:Name="OfflinePainter" />
                     </Grid>
                 </ScrollViewer>
             </Grid>

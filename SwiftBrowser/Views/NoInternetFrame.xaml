@@ -10,17 +10,17 @@
 
     <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Image Source="/Assets/BrowserIcons/Nointernet.png" Margin="30" Width="300" Height="300"></Image>
+            <Image Source="/Assets/BrowserIcons/Nointernet.png" Margin="30" Width="300" Height="300" />
             <TextBlock FontSize="24">
-           You are not connected:
+                You are not connected:
             </TextBlock>
             <TextBlock Foreground="White">
-            >> Check your internet connection 
-            <LineBreak/>
-            >> Check all network cables are connected
-             <LineBreak/>
-            >> Restart your router
-             <LineBreak/>
+                >> Check your internet connection
+                <LineBreak />
+                >> Check all network cables are connected
+                <LineBreak />
+                >> Restart your router
+                <LineBreak />
             </TextBlock>
         </StackPanel>
     </Grid>

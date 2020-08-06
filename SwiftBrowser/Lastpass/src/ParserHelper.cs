@@ -10,19 +10,15 @@ using System.Security.Cryptography;
 
 namespace LastPass
 {
-    static class ParserHelper
+    internal static class ParserHelper
     {
-        public class Chunk
+        private static readonly HashSet<string> AllowedSecureNoteTypes = new HashSet<string>
         {
-            public Chunk(string id, byte[] payload)
-            {
-                Id = id;
-                Payload = payload;
-            }
-
-            public string Id { get; private set; }
-            public byte[] Payload { get; private set; }
-        }
+            "Server",
+            "Email Account",
+            "Database",
+            "Instant Messenger"
+        };
 
         // May return null when the chunk does not represent an account.
         // All secure notes are ACCTs but not all of them store account information.
@@ -90,11 +86,8 @@ namespace LastPass
                 // Shared folder encryption key might come already in pre-decrypted form,
                 // where it's only AES encrypted with the regular encryption key.
                 if (aesEncryptedFolderKey.Length > 0)
-                {
                     key = DecryptAes256Plain(aesEncryptedFolderKey, encryptionKey).DecodeHex();
-                }
                 else
-                {
                     // When the key is blank, then there's an RSA encrypted key, which has to
                     // be decrypted first before use.
                     using (var rsa = new RSACryptoServiceProvider())
@@ -102,7 +95,6 @@ namespace LastPass
                         rsa.ImportParameters(rsaKey);
                         key = rsa.Decrypt(rsaEncryptedFolderKey.ToUtf8().DecodeHex(), true).ToUtf8().DecodeHex();
                     }
-                }
 
                 return new SharedFolder(id, DecryptAes256Base64(encryptedName, key), key);
             });
@@ -111,9 +103,9 @@ namespace LastPass
         public static RSAParameters ParseEcryptedPrivateKey(string encryptedPrivateKey, byte[] encryptionKey)
         {
             var decrypted = DecryptAes256(encryptedPrivateKey.DecodeHex(),
-                                          encryptionKey,
-                                          CipherMode.CBC,
-                                          encryptionKey.Take(16).ToArray());
+                encryptionKey,
+                CipherMode.CBC,
+                encryptionKey.Take(16).ToArray());
 
             const string header = "LastPassPrivateKey<";
             const string footer = ">LastPassPrivateKey";
@@ -121,16 +113,18 @@ namespace LastPass
                 throw new ParseException(ParseException.FailureReason.CorruptedBlob, "Failed to decrypt private key");
 
             var asn1EncodedKey = decrypted.Substring(header.Length,
-                                                     decrypted.Length - header.Length - footer.Length).DecodeHex();
+                decrypted.Length - header.Length - footer.Length).DecodeHex();
 
             var enclosingSequence = Asn1.ParseItem(asn1EncodedKey);
-            var anotherEnclosingSequence = WithBytes(enclosingSequence.Value, reader => {
+            var anotherEnclosingSequence = WithBytes(enclosingSequence.Value, reader =>
+            {
                 2.Times(() => Asn1.ExtractItem(reader));
                 return Asn1.ExtractItem(reader);
             });
             var yetAnotherEnclosingSequence = Asn1.ParseItem(anotherEnclosingSequence.Value);
 
-            return WithBytes(yetAnotherEnclosingSequence.Value, reader => {
+            return WithBytes(yetAnotherEnclosingSequence.Value, reader =>
+            {
                 Asn1.ExtractItem(reader);
 
                 // There are occasional leading zeros that need to be stripped.
@@ -152,10 +146,10 @@ namespace LastPass
         }
 
         public static void ParseSecureNoteServer(string notes,
-                                                 ref string type,
-                                                 ref string url,
-                                                 ref string username,
-                                                 ref string password)
+            ref string type,
+            ref string url,
+            ref string username,
+            ref string password)
         {
             foreach (var i in notes.Split('\n'))
             {
@@ -165,18 +159,18 @@ namespace LastPass
 
                 switch (keyValue[0])
                 {
-                case "NoteType":
-                    type = keyValue[1];
-                    break;
-                case "Hostname":
-                    url = keyValue[1];
-                    break;
-                case "Username":
-                    username = keyValue[1];
-                    break;
-                case "Password":
-                    password = keyValue[1];
-                    break;
+                    case "NoteType":
+                        type = keyValue[1];
+                        break;
+                    case "Hostname":
+                        url = keyValue[1];
+                        break;
+                    case "Username":
+                        username = keyValue[1];
+                        break;
+                    case "Password":
+                        password = keyValue[1];
+                        break;
                 }
             }
         }
@@ -215,7 +209,7 @@ namespace LastPass
             //   000C: --- Next chunk ---
 
             return new Chunk(ReadId(reader),
-                             ReadPayload(reader, ReadSize(reader)));
+                ReadPayload(reader, ReadSize(reader)));
         }
 
         public static byte[] ReadItem(BinaryReader reader)
@@ -247,7 +241,7 @@ namespace LastPass
 
         public static byte[] ReadPayload(BinaryReader reader, uint size)
         {
-            return reader.ReadBytes((int)size);
+            return reader.ReadBytes((int) size);
         }
 
         public static string DecryptAes256Plain(byte[] data, byte[] encryptionKey, string defaultValue)
@@ -266,10 +260,9 @@ namespace LastPass
 
             if (length == 0)
                 return "";
-            else if (data[0] == '!' && length % 16 == 1 && length > 32)
+            if (data[0] == '!' && length % 16 == 1 && length > 32)
                 return DecryptAes256CbcPlain(data, encryptionKey);
-            else
-                return DecryptAes256EcbPlain(data, encryptionKey);
+            return DecryptAes256EcbPlain(data, encryptionKey);
         }
 
         public static string DecryptAes256Base64(byte[] data, byte[] encryptionKey)
@@ -278,10 +271,9 @@ namespace LastPass
 
             if (length == 0)
                 return "";
-            else if (data[0] == '!')
+            if (data[0] == '!')
                 return DecryptAes256CbcBase64(data, encryptionKey);
-            else
-                return DecryptAes256EcbBase64(data, encryptionKey);
+            return DecryptAes256EcbBase64(data, encryptionKey);
         }
 
         public static string DecryptAes256EcbPlain(byte[] data, byte[] encryptionKey)
@@ -297,17 +289,17 @@ namespace LastPass
         public static string DecryptAes256CbcPlain(byte[] data, byte[] encryptionKey)
         {
             return DecryptAes256(data.Skip(17).ToArray(),
-                                 encryptionKey,
-                                 CipherMode.CBC,
-                                 data.Skip(1).Take(16).ToArray());
+                encryptionKey,
+                CipherMode.CBC,
+                data.Skip(1).Take(16).ToArray());
         }
 
         public static string DecryptAes256CbcBase64(byte[] data, byte[] encryptionKey)
         {
             return DecryptAes256(data.Skip(26).ToArray().ToUtf8().Decode64(),
-                                 encryptionKey,
-                                 CipherMode.CBC,
-                                 data.Skip(1).Take(24).ToArray().ToUtf8().Decode64());
+                encryptionKey,
+                CipherMode.CBC,
+                data.Skip(1).Take(24).ToArray().ToUtf8().Decode64());
         }
 
         public static string DecryptAes256(byte[] data, byte[] encryptionKey, CipherMode mode)
@@ -334,7 +326,8 @@ namespace LastPass
 
         public static void WithBytes(byte[] bytes, Action<BinaryReader> action)
         {
-            WithBytes(bytes, (reader) => {
+            WithBytes(bytes, reader =>
+            {
                 action(reader);
                 return 0;
             });
@@ -344,13 +337,15 @@ namespace LastPass
         {
             using (var stream = new MemoryStream(bytes, false))
             using (var reader = new BinaryReader(stream))
+            {
                 return action(reader);
+            }
         }
 
         private static string DecryptAes256WithDefaultValue(byte[] data,
-                                                            byte[] encryptionKey,
-                                                            string defaultValue,
-                                                            Func<byte[], byte[], string> decrypt)
+            byte[] encryptionKey,
+            string defaultValue,
+            Func<byte[], byte[], string> decrypt)
         {
             try
             {
@@ -362,12 +357,16 @@ namespace LastPass
             }
         }
 
-        private static readonly HashSet<string> AllowedSecureNoteTypes = new HashSet<string>
+        public class Chunk
         {
-            "Server",
-            "Email Account",
-            "Database",
-            "Instant Messenger",
-        };
+            public Chunk(string id, byte[] payload)
+            {
+                Id = id;
+                Payload = payload;
+            }
+
+            public string Id { get; }
+            public byte[] Payload { get; }
+        }
     }
 }

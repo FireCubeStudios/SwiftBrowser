@@ -5,19 +5,20 @@ namespace LastPass
 {
     public abstract class Ui
     {
-        // TODO: Think about how to deal with the cancellation.
-        public enum SecondFactorMethod
-        {
-            GoogleAuth,
-            Yubikey,
-            // TODO: See which other methods should be supported.
-        }
-
         public enum OutOfBandMethod
         {
             LastPassAuth,
             Toopher,
-            Duo,
+            Duo
+        }
+
+        // TODO: Think about how to deal with the cancellation.
+        public enum SecondFactorMethod
+        {
+            GoogleAuth,
+
+            Yubikey
+            // TODO: See which other methods should be supported.
         }
 
         // Should always a valid string. Cancellation is not supported yet.

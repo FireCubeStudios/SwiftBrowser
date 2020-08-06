@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -13,15 +12,16 @@ namespace flowpad.Services.Ink
     public class InkSelectionRectangleService
     {
         private const string SelectionRectName = "selectionRectangle";
+        private readonly InkCanvas _inkCanvas;
 
         private readonly Canvas _selectionCanvas;
-        private readonly InkCanvas _inkCanvas;
         private readonly InkStrokesService _strokeService;
 
         private Point dragStartPosition;
         private Rect selectionStrokesRect = Rect.Empty;
 
-        public InkSelectionRectangleService(InkCanvas inkCanvas, Canvas selectionCanvas, InkStrokesService strokeService)
+        public InkSelectionRectangleService(InkCanvas inkCanvas, Canvas selectionCanvas,
+            InkStrokesService strokeService)
         {
             _inkCanvas = inkCanvas;
             _selectionCanvas = selectionCanvas;
@@ -59,8 +59,8 @@ namespace flowpad.Services.Ink
         private Rectangle GetSelectionRectangle()
         {
             var selectionRectangle = _selectionCanvas
-                .Children
-                .FirstOrDefault(f => f is Rectangle r && r.Name == SelectionRectName)
+                    .Children
+                    .FirstOrDefault(f => f is Rectangle r && r.Name == SelectionRectName)
                 as Rectangle;
 
             if (selectionRectangle == null)
@@ -74,22 +74,19 @@ namespace flowpad.Services.Ink
 
         private Rectangle CreateNewSelectionRectangle()
         {
-            return new Rectangle()
+            return new Rectangle
             {
                 Name = SelectionRectName,
                 Stroke = new SolidColorBrush(Colors.Gray),
                 StrokeThickness = 2,
-                StrokeDashArray = new DoubleCollection() { 2, 2 },
+                StrokeDashArray = new DoubleCollection {2, 2},
                 StrokeDashCap = PenLineCap.Round
             };
         }
 
         private void InkCanvas_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            if (!selectionStrokesRect.IsEmpty)
-            {
-                dragStartPosition = e.Position;
-            }
+            if (!selectionStrokesRect.IsEmpty) dragStartPosition = e.Position;
         }
 
         private void InkCanvas_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
@@ -105,10 +102,7 @@ namespace flowpad.Services.Ink
 
         private void InkCanvas_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            if (!selectionStrokesRect.IsEmpty)
-            {
-                _strokeService.MoveSelectedStrokes(dragStartPosition, e.Position);
-            }
+            if (!selectionStrokesRect.IsEmpty) _strokeService.MoveSelectedStrokes(dragStartPosition, e.Position);
         }
 
         private void MoveSelection(Point offset)

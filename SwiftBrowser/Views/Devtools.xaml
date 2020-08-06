@@ -10,10 +10,12 @@
     Background="{ThemeResource SystemControlAcrylicWindowBrush}">
 
     <StackPanel>
-        <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
-            <AppBarButton Click="Button_Click" Margin="5" Icon="Upload" Label="Update HTML"></AppBarButton>
+        <CommandBar HorizontalAlignment="Left" DefaultLabelPosition="Right" VerticalAlignment="Top"
+                    OverflowButtonVisibility="Collapsed">
+            <AppBarButton Click="Button_Click" Margin="5" Icon="Upload" Label="Update HTML" />
         </CommandBar>
-        <monaco:CodeEditor Background="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}" Margin="30"  x:Name="HTMLeditor" Language="HTML" Height="800"></monaco:CodeEditor>
-       <!-- <TextBox Header="Console log" x:Name="lOG" Margin="10"></TextBox>-->
+        <monaco:CodeEditor Background="{ThemeResource SystemControlAcrylicWindowMediumHighBrush}" Margin="30"
+                           x:Name="HTMLeditor" Language="HTML" Height="800" />
+        <!-- <TextBox Header="Console log" x:Name="lOG" Margin="10"></TextBox>-->
     </StackPanel>
 </Page>

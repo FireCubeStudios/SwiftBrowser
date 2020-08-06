@@ -1,46 +1,31 @@
-﻿using Microsoft.Toolkit.Uwp.UI.Controls;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Graphics.Display;
-using Windows.Graphics.Imaging;
+﻿using System;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
-using Windows.System.Diagnostics;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
+using Microsoft.Toolkit.Uwp.UI.Controls;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace SwiftBrowser.Views
 {
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    ///     An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class SnipPage : Page
     {
-        public static IRandomAccessStream WebView { get; set; }
         public SnipPage()
         {
-            this.InitializeComponent();
-             CaptureWebView();
+            InitializeComponent();
+            CaptureWebView();
         }
+
+        public static IRandomAccessStream WebView { get; set; }
+
         private async void CaptureWebView()
         {
-
             /* var originalWidth = WebView.ActualWidth;
              var originalHeight = WebView.ActualHeight;
 
@@ -93,9 +78,9 @@ namespace SwiftBrowser.Views
              }
              SnipCropper.Source = bit;
              WebView.Height = 1000;*/
-            RenderTargetBitmap rtb = new RenderTargetBitmap();
+            var rtb = new RenderTargetBitmap();
             await rtb.RenderAsync(Gridx);
-            WriteableBitmap WB = new WriteableBitmap(rtb.PixelWidth, rtb.PixelHeight);
+            var WB = new WriteableBitmap(rtb.PixelWidth, rtb.PixelHeight);
             WB.SetSource(WebView);
             SnipCropper.Source = WB;
         }
@@ -103,22 +88,22 @@ namespace SwiftBrowser.Views
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             var picker = new FileSavePicker();
-            picker.FileTypeChoices.Add("Png Image", new string[] { ".png" });
-            StorageFile file = await picker.PickSaveFileAsync();
+            picker.FileTypeChoices.Add("Png Image", new[] {".png"});
+            var file = await picker.PickSaveFileAsync();
             using (var stream = await file.OpenAsync(FileAccessMode.ReadWrite))
             {
                 await SnipCropper.SaveAsync(stream, BitmapFileFormat.Png);
-
             }
-            int duration = 3000;
-            try { 
-            TabViewPage.InAppNotificationMain.Show("Screen capture saved", duration);
+
+            var duration = 3000;
+            try
+            {
+                TabViewPage.InAppNotificationMain.Show("Screen capture saved", duration);
             }
             catch
             {
                 IncognitoTabView.InAppNotificationMain.Show("Screen capture saved", duration);
             }
         }
-
     }
 }

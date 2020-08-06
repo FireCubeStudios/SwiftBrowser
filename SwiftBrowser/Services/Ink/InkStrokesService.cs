@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-
-using flowpad.EventHandlers.Ink;
-
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Provider;
 using Windows.UI.Input.Inking;
 using Windows.UI.Input.Inking.Analysis;
 using Windows.UI.Xaml.Media;
+using flowpad.EventHandlers.Ink;
 
 namespace flowpad.Services.Ink
 {
@@ -26,6 +24,8 @@ namespace flowpad.Services.Ink
             inkPresenter.StrokesCollected += (s, e) => StrokesCollected?.Invoke(this, e);
             inkPresenter.StrokesErased += (s, e) => StrokesErased?.Invoke(this, e);
         }
+
+        public bool CanPaste => _strokeContainer.CanPasteFromClipboard();
 
         public event EventHandler<InkStrokesCollectedEventArgs> StrokesCollected;
 
@@ -62,10 +62,7 @@ namespace flowpad.Services.Ink
         public bool RemoveStroke(InkStroke stroke)
         {
             var deleteStroke = GetStrokes().FirstOrDefault(s => s.Id == stroke.Id);
-            if (deleteStroke == null)
-            {
-                return false;
-            }
+            if (deleteStroke == null) return false;
 
             ClearStrokesSelection();
             deleteStroke.Selected = true;
@@ -79,17 +76,20 @@ namespace flowpad.Services.Ink
         {
             var strokes = GetStrokesByIds(strokeIds);
 
-            foreach (var stroke in strokes)
-            {
-                RemoveStroke(stroke);
-            }
+            foreach (var stroke in strokes) RemoveStroke(stroke);
 
             return strokes.Any();
         }
 
-        public IEnumerable<InkStroke> GetStrokes() => _strokeContainer.GetStrokes();
+        public IEnumerable<InkStroke> GetStrokes()
+        {
+            return _strokeContainer.GetStrokes();
+        }
 
-        public IEnumerable<InkStroke> GetSelectedStrokes() => GetStrokes().Where(s => s.Selected);
+        public IEnumerable<InkStroke> GetSelectedStrokes()
+        {
+            return GetStrokes().Where(s => s.Selected);
+        }
 
         public void ClearStrokes()
         {
@@ -99,10 +99,7 @@ namespace flowpad.Services.Ink
 
         public void ClearStrokesSelection()
         {
-            foreach (var stroke in GetStrokes())
-            {
-                stroke.Selected = false;
-            }
+            foreach (var stroke in GetStrokes()) stroke.Selected = false;
 
             SelectStrokesEvent?.Invoke(this, EventArgs.Empty);
         }
@@ -111,10 +108,7 @@ namespace flowpad.Services.Ink
         {
             ClearStrokesSelection();
 
-            foreach (var stroke in strokes)
-            {
-                stroke.Selected = true;
-            }
+            foreach (var stroke in strokes) stroke.Selected = true;
 
             SelectStrokesEvent?.Invoke(this, EventArgs.Empty);
             return GetRectBySelectedStrokes();
@@ -139,18 +133,15 @@ namespace flowpad.Services.Ink
 
         public void MoveSelectedStrokes(Point startPosition, Point endPosition)
         {
-            var x = (float)(endPosition.X - startPosition.X);
-            var y = (float)(endPosition.Y - startPosition.Y);
+            var x = (float) (endPosition.X - startPosition.X);
+            var y = (float) (endPosition.Y - startPosition.Y);
 
             var matrix = Matrix3x2.CreateTranslation(x, y);
 
             if (!matrix.IsIdentity)
             {
                 var selectedStrokes = GetSelectedStrokes();
-                foreach (var stroke in selectedStrokes)
-                {
-                    stroke.PointTransform *= matrix;
-                }
+                foreach (var stroke in selectedStrokes) stroke.PointTransform *= matrix;
 
                 MoveStrokesEvent?.Invoke(this, new MoveStrokesEventArgs(selectedStrokes, startPosition, endPosition));
             }
@@ -169,10 +160,7 @@ namespace flowpad.Services.Ink
 
             var selectedStrokes = GetSelectedStrokes().ToList();
 
-            foreach (var stroke in selectedStrokes)
-            {
-                RemoveStroke(stroke);
-            }
+            foreach (var stroke in selectedStrokes) RemoveStroke(stroke);
 
             CutStrokesEvent?.Invoke(this, new CopyPasteStrokesEventArgs(selectedStrokes));
 
@@ -197,16 +185,11 @@ namespace flowpad.Services.Ink
             return rect;
         }
 
-        public bool CanPaste => _strokeContainer.CanPasteFromClipboard();
-
         public async Task<bool> LoadInkFileAsync(StorageFile file)
         {
             try
             {
-                if (file == null)
-                {
-                    return false;
-                }
+                if (file == null) return false;
 
                 ClearStrokesSelection();
                 ClearStrokes();
@@ -246,19 +229,14 @@ namespace flowpad.Services.Ink
 
         private IEnumerable<InkStroke> GetStrokesByIds(IEnumerable<uint> strokeIds)
         {
-            foreach (var strokeId in strokeIds)
-            {
-                yield return _strokeContainer.GetStrokeById(strokeId);
-            }
+            foreach (var strokeId in strokeIds) yield return _strokeContainer.GetStrokeById(strokeId);
         }
 
         private IReadOnlyList<uint> GetNodeStrokeIds(IInkAnalysisNode node)
         {
             var strokeIds = node.GetStrokeIds();
             if (node.Kind == InkAnalysisNodeKind.Paragraph && node.Children[0].Kind == InkAnalysisNodeKind.ListItem)
-            {
                 strokeIds = new HashSet<uint>(strokeIds).ToList();
-            }
 
             return strokeIds;
         }
@@ -266,10 +244,7 @@ namespace flowpad.Services.Ink
         private Rect GetRectBySelectedStrokes()
         {
             var rect = Rect.Empty;
-            foreach (var stroke in GetSelectedStrokes())
-            {
-                rect.Union(stroke.BoundingRect);
-            }
+            foreach (var stroke in GetSelectedStrokes()) rect.Union(stroke.BoundingRect);
 
             return rect;
         }

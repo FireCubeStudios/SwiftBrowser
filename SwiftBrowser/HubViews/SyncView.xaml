@@ -12,10 +12,11 @@
         <StackPanel>
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/Assets/DownloadsIcon.png" x:Name="icon" Margin="10" Width="50" Height="50"></Image>
+                    <Image Source="/Assets/DownloadsIcon.png" x:Name="icon" Margin="10" Width="50" Height="50" />
                     <TextBlock Margin="5" FontSize="20" TextWrapping="WrapWholeWords" Width="400">Sync browser history between windows 10 devices</TextBlock>
                 </StackPanel>
-                <ToggleSwitch Margin="5" x:Name="SyncToggle" OnContent="Sync enabled" OffContent="Sync disabled" Toggled="SyncToggle_Toggled"></ToggleSwitch>
+                <ToggleSwitch Margin="5" x:Name="SyncToggle" OnContent="Sync enabled" OffContent="Sync disabled"
+                              Toggled="SyncToggle_Toggled" />
             </StackPanel>
 
             <TextBlock Margin="5, 150, 5, 5" FontSize="15" FontWeight="Bold" TextWrapping="WrapWholeWords" Width="400">Sync data between windows 10  and android with your onedrive (soon)</TextBlock>

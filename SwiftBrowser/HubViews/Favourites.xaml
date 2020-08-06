@@ -9,51 +9,48 @@
     Background="Transparent">
 
     <Grid Background="Transparent">
-        <StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Image Source="/Assets/616655.png" x:Name="icon" Margin="10" Width="30" Height="30"></Image>
-                <CommandBar  Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}" DefaultLabelPosition="Right" IsDynamicOverflowEnabled="True" OverflowButtonVisibility="Visible">
-                    <AppBarButton Icon="Add" Label="Add to favorites" Click="AddFav"></AppBarButton>
-                    <AppBarButton Icon="Add" Label="Add a site">
-                        <AppBarButton.Flyout>
-                            <Flyout>
-                                <StackPanel Orientation="Vertical" Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="200">
-                                    <TextBox Margin="5" AllowFocusOnInteraction="True" x:Name="NameBox" Header="Name: " PlaceholderText="Dont leave blank">
 
-                                    </TextBox>
-                                    <TextBox Margin="5" AllowFocusOnInteraction="True" x:Name="UrlBox" Header="Url:" PlaceholderText="Enter valid URL">
-
-                                    </TextBox>
-                                    <Button Margin="5" Click="AddSiteFav" Content="Add" >
-
-                                    </Button>
-                                </StackPanel>
-                            </Flyout>
-                        </AppBarButton.Flyout>
-                    </AppBarButton>
-                    <AppBarButton Icon="Import" Label="Import Favorites" IsEnabled="False"></AppBarButton>
-                    <AppBarButton Icon="Share" Label="Export favorites" IsEnabled="False"></AppBarButton>
-                </CommandBar>
-            </StackPanel>
-            <ListView
-                   Background="Transparent"
-  SelectionMode="None"
-                IsItemClickEnabled="True"
-                ItemClick="Favorites_ItemClick"
-    x:Name="Favorites"
-    HorizontalAlignment="Left">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal" Margin="5"  Background="Transparent">
-                            <Image Height="15" Width="15" Source="{Binding FavIconJSON}" Margin="5"/>
-                            <TextBlock Text="{Binding HeaderJSON}" Margin="0,11,0,5" Width="300"/>
-                            <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"  Background="Transparent">
-                                <AppBarButton Icon="Delete" Click="DeleteFav" Label="Delete"  Background="Transparent"></AppBarButton>
-                            </CommandBar>
+        <CommandBar Background="{ThemeResource SystemControlAcrylicElementMediumHighBrush}"
+                    DefaultLabelPosition="Right" VerticalAlignment="Top" OverflowButtonVisibility="Collapsed">
+            <AppBarButton Icon="Add" Label="Add to favorites" Click="AddFav" />
+            <AppBarButton Icon="Add" Label="Add a site">
+                <AppBarButton.Flyout>
+                    <Flyout>
+                        <StackPanel Orientation="Vertical"
+                                    Background="{ThemeResource SystemControlAcrylicElementBrush}" Width="200">
+                            <TextBox Margin="5" AllowFocusOnInteraction="True" x:Name="NameBox" Header="Name: "
+                                     PlaceholderText="Dont leave blank" />
+                            <TextBox Margin="5" AllowFocusOnInteraction="True" x:Name="UrlBox" Header="Url:"
+                                     PlaceholderText="Enter valid URL" />
+                            <Button Margin="5" Click="AddSiteFav" Content="Add" />
                         </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackPanel>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+        </CommandBar>
+        <ListView
+            Margin="0, 50, 0, 0"
+            Background="Transparent"
+            SelectionMode="None"
+            IsItemClickEnabled="True"
+            ItemClick="Favorites_ItemClick"
+            x:Name="Favorites"
+            HorizontalAlignment="Left">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="5" Width="500" Orientation="Horizontal" Background="Transparent">
+                        <Image Height="30" Width="30" Margin="5" Source="{Binding FavIconJSON}" />
+                        <StackPanel Width="300">
+                            <TextBlock FontSize="15" Width="300" Text="{Binding HeaderJSON}" />
+                            <TextBlock FontSize="10" Text="{Binding UrlJSON}" />
+                        </StackPanel>
+                        <CommandBar DefaultLabelPosition="Right" OverflowButtonVisibility="Collapsed"
+                                    Background="Transparent">
+                            <AppBarButton Click="DeleteFav" Icon="Delete" Background="Transparent" />
+                        </CommandBar>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Page>

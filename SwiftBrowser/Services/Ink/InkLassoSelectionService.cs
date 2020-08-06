@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-
 using Windows.UI;
 using Windows.UI.Core;
 using Windows.UI.Input.Inking;
@@ -13,8 +12,8 @@ namespace flowpad.Services.Ink
     {
         private readonly InkPresenter _inkPresenter;
         private readonly Canvas _selectionCanvas;
-        private readonly InkStrokesService _strokeService;
         private readonly InkSelectionRectangleService _selectionRectangleService;
+        private readonly InkStrokesService _strokeService;
 
         private bool enableLasso;
         private Polyline lasso;
@@ -65,26 +64,21 @@ namespace flowpad.Services.Ink
         {
             EndLassoSelectionConfig();
 
-            if (args.Strokes.Any(s => s.Selected))
-            {
-                ClearSelection();
-            }
+            if (args.Strokes.Any(s => s.Selected)) ClearSelection();
         }
 
         private void UnprocessedInput_PointerPressed(InkUnprocessedInput sender, PointerEventArgs args)
         {
             var position = args.CurrentPoint.Position;
             if (_selectionRectangleService.ContainsPosition(position))
-            {
                 // Pressed on the selected rect, do nothing
                 return;
-            }
 
-            lasso = new Polyline()
+            lasso = new Polyline
             {
                 Stroke = new SolidColorBrush(Colors.Blue),
                 StrokeThickness = 1,
-                StrokeDashArray = new DoubleCollection() { 5, 2 },
+                StrokeDashArray = new DoubleCollection {5, 2}
             };
 
             lasso.Points.Add(args.CurrentPoint.RawPosition);
@@ -94,10 +88,7 @@ namespace flowpad.Services.Ink
 
         private void UnprocessedInput_PointerMoved(InkUnprocessedInput sender, PointerEventArgs args)
         {
-            if (enableLasso)
-            {
-                lasso.Points.Add(args.CurrentPoint.RawPosition);
-            }
+            if (enableLasso) lasso.Points.Add(args.CurrentPoint.RawPosition);
         }
 
         private void UnprocessedInput_PointerReleased(InkUnprocessedInput sender, PointerEventArgs args)

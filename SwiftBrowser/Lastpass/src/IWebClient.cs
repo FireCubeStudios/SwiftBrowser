@@ -8,8 +8,8 @@ namespace LastPass
 {
     public interface IWebClient
     {
+        WebHeaderCollection Headers { get; }
         byte[] UploadValues(string address, NameValueCollection data);
         byte[] DownloadData(string address);
-        WebHeaderCollection Headers { get; }
     }
 }

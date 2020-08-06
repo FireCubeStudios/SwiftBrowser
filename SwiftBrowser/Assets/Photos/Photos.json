@@ -1,225 +1,180 @@
 ﻿{
-"Images": [
+  "Images": [
+    {
+      "Title": "Big four summer heat",
 
-  {
+      "Category": "Nature",
 
-    "Title": "Big four summer heat",
+      "Thumbnail": "/Assets/Photos/BigFourSummerHeat.jpg"
 
-    "Category": "Nature",
+    },
+    {
+      "Title": "Bison badlands Chillin",
 
-    "Thumbnail": "/Assets/Photos/BigFourSummerHeat.jpg"
+      "Category": "Animal",
 
-  },
+      "Thumbnail": "/Assets/Photos/BisonBadlandsChillin.jpg"
 
-  {
+    },
+    {
+      "Title": "Giant slab in Oregon",
 
-    "Title": "Bison badlands Chillin",
+      "Category": "Nature",
 
-    "Category": "Animal",
+      "Thumbnail": "/Assets/Photos/GiantSlabInOregon.jpg"
 
-    "Thumbnail": "/Assets/Photos/BisonBadlandsChillin.jpg"
+    },
+    {
+      "Title": "Grand Tetons",
 
-  },
+      "Category": "Nature",
 
-  {
+      "Thumbnail": "/Assets/Photos/GrandTetons.jpg"
 
-    "Title": "Giant slab in Oregon",
+    },
+    {
+      "Title": "Lake Ann Mushroom",
 
-    "Category": "Nature",
+      "Category": "Nature",
 
-    "Thumbnail": "/Assets/Photos/GiantSlabInOregon.jpg"
+      "Thumbnail": "/Assets/Photos/LakeAnnMushroom.jpg"
 
-  },
+    },
+    {
+      "Title": "Lunch break",
 
-  {
+      "Category": "Animal",
 
-    "Title": "Grand Tetons",
+      "Thumbnail": "/Assets/Photos/LunchBreak.jpg"
 
-    "Category": "Nature",
+    },
+    {
+      "Title": "Milky way St Helens hike purple",
 
-    "Thumbnail": "/Assets/Photos/GrandTetons.jpg"
+      "Category": "Nature",
 
-  },
+      "Thumbnail": "/Assets/Photos/MilkyWayStHelensHikePurple.jpg"
 
-  {
+    },
+    {
+      "Title": "Mitchell buttes",
 
-    "Title": "Lake Ann Mushroom",
+      "Category": "Nature",
 
-    "Category": "Nature",
+      "Thumbnail": "/Assets/Photos/MitchellButtes.jpg"
 
-    "Thumbnail": "/Assets/Photos/LakeAnnMushroom.jpg"
+    },
+    {
+      "Title": "Multnomah falls",
 
-  },
+      "Category": "Nature",
 
-  {
+      "Thumbnail": "/Assets/Photos/MultnomahFalls.jpg"
 
-    "Title": "Lunch break",
+    },
+    {
+      "Title": "Northern cascades reflection",
 
-    "Category": "Animal",
+      "Category": "Nature",
 
-    "Thumbnail": "/Assets/Photos/LunchBreak.jpg"
+      "Thumbnail": "/Assets/Photos/NorthernCascadesReflection.jpg"
 
-  },
+    },
+    {
+      "Title": "November hike waterfall",
 
-  {
+      "Category": "Nature",
 
-    "Title": "Milky way St Helens hike purple",
+      "Thumbnail": "/Assets/Photos/NovemberHikeWaterfall.jpg"
 
-    "Category": "Nature",
+    },
+    {
+      "Title": "Owl",
 
-    "Thumbnail": "/Assets/Photos/MilkyWayStHelensHikePurple.jpg"
+      "Category": "Animal",
 
-  },
+      "Thumbnail": "/Assets/Photos/Owl.jpg"
 
-  {
+    },
+    {
+      "Title": "Oregon winery namaste",
 
-    "Title": "Mitchell buttes",
+      "Category": "Nature",
 
-    "Category": "Nature",
+      "Thumbnail": "/Assets/Photos/OregonWineryNamaste.jpg"
 
-    "Thumbnail": "/Assets/Photos/MitchellButtes.jpg"
+    },
+    {
+      "Title": "Painted hills pathway",
 
-  },
+      "Category": "Nature",
 
-  {
+      "Thumbnail": "/Assets/Photos/PaintedHillsPathway.jpg"
 
-    "Title": "Multnomah falls",
+    },
+    {
+      "Title": "Columbia river Gorge",
 
-    "Category": "Nature",
+      "Category": "Nature",
 
-    "Thumbnail": "/Assets/Photos/MultnomahFalls.jpg"
+      "Thumbnail": "/Assets/Photos/ColumbiaRiverGorge.jpg"
 
-  },
+    },
+    {
+      "Title": "Running dog pacific city",
 
-  {
+      "Category": "Nature",
 
-    "Title": "Northern cascades reflection",
+      "Thumbnail": "/Assets/Photos/RunningDogPacificCity.jpg"
 
-    "Category": "Nature",
+    },
+    {
+      "Title": "Shooting on auto on the drone",
 
-    "Thumbnail": "/Assets/Photos/NorthernCascadesReflection.jpg"
+      "Category": "City",
 
-  },
+      "Thumbnail": "/Assets/Photos/ShootingOnAutoOnTheDrone.jpg"
 
-  {
+    },
+    {
+      "Title": "Smithn rock down the river view",
 
-    "Title": "November hike waterfall",
+      "Category": "Nature",
 
-    "Category": "Nature",
+      "Thumbnail": "/Assets/Photos/SmithnRockDownTheRiverView.jpg"
 
-    "Thumbnail": "/Assets/Photos/NovemberHikeWaterfall.jpg"
+    },
+    {
+      "Title": "West Seattle view",
 
-  },
+      "Category": "City",
 
-  {
+      "Thumbnail": "/Assets/Photos/WestSeattleView.jpg"
 
-    "Title": "Owl",
+    },
+    {
+      "Title": "Van",
 
-    "Category": "Animal",
+      "Category": "Motor",
 
-    "Thumbnail": "/Assets/Photos/Owl.jpg"
+      "Thumbnail": "/Assets/Photos/Van.jpg"
 
-  },
+    },
+    {
+      "Title": "Speed triple atrists point",
 
-  {
+      "Category": "Motor",
 
-    "Title": "Oregon winery namaste",
+      "Thumbnail": "/Assets/Photos/SpeedTripleAtristsPoint.jpg"
 
-    "Category": "Nature",
+    },
+    {
+      "Title": "Snowy interbayt",
 
-    "Thumbnail": "/Assets/Photos/OregonWineryNamaste.jpg"
+      "Category": "City",
 
-  },
+      "Thumbnail": "/Assets/Photos/SnowyInterbayt.jpg"
 
-  {
-
-    "Title": "Painted hills pathway",
-
-    "Category": "Nature",
-
-    "Thumbnail": "/Assets/Photos/PaintedHillsPathway.jpg"
-
-  },
-
-  {
-
-    "Title": "Columbia river Gorge",
-
-    "Category": "Nature",
-
-    "Thumbnail": "/Assets/Photos/ColumbiaRiverGorge.jpg"
-
-  },
-
-  {
-
-    "Title": "Running dog pacific city",
-
-    "Category": "Nature",
-
-    "Thumbnail": "/Assets/Photos/RunningDogPacificCity.jpg"
-
-  },
-
-  {
-
-    "Title": "Shooting on auto on the drone",
-
-    "Category": "City",
-
-    "Thumbnail": "/Assets/Photos/ShootingOnAutoOnTheDrone.jpg"
-
-  },
-
-  {
-
-    "Title": "Smithn rock down the river view",
-
-    "Category": "Nature",
-
-    "Thumbnail": "/Assets/Photos/SmithnRockDownTheRiverView.jpg"
-
-  },
-
-  {
-
-    "Title": "West Seattle view",
-
-    "Category": "City",
-
-    "Thumbnail": "/Assets/Photos/WestSeattleView.jpg"
-
-  },
-
-  {
-
-    "Title": "Van",
-
-    "Category": "Motor",
-
-    "Thumbnail": "/Assets/Photos/Van.jpg"
-
-  },
-
-  {
-
-    "Title": "Speed triple atrists point",
-
-    "Category": "Motor",
-
-    "Thumbnail": "/Assets/Photos/SpeedTripleAtristsPoint.jpg"
-
-  },
-
-  {
-
-    "Title": "Snowy interbayt",
-
-    "Category": "City",
-
-	 "Thumbnail": "/Assets/Photos/SnowyInterbayt.jpg"
-
-  }
-
-]
+    }
+  ]
 }

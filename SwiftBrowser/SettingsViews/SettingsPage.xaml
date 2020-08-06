@@ -21,66 +21,77 @@
             </Grid.RowDefinitions>
 
             <TextBlock
-            Grid.Row="0"
-            x:Uid="Settings_Title"
-            Style="{StaticResource PageTitleStyle}" />
+                Grid.Row="0"
+                x:Uid="Settings_Title"
+                Style="{StaticResource PageTitleStyle}" />
 
             <StackPanel
-            Grid.Row="1"
-            x:Name="ContentArea">
+                Grid.Row="1"
+                x:Name="ContentArea">
                 <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
                 <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
                     <TextBlock x:Uid="Settings_Theme" />
 
                     <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                        <RadioButton 
-                        x:Uid="Settings_Theme_Light"
-                        Checked="ThemeChanged_CheckedAsync" 
-                        IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
-                        FontSize="15"
-                        GroupName="AppTheme" >
+                        <RadioButton
+                            x:Uid="Settings_Theme_Light"
+                            Checked="ThemeChanged_CheckedAsync"
+                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
+                            FontSize="15"
+                            GroupName="AppTheme">
                             <RadioButton.CommandParameter>
                                 <xaml:ElementTheme>Light</xaml:ElementTheme>
                             </RadioButton.CommandParameter>
                         </RadioButton>
-                        <RadioButton 
-                        x:Uid="Settings_Theme_Dark"
-                        Checked="ThemeChanged_CheckedAsync" 
-                        IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
-                        FontSize="15"
-                        GroupName="AppTheme">
+                        <RadioButton
+                            x:Uid="Settings_Theme_Dark"
+                            Checked="ThemeChanged_CheckedAsync"
+                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
+                            FontSize="15"
+                            GroupName="AppTheme">
                             <RadioButton.CommandParameter>
                                 <xaml:ElementTheme>Dark</xaml:ElementTheme>
                             </RadioButton.CommandParameter>
                         </RadioButton>
-                        <RadioButton 
-                        x:Uid="Settings_Theme_Default"
-                        Checked="ThemeChanged_CheckedAsync"
-                        IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
-                        FontSize="15"
-                        GroupName="AppTheme">
+                        <RadioButton
+                            x:Uid="Settings_Theme_Default"
+                            Checked="ThemeChanged_CheckedAsync"
+                            IsChecked="{x:Bind ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
+                            FontSize="15"
+                            GroupName="AppTheme">
                             <RadioButton.CommandParameter>
                                 <xaml:ElementTheme>Default</xaml:ElementTheme>
                             </RadioButton.CommandParameter>
                         </RadioButton>
                     </StackPanel>
                 </StackPanel>
-                <StackPanel  Margin="5, 30, 5, 5">
+                <StackPanel Margin="5, 30, 5, 5">
                     <muxc:RadioButtons x:Name="H" Header="Set your homepage" Margin="5">
-                        <RadioButton x:Name="Option1RadioButton" GroupName="H" Content="Default homepage" Checked="Option1RadioButton_Checked"/>
-                        <RadioButton x:Name="Option2RadioButton" GroupName="H" Content="Website" Checked="Option2RadioButton_Checked"/>
+                        <RadioButton x:Name="Option1RadioButton" GroupName="H" Content="Default homepage"
+                                     Checked="Option1RadioButton_Checked" />
+                        <RadioButton x:Name="Option2RadioButton" GroupName="H" Content="Website"
+                                     Checked="Option2RadioButton_Checked" />
                     </muxc:RadioButtons>
-                    <AutoSuggestBox AllowFocusOnInteraction="True" Visibility="Collapsed" Header="Enter valid url: " PlaceholderText="Url..." Margin="5" x:Name="TextUrl" QuerySubmitted="TextUrl_QuerySubmitted" QueryIcon="Globe"></AutoSuggestBox>
+                    <AutoSuggestBox AllowFocusOnInteraction="True" Visibility="Collapsed" Header="Enter valid url: "
+                                    PlaceholderText="Url..." Margin="5" x:Name="TextUrl"
+                                    QuerySubmitted="TextUrl_QuerySubmitted" QueryIcon="Globe" />
                     <muxc:RadioButtons Margin="5" x:Name="B" Header="Background">
-                        <RadioButton x:Name="DefaultacrylicOption" GroupName="B" IsChecked="False" Content="Default acrylic" Checked="DefaultacrylicOption_Checked"/>
-                        <RadioButton x:Name="Imageoption" GroupName="B" Content="Image" IsChecked="False" Checked="Imageoption_Checked"/>
+                        <RadioButton x:Name="DefaultacrylicOption" GroupName="B" IsChecked="False"
+                                     Content="Default acrylic" Checked="DefaultacrylicOption_Checked" />
+                        <RadioButton x:Name="Imageoption" GroupName="B" Content="Image" IsChecked="False"
+                                     Checked="Imageoption_Checked" />
                     </muxc:RadioButtons>
-        
-                    <ToggleSwitch x:Name="tICO" Toggled="TICO_Toggled" Header="Toggle Icon" OffContent="Disabled" OnContent="Enabled"/>
-                    <ToggleSwitch x:Name="TfAV" Toggled="TfAV_Toggled" Header="Toggle Favourites" OffContent="Disabled" OnContent="Enabled"/>
-                    <ToggleSwitch x:Name="TqUI" Toggled="TqUI_Toggled" Header="Toggle Quick web" OffContent="Disabled" OnContent="Enabled"/>
-                    <ToggleSwitch x:Name="TmOR" Toggled="TmOR_Toggled" Header="Toggle More content" OffContent="Disabled" OnContent="Enabled"/>
-                    <ToggleSwitch x:Name="TSea" Toggled="TSea_Toggled" Header="Toggle Search Content" OffContent="Disabled" OnContent="Enabled"/>
+
+                    <ToggleSwitch x:Name="tICO" Toggled="TICO_Toggled" Header="Toggle Icon" OffContent="Disabled"
+                                  OnContent="Enabled" />
+                    <ToggleSwitch x:Name="TfAV" Toggled="TfAV_Toggled" Header="Toggle Favourites" OffContent="Disabled"
+                                  OnContent="Enabled" />
+                    <ToggleSwitch x:Name="TqUI" Toggled="TqUI_Toggled" Header="Toggle Quick web" OffContent="Disabled"
+                                  OnContent="Enabled" />
+                    <ToggleSwitch x:Name="TmOR" Toggled="TmOR_Toggled" Header="Toggle More content"
+                                  OffContent="Disabled" OnContent="Enabled" />
+                    <ToggleSwitch x:Name="TSea" Toggled="TSea_Toggled" Header="Toggle Search Content"
+                                  OffContent="Disabled" OnContent="Enabled" />
                 </StackPanel>
                 <StackPanel>
                     <TextBlock Margin="5">Manage toolbar:</TextBlock>
@@ -92,22 +103,24 @@
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel>
-                                        <Image Height="50" Width="50" Source="{Binding IconJSON}" Margin="2"></Image>
+                                        <Image Height="50" Width="50" Source="{Binding IconJSON}" Margin="2" />
                                     </StackPanel>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding NameJSON}" Margin="2" FontSize="25"></TextBlock>
-                                        <TextBlock Text="{Binding DescriptionJSON}" Margin="2"></TextBlock>
+                                        <TextBlock Text="{Binding NameJSON}" Margin="2" FontSize="25" />
+                                        <TextBlock Text="{Binding DescriptionJSON}" Margin="2" />
                                     </StackPanel>
                                 </StackPanel>
-                                <ToggleSwitch x:Name="ToggleToolbar" IsOn="{Binding IsToolbar}" Margin="5" Header="Show in toolbar:" Toggled="ToggleToolbar_Toggled" OnContent="Enabled" OffContent="Disabled"></ToggleSwitch>
+                                <ToggleSwitch x:Name="ToggleToolbar" IsOn="{Binding IsToolbar}" Margin="5"
+                                              Header="Show in toolbar:" Toggled="ToggleToolbar_Toggled"
+                                              OnContent="Enabled" OffContent="Disabled" />
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
             </StackPanel>
-            <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="50,80,150,0" >
+            <Canvas x:Name="Container" HorizontalAlignment="Right" Margin="50,80,150,0">
 
-                <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100"/>
+                <Image x:Name="FirstGear" Source="ms-appx:///Assets/Gear.png" Width="100" Height="100" />
 
             </Canvas>
         </Grid>
