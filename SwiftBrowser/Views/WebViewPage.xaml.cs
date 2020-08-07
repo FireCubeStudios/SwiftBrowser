@@ -409,6 +409,47 @@ namespace SwiftBrowser.Views
 
         public async void Startup()
         {
+            Window.Current.CoreWindow.KeyDown += (s, eArgs) =>
+            {
+                var ctrl = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control);
+                if (ctrl.HasFlag(CoreVirtualKeyStates.Down) && eArgs.VirtualKey == VirtualKey.F)
+                {
+                    // do your stuff
+                    FindTip.IsOpen = true;
+                    MainFlyout.Hide();
+                }
+            };
+            Window.Current.CoreWindow.KeyDown += (s, eArgs) =>
+            {
+                var ctrl = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control);
+                if (ctrl.HasFlag(CoreVirtualKeyStates.Down) && eArgs.VirtualKey == VirtualKey.R)
+                {
+                    // do your stuff
+                        if (RefreshButton.IsEnabled == true)
+                        { webView.Refresh(); }
+                }
+            };
+            Window.Current.CoreWindow.KeyDown += (s, eArgs) =>
+            {
+                var ctrl = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control);
+                if (ctrl.HasFlag(CoreVirtualKeyStates.Down) && eArgs.VirtualKey == VirtualKey.H)
+                {
+                    // do your stuff
+                    Favourites.WebWeb = webView;
+                    OfflinePage.WebWeb = webView;
+                    OfflinePage.ImageFrame = InkingFrame;
+                    HubPage.NavString = "H";
+                    HubFrame.Navigate(typeof(HubPage));
+                    try
+                    {
+                        if (HomeFrame.IsLoaded) Favourites.BoolWeb = false;
+                    }
+                    catch
+                    {
+                        Favourites.BoolWeb = true;
+                    }
+                }
+            };
             if (isfirst)
             {
                 isfirst = false;
@@ -3094,17 +3135,31 @@ namespace SwiftBrowser.Views
         private async void HighlightTerm_QuerySubmitted(AutoSuggestBox sender,
             AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            if (!Cleared) ClearSearch();
-            await webView.InvokeScriptAsync("eval",
-                new[] {HighlightFunctionJS + " HighlightFunction('" + args.QueryText + "');"});
-            Cleared = false;
+            try
+            {
+                if (!Cleared) ClearSearch();
+                await webView.InvokeScriptAsync("eval",
+                    new[] { HighlightFunctionJS + " HighlightFunction('" + args.QueryText + "');" });
+                Cleared = false;
+            }
+            catch
+            {
+
+            }
         }
 
         public async void ClearSearch()
         {
-            await webView.InvokeScriptAsync("eval",
-                new[] {HighlightFunctionJS + " RestoreFunction();"});
-            Cleared = true;
+            try
+            {
+                await webView.InvokeScriptAsync("eval",
+                    new[] { HighlightFunctionJS + " RestoreFunction();" });
+                Cleared = true;
+            }
+            catch
+            {
+
+            }
         }
 
         private void FindTip_CloseButtonClick(WinUI.TeachingTip sender, object args)

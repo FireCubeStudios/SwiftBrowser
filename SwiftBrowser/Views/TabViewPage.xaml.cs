@@ -1357,10 +1357,102 @@ namespace SwiftBrowser.Views
             LoadTabViewRestore();
             sender.IsOpen = false;
         }
+        public async void AddTab()
+        {
+            var newTab = new WinUI.TabViewItem();
+            newTab.IconSource = new WinUI.SymbolIconSource { Symbol = Symbol.Home };
+            var Flyout = new MenuFlyout();
+            var OpenInnewwindow = new MenuFlyoutItem();
+            OpenInnewwindow.Icon = new SymbolIcon(Symbol.Add);
 
+            var T = new ToolTip();
+            ToolTipService.SetToolTip(newTab, T);
+
+            OpenInnewwindow.Text = "Move to new window";
+            Flyout.Items.Add(OpenInnewwindow);
+            Flyout.Items.Add(new MenuFlyoutSeparator());
+            var Refresh = new MenuFlyoutItem();
+            Refresh.Icon = new SymbolIcon(Symbol.Refresh);
+            Refresh.Text = "Refresh Tab";
+            Refresh.Click += Refresh_Click;
+            Flyout.Items.Add(Refresh);
+            Flyout.Items.Add(new MenuFlyoutSeparator());
+            var newtabF = new MenuFlyoutItem();
+            newtabF.Icon = new SymbolIcon(Symbol.Add);
+            newtabF.Text = "New Tab";
+            newtabF.Click += AddAll;
+            Flyout.Items.Add(newtabF);
+
+            var newWindow = new MenuFlyoutItem();
+            newWindow.Icon = new SymbolIcon(Symbol.Add);
+            newWindow.Text = "New secondary window";
+            newWindow.Click += NewWindow_Click;
+            Flyout.Items.Add(newWindow);
+
+            var newIncognito = new MenuFlyoutItem();
+            newIncognito.Icon = new SymbolIcon(Symbol.Add);
+            newIncognito.Text = "New incognito window";
+            newIncognito.Click += Incognito_Click;
+            Flyout.Items.Add(newIncognito);
+
+            Flyout.Items.Add(new MenuFlyoutSeparator());
+            var CloseTab = new MenuFlyoutItem();
+            CloseTab.Icon = new SymbolIcon(Symbol.Delete);
+            CloseTab.Text = "Close Tab";
+            CloseTab.Click += CloseTab_Click;
+            Flyout.Items.Add(CloseTab);
+            var CloseO = new MenuFlyoutItem();
+            CloseO.Icon = new SymbolIcon(Symbol.Delete);
+            CloseO.Text = "Close other tabs";
+            CloseO.Click += CloseO_Click;
+            Flyout.Items.Add(CloseO);
+            var CloseAll = new MenuFlyoutItem();
+            CloseAll.Icon = new SymbolIcon(Symbol.Delete);
+            CloseAll.Text = "Close all tabs";
+            CloseAll.Click += ClearAll;
+            Flyout.Items.Add(CloseAll);
+            newTab.RightTapped += NewTab_RightTapped;
+            newTab.PointerEntered += NewTab_PointerEntered;
+            newTab.ContextFlyout = Flyout;
+            newTab.Header = "Home Tab";
+
+            var frame = new Frame();
+            newTab.Content = frame;
+            WebViewPage.IncognitoModeStatic = false;
+            WebViewPage.CurrentMainTab = newTab;
+            WebViewPage.MainTab = TabsControl;
+            frame.Navigate(typeof(WebViewPage));
+            WebViewPage.CurrentMainTab = newTab;
+            WebViewPage.IncognitoModeStatic = false;
+            WebViewPage.MainTab = TabsControl;
+           TabsControl.TabItems.Add(newTab);
+            WebViewPage.MainTab = TabsControl;
+            TabsControl.SelectedItem = newTab;
+            WebViewPage.CurrentMainTab = newTab;
+            try
+            {
+                AppTitleBar.Width = AppTitleBar.Width =
+                    Window.Current.Bounds.Width - 60 - TabsControl.TabItems.Count * newTab.Width;
+            }
+            catch
+            {
+                AppTitleBar.Width = 240;
+            }
+
+            GC.Collect(2);
+        }
         private async void TitleGrid_Loaded(object sender, RoutedEventArgs e)
         {
             FindName("TabsControl");
+            Window.Current.CoreWindow.KeyDown += (s, eArgs) =>
+            {
+                var ctrl = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control);
+                if (ctrl.HasFlag(CoreVirtualKeyStates.Down) && eArgs.VirtualKey == VirtualKey.W)
+                {
+                    // do your stuff
+                    AddTab();
+                }
+            };
             var newTab = new WinUI.TabViewItem();
             newTab.IconSource = new WinUI.SymbolIconSource {Symbol = Symbol.Home};
             newTab.Header = "Home Tab";
