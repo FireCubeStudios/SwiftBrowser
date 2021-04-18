@@ -13,6 +13,7 @@ Timeline for new Swift Browser lite:
 - basic features
 - Miscallaneous browser features
 - full homescreen
+
 2021 september:
 - Inking etc.
 - Favorites
@@ -20,6 +21,7 @@ Timeline for new Swift Browser lite:
 - Incognito
 - Multi instancing
 - Themes
+
 2021 october:
 - Tabs
 - Vertical tabs
@@ -28,6 +30,7 @@ Timeline for new Swift Browser lite:
 - Set aside for tabs
 - Tab sessions
 - Stacked tab groups
+
 2021 november:
 - Commandline args
 - Live tiles
@@ -37,6 +40,7 @@ Timeline for new Swift Browser lite:
 - Downloads
 - Tag search
 - Offline sites
+
 2021 december:
 - Pdf reader
 - E reader
